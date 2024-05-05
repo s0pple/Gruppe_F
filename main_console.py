@@ -1,13 +1,15 @@
-# from search import SearchManager
-# from register import UserManager
+from business.SearchManager import *
+import business.UserManager
 from data_access import data_loader as dl
 from data_access.data_base import *
 
+database_path = './data/hotel_reservation.db'
 
-DB_PATH = './data/hotel_reservation.db'
-
-def load_db():
+def load_db(database_path):
     # Import relevant data classes and initialize objects for hotels, registered users, admin users and other
+    init_db(database_path, True, True, True)
+
+    get_db_connection(database_path)
     # required data
     pass
 
@@ -31,7 +33,10 @@ def navigate():
             print("Goodbye, see you soon!")
             exit()
         case '0':
-            print("Search")
+            city = input("Enter the city you want to search hotels in: ")
+            hotels = SearchManager.search_hotels_by_city(database_path, city)
+            for hotel in hotels:
+                print(hotel)
             # call functions in SearchManager
         case '1':
             print("Register")
@@ -44,10 +49,8 @@ def navigate():
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     # later replace with load_sqlite_db()
-    #load_db()
-
-    init_db(DB_PATH, True, True, True)
-
+    load_db(database_path)
+    
     # try:
     #     dl.load_data_from_sqlite()
     # except Exception as e:
@@ -59,4 +62,4 @@ if __name__ == '__main__':
     show_menu()
 
     # can be replaced with individual screens for different function like register, login, search etc.
-    #navigate()
+    navigate()

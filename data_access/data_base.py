@@ -2,15 +2,24 @@ import os
 from pathlib import Path
 
 from sqlalchemy import create_engine
+
 from sqlalchemy.schema import CreateTable
 
 from data_models.models import *
 from data_access.data_generator import *
 
-def init_db(file_path: str, create_ddl: bool = False, generate_example_data: bool = False, verbose: bool = False):
-    path = Path(file_path)
+from sqlalchemy.orm import sessionmaker
+
+def get_db_connection(database_path):
+    engine = create_engine(f"sqlite:///{database_path}")
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    return session
+
+def init_db(database_path: str, create_ddl: bool = False, generate_example_data: bool = False, verbose: bool = False):
+    path = Path(database_path)
     data_folder = path.parent
-    engine = create_engine(f"sqlite:///{file_path}")
+    engine = create_engine(f"sqlite:///{database_path}")
 
     if path.is_file():
         Base.metadata.drop_all(engine)
