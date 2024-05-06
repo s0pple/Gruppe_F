@@ -5,6 +5,7 @@ from data_access.data_base import *
 
 database_path = './data/hotel_reservation.db'
 
+
 def load_db(database_path):
     # Import relevant data classes and initialize objects for hotels, registered users, admin users and other
     init_db(database_path, True, True, True)
@@ -12,6 +13,7 @@ def load_db(database_path):
     get_db_connection(database_path)
     # required data
     pass
+
 
 def show_welcome():
     print("Welcome to hotel reservation system <customize>")
@@ -50,7 +52,7 @@ def navigate():
 if __name__ == '__main__':
     # later replace with load_sqlite_db()
     load_db(database_path)
-    
+
     # try:
     #     dl.load_data_from_sqlite()
     # except Exception as e:
