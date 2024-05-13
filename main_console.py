@@ -19,12 +19,12 @@ def show_welcome():
     print("Welcome to hotel reservation system <customize>")
     # add more instructions or information as desired
 
-
 def show_menu():
     print("Menu: ")
-    print("Print 0 to search hotels based on your criteria")
-    print("Print 1 to register a new user")
-    print("Print 2 login as a registered user or an admin")
+    print("Print 0 to search hotels in a city")
+    print("Print 1 to search hotels in a city with max_guests (per room) and optional star rating")
+    print("Print 2 to register a new user")
+    print("Print 3 to login as a registered user or an admin")
     print("Print x to quit the hotel reservation system")
 
 
@@ -34,15 +34,24 @@ def navigate():
         case 'x':
             print("Goodbye, see you soon!")
             exit()
+        # call functions in SearchManager
         case '0':
             city = input("Enter the city you want to search hotels in: ")
             hotels = SearchManager.search_hotels_by_city(database_path, city)
             for hotel in hotels:
                 print(hotel)
-            # call functions in SearchManager
         case '1':
+            city = input("Enter the city you want to search hotels in: ")
+            max_guests = input("Enter the max_guests you want (per room) to search hotels for: ")
+            star_rating = input("(optional) - Enter the star rating you want to search hotels for: ")
+            hotels = SearchManager.search_hotels_by_city_and_max_guests_with_optional_star_rating(database_path, city, max_guests, star_rating=None)
+            for hotel in hotels:
+                print(hotel)
+        # call functions in UserManager
+        case '2':
             print("Register")
-            # call functions in UserManager
+        case '3':
+            pass
         case _:
             print("No such option, please enter a valid choice as shown in the Menu")
             choice = input("Choose an option for your desired action: ")
