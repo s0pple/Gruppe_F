@@ -1,6 +1,6 @@
 from business.SearchManager import *
 import business.UserManager
-business.UserManager.UserManager.register()
+from business.UserManager import UserManager
 from data_access import data_loader as dl
 from data_access.data_base import *
 
@@ -50,12 +50,11 @@ def navigate():
                 print(hotel)
         # call functions in UserManager
         case '2':
-            user_manager = business.UserManager.UserManager()
-            print("Enter Username:")
-            username = input()
-            print("Enter Password:")
-            password = input()
-            user_manager.register(database_path, username, password)
+            user_manager = UserManager()
+            database_path = './data/hotel_reservation.db'
+            username = 'your_username'
+            password = 'your_password'
+            user_manager.register(user_manager, database_path, username, password)
         case '3':
             print("SoonTM")
         case _:
