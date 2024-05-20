@@ -52,9 +52,10 @@ def navigate():
         case '2':
             user_manager = UserManager()
             database_path = './data/hotel_reservation.db'
-            username = 'your_username'
-            password = 'your_password'
-            user_manager.register(user_manager, database_path, username, password)
+            username = input("Enter your username: ")
+            password = input("Enter your password: ")
+            user_manager.register(database_path, username, password)
+
         case '3':
             print("SoonTM")
         case _:
