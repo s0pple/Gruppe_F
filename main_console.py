@@ -1,5 +1,6 @@
 from business.SearchManager import *
 import business.UserManager
+business.UserManager.UserManager.register()
 from data_access import data_loader as dl
 from data_access.data_base import *
 
@@ -49,13 +50,14 @@ def navigate():
                 print(hotel)
         # call functions in UserManager
         case '2':
+            user_manager = business.UserManager.UserManager()
             print("Enter Username:")
             username = input()
             print("Enter Password:")
             password = input()
-            business.UserManager.register(database_path, username, password)
+            user_manager.register(database_path, username, password)
         case '3':
-            pass
+            print("SoonTM")
         case _:
             print("No such option, please enter a valid choice as shown in the Menu")
             choice = input("Choose an option for your desired action: ")
