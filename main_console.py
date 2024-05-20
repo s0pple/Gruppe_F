@@ -49,7 +49,11 @@ def navigate():
                 print(hotel)
         # call functions in UserManager
         case '2':
-            print("Register")
+            print("Enter Username:")
+            username = input()
+            print("Enter Password:")
+            password = input()
+            business.UserManager.register(database_path, username, password)
         case '3':
             pass
         case _:
