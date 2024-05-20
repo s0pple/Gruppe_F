@@ -22,3 +22,9 @@ class UserManager:
                 return True
             else:
                 return False
+
+    @staticmethod
+    def get_all_users(engine: Engine):
+        with Session(engine) as session:
+            users = session.query(User).all()
+            return users
