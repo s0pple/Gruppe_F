@@ -78,7 +78,7 @@ class Menu(Console):
             choice = input("Enter Option: ")
         return int(choice)
 
-    def _navigate(self, choice: int):
+    def _navigate(self, choice: int) -> Console:
         raise NotImplementedError("Implement this method")
 
     def run(self) -> Console:
