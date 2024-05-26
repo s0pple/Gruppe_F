@@ -1,2 +1,1 @@
-SQLAlchemy==2.0.25
-PyQt5==5.15.10
+sqlalchemy
