@@ -9,6 +9,7 @@ class SearchMenu(Menu):
         self.add_option(MenuOption("Search by city"))  # option 2
         self.add_option(MenuOption("Search by stars"))  # option 3
         self.add_option(MenuOption("Search hotels by city and max guests with optional star rating"))  # option 4
+        self.add_option(MenuOption("display_hotel_info"))  # option 5
         # TODO: Add further MenuOptions to search by the address.city etc. of the hotels.
         self.add_option(MenuOption("Back"))  # option 5
         # we need the main menu to navigate back to it
@@ -48,13 +49,21 @@ class SearchMenu(Menu):
         if stars:
             stars = int(stars)
         hotels = self.__search_manager.search_hotels_by_city_and_max_guests_with_optional_star_rating(city, max_guests, stars)
-
         if hotels == 0:
             print("No hotels found")
         else:
             for hotel in hotels:
                 print(hotel)
+        input("Press Enter to continue...")
 
+    def __display_hotel_info(self):
+        self.clear()
+        all_hotels = self.__search_manager.display_hotel_info()
+        if not all_hotels:
+            print("No hotels found")
+        else:
+            for hotel_info in all_hotels:
+                print(hotel_info)
         input("Press Enter to continue...")
 
     # TODO: Add more methods which implement the UI for further search options.
@@ -73,5 +82,8 @@ class SearchMenu(Menu):
             case 4: # option 4 (Search hotels by city and max guests with optional star rating)
                 self.__search_by_city_and_max_guests_with_optional_star_rating()
                 return self # navigate again to this menu
-            case 5:  # option 5 (Back)
+            case 5: # option 5 (display_hotel_info)
+                self.__display_hotel_info()
+                return self # navigate again to this menu
+            case 6:  # option 6 (Back)
                 return self.__main_menu  # navigate back to the main menu

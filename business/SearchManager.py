@@ -73,6 +73,17 @@ class SearchManager(BaseManager):
 
     # 1.1.4. Ich möchte alle Hotels in einer Stadt durchsuchen, die während meines Aufenthaltes ("von" (start_date) und "bis" (end_date)) Zimmer für meine Gästezahl zur Verfügung haben, entweder mit oder ohne Anzahl der Sterne, damit ich nur relevante Ergebnisse sehe.
     # 1.1.5. Ich möchte die folgenden Informationen pro Hotel sehen: Name, Adresse, Anzahl der Sterne.
+    def display_hotel_info(self):
+        all_hotels = self.get_all_hotels()
+        hotels_info = []
+        for hotel in all_hotels:
+            hotel_info = f"Hotel Name: {hotel.name}\n"
+            hotel_info += f"Address: {hotel.address.street}, {hotel.address.zip} {hotel.address.city}\n"
+            hotel_info += f"Stars: {hotel.stars}\n"
+            hotel_info += "-" * 50  # Separator for better readability
+            hotels_info.append(hotel_info)
+        return hotels_info
+
     # 1.1.6. Ich möchte ein Hotel auswählen, um die Details zu sehen (z.B.verfügbare Zimmer [siehe 1.2])
 
 
