@@ -72,6 +72,50 @@ class SearchManager(BaseManager):
         return formatted_hotels
 
     # 1.1.4. Ich möchte alle Hotels in einer Stadt durchsuchen, die während meines Aufenthaltes ("von" (start_date) und "bis" (end_date)) Zimmer für meine Gästezahl zur Verfügung haben, entweder mit oder ohne Anzahl der Sterne, damit ich nur relevante Ergebnisse sehe.
+    def get_hotels_by_city_guests_star_availability(self, city=None, max_guests=None, star_rating=None, start_date=None,
+                                                    end_date=None) -> List[Hotel]:
+        query = select(Hotel)
+
+        if city:
+            query = query.join(Address, Hotel.address_id == Address.id).where(Address.city == city)
+
+        # If max_guests is specified, add it to the WHERE clause
+        if max_guests:
+            query = query.where(Hotel.rooms.any(max_guests <= Room.max_guests))
+
+        # If star_rating is specified, add it to the WHERE clause
+        if star_rating:
+            query = query.where(Hotel.stars == star_rating)
+
+        # If the start_date and end_date are specified, check availability
+        if start_date and end_date:
+            # Alias for the Booking table to avoid name conflicts
+            br = aliased(Booking)
+
+            # Subquery to find booked room_hotel_id combinations
+            booking_subquery = (
+                select(br.room_hotel_id, br.room_number)
+                .where(
+                    or_(
+                        and_(br.start_date <= start_date, br.end_date >= end_date),
+                        and_(br.start_date >= start_date, br.start_date <= end_date),
+                        and_(br.end_date >= start_date, br.end_date <= end_date)
+                    )
+                )
+                .subquery()
+            )
+
+            # Main query to exclude hotels with booked rooms during the requested period
+            query = query.join(Room, Hotel.id == Room.hotel_id).outerjoin(
+                booking_subquery,
+                and_(
+                    Room.hotel_id == booking_subquery.c.room_hotel_id,
+                    Room.number == booking_subquery.c.room_number
+                )
+            ).where(booking_subquery.c.room_hotel_id == None).group_by(Hotel.id)
+
+        return self.select_all(query)
+
     # 1.1.5. Ich möchte die folgenden Informationen pro Hotel sehen: Name, Adresse, Anzahl der Sterne.
     def display_hotel_info(self):
         all_hotels = self.get_all_hotels()
