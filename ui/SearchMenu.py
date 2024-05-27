@@ -8,9 +8,8 @@ class SearchMenu(Menu):
         self.add_option(MenuOption("Show all hotel"))  # option 1
         self.add_option(MenuOption("Search by city"))  # option 2
         self.add_option(MenuOption("Search by stars"))  # option 3
-        self.add_option(MenuOption("Search hotels by city and max guests with optional star rating"))  # option 4
         # TODO: Add further MenuOptions to search by the address.city etc. of the hotels.
-        self.add_option(MenuOption("Back"))  # option 5
+        self.add_option(MenuOption("Back"))  # option 4
         # we need the main menu to navigate back to it
         self.__main_menu = main_menu
 
@@ -40,26 +39,9 @@ class SearchMenu(Menu):
         print("Implement this by next week")
         input("Press Enter to continue...")
 
-    def __search_by_city_and_max_guests_with_optional_star_rating(self):
-        self.clear()
-        city = input("City: ")
-        max_guests = input("Max Guests: ")
-        stars = input("Star Rating (optional): ")
-        if stars:
-            stars = int(stars)
-        hotels = self.__search_manager.search_hotels_by_city_and_max_guests_with_optional_star_rating(city, max_guests, stars)
-
-        if hotels == 0:
-            print("No hotels found")
-        else:
-            for hotel in hotels:
-                print(hotel)
-
-        input("Press Enter to continue...")
-
     # TODO: Add more methods which implement the UI for further search options.
 
-    def _navigate(self, choice: int): # TODO: Add further navigation options according to the added MenuOptions in the constructor.
+    def _navigate(self, choice: int):
         match choice:
             case 1:  # option 1 (Show all hotel)
                 self.__show_all()
@@ -70,8 +52,6 @@ class SearchMenu(Menu):
             case 3:  # option 3 (Search by starts)
                 self.__search_by_stars()
                 return self  # navigate again to this menu
-            case 4: # option 4 (Search hotels by city and max guests with optional star rating)
-                self.__search_by_city_and_max_guests_with_optional_star_rating()
-                return self # navigate again to this menu
-            case 5:  # option 5 (Back)
+            # TODO: Add further navigation options according to the added MenuOptions in the constructor.
+            case 4:  # option 4 (Back)
                 return self.__main_menu  # navigate back to the main menu
