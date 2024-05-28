@@ -116,6 +116,7 @@ class SearchManager(BaseManager):
 
         return self.select_all(query)
 
+
     # 1.1.5. Ich möchte die folgenden Informationen pro Hotel sehen: Name, Adresse, Anzahl der Sterne.
     def display_hotel_info(self):
         all_hotels = self.get_all_hotels()

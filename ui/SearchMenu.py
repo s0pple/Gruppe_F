@@ -3,7 +3,7 @@ from console.console_base import Menu, MenuOption
 
 
 class SearchMenu(Menu):
-    def __init__(self, main_menu: Menu):
+    def __init__(self, main_menu: Menu, formatted_hotels: list = None):
         super().__init__("Search Hotel")
         self.add_option(MenuOption("Show all hotel"))  # option 1
         self.add_option(MenuOption("Search by city"))  # option 2
@@ -16,6 +16,9 @@ class SearchMenu(Menu):
         # we need the main menu to navigate back to it
         self.__main_menu = main_menu
         self.__search_manager = SearchManager()
+
+
+
 
     def __show_all(self):
         self.clear() # clear the console
@@ -74,16 +77,53 @@ class SearchMenu(Menu):
         star_rating = input("(optional) - Enter the star rating you want to search hotels for: ")
         start_date = input("(optional) - Enter the start date: ")
         end_date = input("(optional) - Enter the end date: ")
-        select_hotels = self.__search_manager.get_hotels_by_city_guests_star_availability(city, max_guests,
+        self.clear()
+        all_hotels = self.__search_manager.get_hotels_by_city_guests_star_availability(city, max_guests,
                                                                                           star_rating,
                                                                                           start_date, end_date)
 
-        if not select_hotels:
+        if not all_hotels:
             print("No hotels with these conditions were found")
 
-        for hotel in select_hotels:
-            print(hotel)
-        input("Press Enter to continue...")
+        else:
+
+            formatted_hotels = self.__format_hotels(all_hotels)
+            selected_hotel = self.__navigate_hotel(formatted_hotels)
+
+            if selected_hotel:
+                self.clear()
+                print(f"You selected: {selected_hotel}")
+            input("Press Enter to continue...")
+
+    def __navigate_hotel(self, formatted_hotels: list):
+        while True:
+            for index, hotel in enumerate(formatted_hotels, start=1):
+                print(f"{index}.\n {hotel}")
+            try:
+                choice = input("Enter the number of your choice, or 'x' to go back: ")
+                if choice.lower() == 'x':
+                    return None  # Return None to indicate going back
+                choice = int(choice)
+                if 1 <= choice <= len(formatted_hotels):
+                    return formatted_hotels[choice - 1]
+                else:
+                    print("Invalid number. Please try again.")
+            except ValueError:
+                print("Invalid input. Please enter a number.")
+
+    def __format_hotels(self, all_hotels):
+        hotels_info = []
+        for hotel in all_hotels:
+            hotel_info = f"Hotel Name: {hotel.name}\n"
+            hotel_info += f"Address: {hotel.address.street}, {hotel.address.zip} {hotel.address.city}\n"
+            hotel_info += f"Stars: {hotel.stars}\n"
+            hotel_info += "-" * 80  # Separator for better readability
+            hotels_info.append(hotel_info)
+        return hotels_info
+
+
+
+
     # TODO: Add more methods which implement the UI for further search options.
 
     def _navigate(self, choice: int): # TODO: Add further navigation options according to the added MenuOptions in the constructor.
@@ -108,3 +148,5 @@ class SearchMenu(Menu):
                 return self  # navigate again to this menu
             case 7:  # option 7 (Back)
                 return self.__main_menu  # navigate back to the main menu
+
+

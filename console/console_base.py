@@ -38,7 +38,7 @@ class MenuOption(object):
 
 
 class Menu(Console):
-    def __init__(self, title, width=50):
+    def __init__(self, title, width=90):
         super().__init__()
         self._title = title
         self._options = []
