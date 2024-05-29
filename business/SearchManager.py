@@ -15,61 +15,61 @@ class SearchManager(BaseManager):
     def get_session(self):
         return self._session
 
-    def get_all_hotels(self) -> List[Hotel]:
-        query = select(Hotel)
-        return self.select_all(query)
-
-    def get_hotels_by_name(self, name: str) -> List[Hotel]:
-        query = select(Hotel).where(func.lower(Hotel.name).like(f"%{name.lower()}%"))
-        return self.select_all(query)
-
-    # 1.1.1. Ich möchte alle Hotels in einer Stadt durchsuchen, damit ich das Hotel nach meinem bevorzugten Standort (Stadt) auswählen kann.
-    def get_hotels_by_city(self, city: str) -> List[Hotel]:
-        query = select(Hotel).join(Address).where(Address.city == city)
-        return self.select_all(query)
-
-    def get_hotel_by_id(self, id: int) -> Hotel:
-        query = select(Hotel).where(Hotel.id == id)
-        return self.select_one(query)
-
-    # 1.1.2. Ich möchte alle Hotels in einer Stadt nach der Anzahl der Sterne durchsuchen.
-    # 1.1.3. Ich möchte alle Hotels in einer Stadt durchsuchen, die Zimmer haben, die meiner Gästezahl entsprechen (nur 1 Zimmer pro Buchung), entweder mit oder ohne Anzahl der Sterne.
-    def search_hotels_by_city_and_max_guests_with_optional_star_rating(self, city, max_guests, stars=None):
-        session = self.get_session()
-
-        # Start of the SQL query
-        query = """
-            SELECT hotel.name, GROUP_CONCAT(room.number) as room_numbers
-            FROM hotel
-            JOIN address ON hotel.address_id = address.id
-            JOIN room ON hotel.id = room.hotel_id
-            WHERE address.city = :city
-            AND room.max_guests >= :max_guests"""
-
-        # If star_rating is specified, add it to the WHERE clause
-        if stars is not None:
-            query += " AND hotel.stars = :stars"
-
-        # Add GROUP BY clause to avoid repeating hotel names
-        query += " GROUP BY hotel.name"
-
-        # Convert the query string to a SQLAlchemy text object
-        query = text(query)
-
-        # Execute the SQL query
-        result = session.execute(query, {'city': city, 'max_guests': max_guests, 'stars': stars})
-
-        # Fetch all the records
-        hotels = result.fetchall()
-
-        if not hotels:
-            return 0
-
-        # Format the output
-        formatted_hotels = []
-        for hotel in hotels:
-            formatted_hotels.append(f"hotel_name: {hotel[0]}, room_numbers: {hotel[1]}")
-        return formatted_hotels
+    # def get_all_hotels(self) -> List[Hotel]:
+    #     query = select(Hotel)
+    #     return self.select_all(query)
+    #
+    # def get_hotels_by_name(self, name: str) -> List[Hotel]:
+    #     query = select(Hotel).where(func.lower(Hotel.name).like(f"%{name.lower()}%"))
+    #     return self.select_all(query)
+    #
+    # # 1.1.1. Ich möchte alle Hotels in einer Stadt durchsuchen, damit ich das Hotel nach meinem bevorzugten Standort (Stadt) auswählen kann.
+    # def get_hotels_by_city(self, city: str) -> List[Hotel]:
+    #     query = select(Hotel).join(Address).where(Address.city == city)
+    #     return self.select_all(query)
+    #
+    # def get_hotel_by_id(self, id: int) -> Hotel:
+    #     query = select(Hotel).where(Hotel.id == id)
+    #     return self.select_one(query)
+    #
+    # # 1.1.2. Ich möchte alle Hotels in einer Stadt nach der Anzahl der Sterne durchsuchen.
+    # # 1.1.3. Ich möchte alle Hotels in einer Stadt durchsuchen, die Zimmer haben, die meiner Gästezahl entsprechen (nur 1 Zimmer pro Buchung), entweder mit oder ohne Anzahl der Sterne.
+    # def search_hotels_by_city_and_max_guests_with_optional_star_rating(self, city, max_guests, stars=None):
+    #     session = self.get_session()
+    #
+    #     # Start of the SQL query
+    #     query = """
+    #         SELECT hotel.name, GROUP_CONCAT(room.number) as room_numbers
+    #         FROM hotel
+    #         JOIN address ON hotel.address_id = address.id
+    #         JOIN room ON hotel.id = room.hotel_id
+    #         WHERE address.city = :city
+    #         AND room.max_guests >= :max_guests"""
+    #
+    #     # If star_rating is specified, add it to the WHERE clause
+    #     if stars is not None:
+    #         query += " AND hotel.stars = :stars"
+    #
+    #     # Add GROUP BY clause to avoid repeating hotel names
+    #     query += " GROUP BY hotel.name"
+    #
+    #     # Convert the query string to a SQLAlchemy text object
+    #     query = text(query)
+    #
+    #     # Execute the SQL query
+    #     result = session.execute(query, {'city': city, 'max_guests': max_guests, 'stars': stars})
+    #
+    #     # Fetch all the records
+    #     hotels = result.fetchall()
+    #
+    #     if not hotels:
+    #         return 0
+    #
+    #     # Format the output
+    #     formatted_hotels = []
+    #     for hotel in hotels:
+    #         formatted_hotels.append(f"hotel_name: {hotel[0]}, room_numbers: {hotel[1]}")
+    #     return formatted_hotels
 
     # 1.1.4. Ich möchte alle Hotels in einer Stadt durchsuchen, die während meines Aufenthaltes ("von" (start_date) und "bis" (end_date)) Zimmer für meine Gästezahl zur Verfügung haben, entweder mit oder ohne Anzahl der Sterne, damit ich nur relevante Ergebnisse sehe.
     def get_hotels_by_city_guests_star_availability(self, city=None, max_guests=None, star_rating=None, start_date=None,
@@ -114,22 +114,27 @@ class SearchManager(BaseManager):
                 )
             ).where(booking_subquery.c.room_hotel_id == None).group_by(Hotel.id)
 
-        return self.select_all(query)
+        result = self._session.execute(query)
+        all_hotels = result.fetchall()
+        # return all_hotels
+
+        return self.select_all(query), all_hotels
 
 
     # 1.1.5. Ich möchte die folgenden Informationen pro Hotel sehen: Name, Adresse, Anzahl der Sterne.
-    def display_hotel_info(self):
-        all_hotels = self.get_all_hotels()
-        hotels_info = []
-        for hotel in all_hotels:
-            hotel_info = f"Hotel Name: {hotel.name}\n"
-            hotel_info += f"Address: {hotel.address.street}, {hotel.address.zip} {hotel.address.city}\n"
-            hotel_info += f"Stars: {hotel.stars}\n"
-            hotel_info += "-" * 50  # Separator for better readability
-            hotels_info.append(hotel_info)
-        return hotels_info
+    # def display_hotel_info(self):
+    #     all_hotels = self.get_all_hotels()
+    #     hotels_info = []
+    #     for hotel in all_hotels:
+    #         hotel_info = f"Hotel Name: {hotel.name}\n"
+    #         hotel_info += f"Address: {hotel.address.street}, {hotel.address.zip} {hotel.address.city}\n"
+    #         hotel_info += f"Stars: {hotel.stars}\n"
+    #         hotel_info += "-" * 50  # Separator for better readability
+    #         hotels_info.append(hotel_info)
+    #     return hotels_info
 
     # 1.1.6. Ich möchte ein Hotel auswählen, um die Details zu sehen (z.B.verfügbare Zimmer [siehe 1.2])
+
 
 
 if __name__ == '__main__':

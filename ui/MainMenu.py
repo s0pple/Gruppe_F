@@ -1,6 +1,6 @@
 # ui/MainMenu.py
 from console.console_base import Menu, MenuOption
-from ui.SearchMenu import SearchMenu
+from ui.SearchMenu import SearchMenu, SelectHotelMenu
 from ui.UserMenu import UserMenu
 
 
