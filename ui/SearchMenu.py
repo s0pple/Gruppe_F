@@ -98,7 +98,6 @@ class SearchMenu(Menu):
 
         else:
             names =["Patrick","Oli", "Vagi", "Michi", "Robin"]
-
             return SelectHotelMenu(self.__main_menu, names)
 
 
@@ -173,7 +172,7 @@ class SearchMenu(Menu):
 ####################start of SelectHotelMenu class###########################
 class SelectHotelMenu(Menu):
 
-    def __init__(self, main_menu: Menu, all_hotels: list, names=None):
+    def __init__(self, main_menu: Menu, all_hotels: list, names=None, hotel_id=None):
         super().__init__("Select Hotel")
 
         self.__main_menu = main_menu  # we need the main menu to navigate back to it
@@ -194,6 +193,7 @@ class SelectHotelMenu(Menu):
         # self.__formatted_hotels = formatted_hotels
         self.__search_manager = SearchManager()  # we need the  SearchManager to navigate back to it
         # self.__select_hotel = SelectHotel(self)
+        self._hotel_id = hotel_id # storing the hotel_id
 
         # self.__navigate_hotel(formatted_hotels)
         # for hotels in formatted_hotels:
@@ -216,13 +216,45 @@ class SelectHotelMenu(Menu):
     #         except ValueError:
     #             print("Invalid input. Please enter a number.")
 
+    def __search_rooms(self, hotel_id):
+        # Prompt the user for the room attributes
+        room_type = input("(optional) - Enter the room type you want to search for: ")
+        max_guests = input("(optional) - Enter the maximum number of guests you want to search for: ")
+        description = input("(optional) - Enter the description you want to search for: ")
+        amenities = input("(optional) - Enter the amenities you want to search for: ")
+        price = input("(optional) - Enter the price per night you want to search for: ")
 
-    def _navigate(self,
-                  choice: int):
+        # Call the get_desired_rooms_by_hotel_id function with the user's inputs
+        rooms = self.__search_manager.get_desired_rooms_by_hotel_id(hotel_id, type=room_type, max_guests=max_guests,
+                                                                    description=description, amenities=amenities,
+                                                                    price=price)
+        for room in rooms:
+            # Print the room details
+            room_info = f"Room Type: {room[0].type}\n"  # Changed 'room_type' to 'type'
+            room_info += f"Max Guests: {room[0].max_guests}\n"
+            room_info += f"Description: {room[0].description}\n"
+            room_info += f"Amenities: {room[0].amenities}\n"
+            room_info += f"Price per Night: {room[0].price}\n"
+            print(room_info)
+
+    # def _navigate(self,choice: int):
+    #     match choice:
+    #         case 1:  # option 6 (Search by city, guests, star, availability)
+    #             print("case1")
+    #             return self.__main_menu
+    #         case 2: # option 2 (display rooms)
+    #             print("case2")
+    #             self.__display_rooms(self._hotel_id)
+    #             return self.__main_menu
+    #         case 3:  # option 3 (Back)
+    #             print("case2")
+    #             return self.__main_menu  # navigate back to the main menu
+
+    def _navigate(self, choice: int):
         match choice:
-            case 1:  # option 6 (Search by city, guests, star, availability)
-                print("case1")
-                return self.__main_menu
-            case 2:  # option 7 (Back)
-                print("case2")
+            case 1:  # option 1 (Select a hotel)
+                # Call the __search_rooms method after a hotel is selected
+                self.__search_rooms(self._hotel_id)
+                return self  # navigate again to this menu
+            case 2:  # option 2 (Back)
                 return self.__main_menu  # navigate back to the main menu

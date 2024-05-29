@@ -137,7 +137,8 @@ class SearchManager(BaseManager):
 
 # 1.2.1. Ich möchte die folgenden Informationen pro Zimmer sehen: Zimmertyp, max. Anzahl der Gäste, Beschreibung, Ausstattung, Preis pro Nacht und Gesamtpreis.
 # 1.2.2. Ich möchte nur die verfügbaren Zimmer sehen
-    def get_desired_rooms_by_hotel_id(self, hotel_id = None, number = None, type = None, max_guests = None, amenities = None, price = None, start_date = None, end_date = None) -> List[Room]:
+    def get_desired_rooms_by_hotel_id(self, hotel_id=None, number=None, type=None, max_guests=None, amenities=None,
+                                      price=None, start_date=None, end_date=None, description=None) -> List[Room]:
         query = select(Room)
 
         if hotel_id:
@@ -157,6 +158,9 @@ class SearchManager(BaseManager):
 
         if price:
             query = query.where(Room.price == price)
+
+        if description:  # Add this line
+            query = query.where(Room.description == description)  # Add this line
 
         if start_date and end_date:
             br = aliased(Booking)
