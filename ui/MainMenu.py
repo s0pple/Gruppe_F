@@ -15,7 +15,7 @@ class MainMenu(Menu):
         self._user_menu = UserMenu(self)
         # TODO: Implement other SubMenus like SearchMenu
         # TODO: Add more MenuOptions for other User Stories to navigate to the implemented submenus
-        self.add_option(MenuOption("Quit"))  # option 2
+        self.add_option(MenuOption("Quit"))  # option 3
 
     def _navigate(self, choice: int):
         match choice:

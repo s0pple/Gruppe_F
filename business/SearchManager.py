@@ -135,7 +135,55 @@ class SearchManager(BaseManager):
 
     # 1.1.6. Ich möchte ein Hotel auswählen, um die Details zu sehen (z.B.verfügbare Zimmer [siehe 1.2])
 
+# 1.2.1. Ich möchte die folgenden Informationen pro Zimmer sehen: Zimmertyp, max. Anzahl der Gäste, Beschreibung, Ausstattung, Preis pro Nacht und Gesamtpreis.
+# 1.2.2. Ich möchte nur die verfügbaren Zimmer sehen
+    def get_desired_rooms_by_hotel_id(self, hotel_id = None, number = None, type = None, max_guests = None, amenities = None, price = None, start_date = None, end_date = None) -> List[Room]:
+        query = select(Room)
 
+        if hotel_id:
+            query = query.where(Room.hotel_id == hotel_id)
+
+        if number:
+            query = query.where(Room.number == number)
+
+        if type:
+            query = query.where(Room.type == type)
+
+        if max_guests:
+            query = query.where(Room.max_guests == max_guests)
+
+        if amenities:
+            query = query.where(Room.amenities == amenities)
+
+        if price:
+            query = query.where(Room.price == price)
+
+        if start_date and end_date:
+            br = aliased(Booking)
+
+            booking_subquery = (
+                select(br.room_hotel_id, br.room_number)
+                .where(
+                    or_(
+                        and_(br.start_date <= start_date, br.end_date >= end_date),
+                        and_(br.start_date >= start_date, br.start_date <= end_date),
+                        and_(br.end_date >= start_date, br.end_date <= end_date)
+                    )
+                )
+                .subquery()
+            )
+
+            query = query.outerjoin(
+                booking_subquery,
+                and_(
+                    Room.hotel_id == booking_subquery.c.room_hotel_id,
+                    Room.number == booking_subquery.c.room_number
+                )
+            ).where(booking_subquery.c.room_hotel_id == None).group_by(Room.id)
+
+        result = self._session.execute(query)
+        all_rooms = result.fetchall()
+        return self.select_all(query), all_rooms
 
 if __name__ == '__main__':
     # This is only for testing without Application

@@ -71,6 +71,16 @@ class SearchMenu(Menu):
     #             print(hotel_info)
     #     input("Press Enter to continue...")
     #     self.clear()  # clear the console
+    def __display_rooms(self):
+        rooms = self.__search_manager.get_desired_rooms_by_hotel_id(self._hotel_id, start_date, end_date)
+        for room in rooms:
+            room_info = f"Room Type: {room.type}\n"
+            room_info += f"Max Guests: {room.max_guests}\n"
+            room_info += f"Description: {room.description}\n"
+            room_info += f"Equipment: {room.equipment}\n"
+            room_info += f"Price per Night: {room.price_per_night}\n"
+            room_info += f"Total Price: {room.total_price}\n"
+            print(room_info)
 
     def __search_by__city_guests_star_availability(self):
         city = input("(optional) - Enter the city you want to search hotels in: ")
