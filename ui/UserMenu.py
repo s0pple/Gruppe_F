@@ -23,7 +23,7 @@ class UserMenu(Menu):
                 password = input("Enter Password: ")
 
                 self.__user_manager.create_user(username, password)
-                return self  # navigate again to this menu
+                return self
             case 2:  # option 2 (Login)
                 username = input("Enter Username: ")
                 password = input("Enter Password: ")
@@ -32,13 +32,13 @@ class UserMenu(Menu):
                 if login_successful:
                     print("You are now logged in.")
                     if role == 'admin':
-                        return AdminMenu(self.__main_menu)  # return the AdminMenu instance
-                    return self  # navigate again to this menu
+                        return AdminMenu(self.__main_menu)
+                    return self
                 else:
                     print("Login failed. Please try again.")
-                    return self  # navigate again to this menu
-            case 3:  # option 3 (Delete user)
+                    return self
+            case 3:
                 self.__user_manager.delete_user()
-                return self  # navigate again to this menu
+                return self
             case 4:  # option 4 (Back)
-                return self.__main_menu  # navigate back to the main menu
+                return self.__main_menu  #
