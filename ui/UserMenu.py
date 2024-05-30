@@ -2,6 +2,7 @@
 from business.UserManager import UserManager
 from console.console_base import Menu, MenuOption
 from sqlalchemy.orm import Session
+from ui.AdminMenu import AdminMenu
 
 
 class UserMenu(Menu):
@@ -27,11 +28,15 @@ class UserMenu(Menu):
                 username = input("Enter Username: ")
                 password = input("Enter Password: ")
 
-                if self.__user_manager.login(username, password):
+                login_successful, role = self.__user_manager.login(username, password)
+                if login_successful:
                     print("You are now logged in.")
+                    if role == 'admin':
+                        return AdminMenu(self.__main_menu)  # return the AdminMenu instance
+                    return self  # navigate again to this menu
                 else:
                     print("Login failed. Please try again.")
-                return self  # navigate again to this menu
+                    return self  # navigate again to this menu
             case 3:  # option 3 (Delete user)
                 self.__user_manager.delete_user()
                 return self  # navigate again to this menu

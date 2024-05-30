@@ -26,14 +26,12 @@ class UserManager:
         self._session.commit()
 
     def login(self, username: str, password: str):
-        # Query the Login table for a user with the provided username and password
         user = self._session.query(Login).filter_by(username=username, password=password).first()
-
-        # If a user is found, print a success message and return True, else print an error message and return False
         if user:
-            return True
+            role = 'admin' if user.role_id == 1 else 'user'
+            return True, role
         else:
-            return False
+            return False, None
 
     def update_user(self):
         # Implement the logic to update user information
