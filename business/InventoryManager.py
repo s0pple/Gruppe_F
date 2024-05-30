@@ -1,6 +1,7 @@
 import os
 from sqlalchemy import select, func, text, create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import session
 from business.BaseManager import *
 from data_models.models import *
 
@@ -128,6 +129,85 @@ class HotelManager(BaseManager):
                         continue
                     adjust_room(room)
 
+    def edit_room(self,Hotel, Room):
+        hotel_name = input("In which hotel should the room be edited? ")
+        hotel = session.query(Hotel).filter_by(name=hotel_name).first()
+        if hotel:
+            while True:  # Loop until valid room is selected
+                room_number = int(input("Enter room number to edit: "))
+                room = session.query(Room).filter_by(hotel_id=hotel.id, number=room_number).first()
 
-#-----------------
-add_hotel()
+                if room:
+                    adjust_room(room)
+                    break
+                else:
+                    print("Room not found in this hotel. Please try again.")
+        else:
+            print("Hotel not found. Please try again.")
+
+    def add_room(self, Hotel, Room):
+        hotel_name = input("In which hotel should the room be added? ")
+        hotel = session.query(Hotel).filter_by(name=hotel_name).first()
+        if hotel:
+            while True:
+                try:
+                    room_number = int(input("Room number: "))
+                    # Check if the room number already exists in this hotel
+                    existing_room = session.query(Room).filter_by(hotel_id=hotel.id, number=room_number).first()
+                    if existing_room:
+                        print(f"Room number {room_number} already exists in this hotel. Please choose another number.")
+                        continue  # Go back to the beginning of the loop
+
+                    # Get input for the new room's details
+                    room_type = input("Room type: ")
+                    max_guests = int(input("Maximum number of guests: "))
+                    description = input("Description: ")
+                    amenities = input("Amenities: ")
+                    room_price = float(input("Room price: "))
+
+                    # Create and add the new room
+                    new_room = Room(
+                        hotel_id=hotel.id,
+                        number=room_number,
+                        type=room_type,
+                        max_guests=max_guests,
+                        description=description,
+                        amenities=amenities,
+                        price=room_price
+                    )
+                    session.add(new_room)
+                    session.commit()
+
+                    print("Room has been added to the database.")
+                    break  # Exit the loop after successfully adding the room
+
+                except ValueError:
+                    print(
+                        "Invalid input. Please enter numbers for room number and maximum guests, and a decimal number for price.")
+        else:
+            print("Hotel not found. Please try again.")
+
+    def delete_room(Hotel, Room):
+        hotel_name = input("In which hotel should the room be deleted? ")
+        hotel = session.query(Hotel).filter_by(name=hotel_name).first()
+
+        if not hotel:
+            print(f"Hotel '{hotel_name}' not found.")
+            return
+
+        while True:
+            try:
+                room_number = int(input("Room number to delete: "))
+            except ValueError:
+                print("Invalid input. Please enter a number.")
+                continue  # Go back to the beginning of the loop
+
+            room = session.query(Room).filter_by(hotel_id=hotel.id, number=room_number).first()
+
+            if room:
+                session.delete(room)
+                session.commit()
+                print(f"Room {room_number} deleted from '{hotel_name}'.")
+                break  # Exit the loop after successful deletion
+            else:
+                print(f"Room {room_number} not found in '{hotel_name}'.")
