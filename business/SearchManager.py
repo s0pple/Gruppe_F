@@ -115,10 +115,10 @@ class SearchManager(BaseManager):
             ).where(booking_subquery.c.room_hotel_id == None).group_by(Hotel.id)
 
         result = self._session.execute(query)
-        all_hotels = result.fetchall()
+        # all_hotels = result.fetchall()
         # return all_hotels
 
-        return self.select_all(query), all_hotels
+        return self.select_all(query)  # , all_hotels
 
 
     # 1.1.5. Ich möchte die folgenden Informationen pro Hotel sehen: Name, Adresse, Anzahl der Sterne.
