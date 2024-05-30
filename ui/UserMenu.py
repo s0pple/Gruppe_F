@@ -3,7 +3,7 @@ from business.UserManager import UserManager
 from console.console_base import Menu, MenuOption
 from sqlalchemy.orm import Session
 from ui.AdminMenu import AdminMenu
-
+#lol
 
 class UserMenu(Menu):
     def __init__(self, main_menu: Menu):
