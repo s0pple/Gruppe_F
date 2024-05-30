@@ -57,11 +57,26 @@ class SearchMenu(Menu):
             print("No hotels with these conditions were found")
         else:
             formatted_hotels = self.__format_hotels(all_hotels)  # Format the hotels
-            selected_hotel = self.navigate_hotel(formatted_hotels)  # Pass the formatted hotels to navigate_hotel
+            #selected_hotel = self.navigate_hotel(formatted_hotels)  # Pass the formatted hotels to navigate_hotel
+            choice = self.navigate_hotel(formatted_hotels)
+
+            if choice is not None:
+                choice_hotel_id = all_hotels[choice - 1].id  # Get the hotel ID using the choice index
+                #print(f"Selected Hotel ID: {choice_hotel_id}") #Debug-statement
+                print(f"You selected: {formatted_hotels[choice - 1]}")
+            input("Press Enter to continue...")
+            return choice_hotel_id
+
+            #choice_hotel_id= all_hotels[choice - 1]
+            #print(choice_hotel_id)
+
+
 
             if selected_hotel:
                 print(f"You selected: {selected_hotel}")
             input("Press Enter to continue...")
+            hotel_id=choice_hotel_id
+            return hotel_id
 
     def navigate_hotel(self, formatted_hotels: list):
         while True:
@@ -73,11 +88,13 @@ class SearchMenu(Menu):
                     return None  # Return None to indicate going back
                 choice = int(choice)
                 if 1 <= choice <= len(formatted_hotels):
-                    return formatted_hotels[choice - 1]
+                    #print(f"Returning choice: {choice}")  # Debug-statement
+                    return choice  # Return the choice index
                 else:
                     print("Invalid number. Please try again.")
             except ValueError:
                 print("Invalid input. Please enter a number.")
+
 
     def __format_hotels(self, all_hotels):
         hotels_info = []
