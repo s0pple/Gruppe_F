@@ -43,43 +43,62 @@ class SearchMenu(Menu):
             except ValueError:
                 print("Error: Invalid input. Please enter a valid number.")
 
+    def get_max_guests(self):
+        while True:
+            input_value = input("(optional) - Enter number of guests you want to search hotels for: ").strip()
+            if input_value == "":
+                return None
+            try:
+                max_guests = int(input_value)
+                if max_guests > 0:
+                    return max_guests
+                else:
+                    print("Error: Please enter a positive number.")
+            except ValueError:
+                print("Error: Invalid input. Please enter a valid number.")
     def __search_by__city_guests_star_availability(self):
-        city = input("(optional) - Enter the city you want to search hotels in: ")
-        max_guests = input("(optional) - Enter number of guests you want to search hotels for: ")
-        # star_rating = input("(optional) - Enter the star rating you want to search hotels for: ")
-        star_rating = self.get_star_rating()
-        start_date = input("(optional) - Enter the start date: ")
-        end_date = input("(optional) - Enter the end date: ")
-        all_hotels = self.__search_manager.get_hotels_by_city_guests_star_availability(city, max_guests, star_rating,
-                                                                                       start_date, end_date)
+        while True:
+            #hotelname= input("(optional) - Enter the name of the Hotel: ")
+            city = input("(optional) - Enter the city you want to search hotels in: ")
+            # max_guests = input("(optional) - Enter number of guests you want to search hotels for: ")
+            max_guests= self.get_max_guests()
+            # star_rating = input("(optional) - Enter the star rating you want to search hotels for: ")
+            star_rating = self.get_star_rating()
+            start_date = input("(optional) - Enter the start date: ")
+            end_date = input("(optional) - Enter the end date: ")
+            all_hotels = self.__search_manager.get_hotels_by_city_guests_star_availability(city, max_guests, star_rating,
+                                                                                           start_date, end_date)
 
-        if not all_hotels:
-            print("No hotels with these conditions were found")
-        else:
-            formatted_hotels = self.__format_hotels(all_hotels)  # Format the hotels
-            #selected_hotel = self.navigate_hotel(formatted_hotels)  # Pass the formatted hotels to navigate_hotel
-            choice = self.navigate_hotel(formatted_hotels)
+            if not all_hotels:
+                print("No hotels with these conditions were found")
+                input("Press Enter to continue...")
 
-            if choice is not None:
-                choice_hotel_id = all_hotels[choice - 1].id  # Get the hotel ID using the choice index
-                #print(f"Selected Hotel ID: {choice_hotel_id}") #Debug-statement
-                print(f"You selected: {formatted_hotels[choice - 1]}")
-            input("Press Enter to continue...")
-            return choice_hotel_id
+            else:
+                formatted_hotels = self.__format_hotels(all_hotels)  # Format the hotels
+                #selected_hotel = self.navigate_hotel(formatted_hotels)  # Pass the formatted hotels to navigate_hotel
+                choice = self.navigate_hotel(formatted_hotels)
 
-            #choice_hotel_id= all_hotels[choice - 1]
-            #print(choice_hotel_id)
+                if choice is not None:
+                    choice_hotel_id = all_hotels[choice - 1].id  # Get the hotel ID using the choice index
+                    print(f"Selected Hotel ID: {choice_hotel_id}") #Debug-statement
+                    print(f"You selected: {formatted_hotels[choice - 1]}")
+                input("Press Enter to continue...")
+                return choice_hotel_id
+
+                #choice_hotel_id= all_hotels[choice - 1]
+                #print(choice_hotel_id)
 
 
 
-            if selected_hotel:
-                print(f"You selected: {selected_hotel}")
-            input("Press Enter to continue...")
-            hotel_id=choice_hotel_id
-            return hotel_id
+                # if selected_hotel:
+                #     print(f"You selected: {selected_hotel}")
+                # input("Press Enter to continue...")
+                # hotel_id=choice_hotel_id
+                # return hotel_id
 
     def navigate_hotel(self, formatted_hotels: list):
         while True:
+            print("#" * 90 )
             for index, hotel in enumerate(formatted_hotels, start=1):
                 print(f"{index}. {hotel}")
             try:
@@ -102,7 +121,7 @@ class SearchMenu(Menu):
             hotel_info = f"Hotel Name: {hotel.name}\n"
             hotel_info += f"Address: {hotel.address.street}, {hotel.address.zip} {hotel.address.city}\n"
             hotel_info += f"Stars: {hotel.stars}\n"
-            hotel_info += "-" * 80  # Separator for better readability
+            hotel_info += "-" * 90  # Separator for better readability
             hotels_info.append(hotel_info)
         return hotels_info
 

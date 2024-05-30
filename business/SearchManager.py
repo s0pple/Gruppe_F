@@ -77,7 +77,7 @@ class SearchManager(BaseManager):
         query = select(Hotel)
 
         if city:
-            query = query.join(Address, Hotel.address_id == Address.id).where(Address.city == city)
+            query = query.join(Address, Hotel.address_id == Address.id).where(Address.city.ilike(f"%{city}%"))  # == city)
 
         # If max_guests is specified, add it to the WHERE clause
         if max_guests:
