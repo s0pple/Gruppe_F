@@ -1,6 +1,6 @@
 import os
-from sqlalchemy import select, func, text, create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import select, func, text, create_engine, or_, and_
+from sqlalchemy.orm import sessionmaker, aliased
 from business.BaseManager import BaseManager
 from data_models.models import *
 
@@ -72,10 +72,11 @@ class SearchManager(BaseManager):
     #     return formatted_hotels
 
     # 1.1.4. Ich möchte alle Hotels in einer Stadt durchsuchen, die während meines Aufenthaltes ("von" (start_date) und "bis" (end_date)) Zimmer für meine Gästezahl zur Verfügung haben, entweder mit oder ohne Anzahl der Sterne, damit ich nur relevante Ergebnisse sehe.
-    def get_hotels_by_city_guests_star_availability(self, city=None, max_guests=None, star_rating=None, start_date=None,
+    def get_hotels_by_city_guests_star_availability(self, hotel_name = None, city=None, max_guests=None, star_rating=None, start_date=None,
                                                     end_date=None) -> List[Hotel]:
         query = select(Hotel)
-
+        if hotel_name:
+            query = query.where(Hotel.name.ilike(f"%{hotel_name}%") )
         if city:
             query = query.join(Address, Hotel.address_id == Address.id).where(Address.city.ilike(f"%{city}%"))  # == city)
 
