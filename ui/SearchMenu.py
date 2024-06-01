@@ -19,10 +19,10 @@ class SearchMenu(Menu):
 
     def __search_by_name_city_guests_star_availability(self):
         # while True:
-
-            hotel_name= input("(optional) - Enter the name of a hotel: ")
+            print("Enter the attributes you want to search with, or skip to show all hotels ")
+            hotel_name= input("Enter the name of a hotel: ")
             #hotelname= input("(optional) - Enter the name of the Hotel: ")
-            city = input("(optional) - Enter the city you want to search hotels in: ")
+            city = input("Enter the city you want to search hotels in: ")
             # max_guests = input("(optional) - Enter number of guests you want to search hotels for: ")
             max_guests= self.__validation_manager.input_max_guests()
             # star_rating = input("(optional) - Enter the star rating you want to search hotels for: ")
