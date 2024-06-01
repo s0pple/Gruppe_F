@@ -15,9 +15,9 @@ class SearchManager(BaseManager):
     def get_session(self):
         return self._session
 
-    # def get_all_hotels(self) -> List[Hotel]:
-    #     query = select(Hotel)
-    #     return self.select_all(query)
+    def get_all_hotels(self) -> List[Hotel]:
+        query = select(Hotel)
+        return self.select_all(query)
     #
     # def get_hotels_by_name(self, name: str) -> List[Hotel]:
     #     query = select(Hotel).where(func.lower(Hotel.name).like(f"%{name.lower()}%"))
@@ -140,7 +140,7 @@ class SearchManager(BaseManager):
 # 1.2.2. Ich möchte nur die verfügbaren Zimmer sehen
     def get_desired_rooms_by_hotel_id(self, hotel_id=None, number=None, type=None, max_guests=None, amenities=None,
                                       price=None, start_date=None, end_date=None, description=None) -> List[Room]:
-        query = select(Room)
+        query = select(Room).where(Room.available == True)  # Only select available rooms
 
         if hotel_id:
             query = query.where(Room.hotel_id == hotel_id)
@@ -160,8 +160,8 @@ class SearchManager(BaseManager):
         if price:
             query = query.where(Room.price == price)
 
-        if description:  # Add this line
-            query = query.where(Room.description == description)  # Add this line
+        if description:
+            query = query.where(Room.description == description)
 
         if start_date and end_date:
             br = aliased(Booking)
@@ -184,11 +184,16 @@ class SearchManager(BaseManager):
                     Room.hotel_id == booking_subquery.c.room_hotel_id,
                     Room.number == booking_subquery.c.room_number
                 )
-            ).where(booking_subquery.c.room_hotel_id == None).group_by(Room.id)
+            ).where(booking_subquery.c.room_hotel_id == None).group_by(Room.number)
 
         result = self._session.execute(query)
         all_rooms = result.fetchall()
         return self.select_all(query), all_rooms
+
+    def get_hotel_name_by_id(self, hotel_id):
+        query = select(Hotel.name).where(Hotel.id == hotel_id)
+        result = self._session.execute(query).scalar_one()
+        return result
 
 if __name__ == '__main__':
     # This is only for testing without Application

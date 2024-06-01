@@ -2,10 +2,8 @@ import datetime
 import sys
 from datetime import date
 from random import seed, choices
-
 from sqlalchemy import Engine, select
 from sqlalchemy.orm import Session
-
 from data_models.models import *
 
 
@@ -30,89 +28,92 @@ def generate_system_data(engine: Engine, verbose: bool = False) -> None:
 
 def generate_hotels(engine: Engine, verbose: bool = False) -> None:
     with Session(engine) as session:
-
-        hotels_to_add = [
-            Hotel(
-                name="Hotel Amaris",
-                stars=3,
-                address=Address(
-                    street="Tannwaldstrasse 34",
-                    zip="4600",
-                    city="Olten"
+        if session.query(Hotel).count() == 0:
+            hotels_to_add = [
+                Hotel(
+                    name="Hotel Amaris",
+                    stars=3,
+                    address=Address(
+                        street="Tannwaldstrasse 34",
+                        zip="4600",
+                        city="Olten"
+                    ),
+                    rooms=[
+                        Room(number="01", type="single room", max_guests=1, description="One single bed",
+                             amenities="TV, Caffe Machine", price=124.0),
+                        Room(number="02", type="double room", max_guests=2, description="One double bed",
+                             amenities="TV, Caffe Machine", price=138.0),
+                        Room(number="03", type="single room", max_guests=1, description="One single bed",
+                             amenities="TV, Caffe Machine", price=124.0),
+                        Room(number="04", type="double room", max_guests=2, description="Two single beds",
+                             amenities="TV, Caffe Machine", price=138.0),
+                        Room(number="05", type="family room", max_guests=4,
+                             description="One queensized bed and two single beds",
+                             amenities="TV, Caffe Machine", price=219.0),
+                        Room(number="06", type="double room", max_guests=2, description="One double bed",
+                             amenities="TV, Caffe Machine", price=138.0),
+                        Room(number="07", type="double room", max_guests=2, description="One double bed",
+                             amenities="TV, Caffe Machine", price=138.0),
+                        Room(number="11", type="double room", max_guests=2, description="One queensized bed",
+                             amenities="TV, Caffe Machine", price=165.0),
+                        Room(number="12", type="double room", max_guests=2, description="One queensized bed",
+                             amenities="TV, Caffe Machine", price=165.0),
+                        Room(number="13", type="double room", max_guests=2, description="One queensized bed",
+                             amenities="TV, Caffe Machine", price=165.0),
+                        Room(number="14", type="double room", max_guests=2, description="One kingsized bed",
+                             amenities="TV, Caffe Machine", price=183.0),
+                        Room(number="15", type="double room", max_guests=2, description="One kingsized bed",
+                             amenities="TV, Caffe Machine", price=183.0),
+                    ]
                 ),
-                rooms=[
-                    Room(number="01", type="single room", max_guests=1, description="One single bed",
-                         amenities="TV, Caffe Machine", price=124.0),
-                    Room(number="02", type="double room", max_guests=2, description="One double bed",
-                         amenities="TV, Caffe Machine", price=138.0),
-                    Room(number="03", type="single room", max_guests=1, description="One single bed",
-                         amenities="TV, Caffe Machine", price=124.0),
-                    Room(number="04", type="double room", max_guests=2, description="Two single beds",
-                         amenities="TV, Caffe Machine", price=138.0),
-                    Room(number="05", type="family room", max_guests=4,
-                         description="One queensized bed and two single beds",
-                         amenities="TV, Caffe Machine", price=219.0),
-                    Room(number="06", type="double room", max_guests=2, description="One double bed",
-                         amenities="TV, Caffe Machine", price=138.0),
-                    Room(number="07", type="double room", max_guests=2, description="One double bed",
-                         amenities="TV, Caffe Machine", price=138.0),
-                    Room(number="11", type="double room", max_guests=2, description="One queensized bed",
-                         amenities="TV, Caffe Machine", price=165.0),
-                    Room(number="12", type="double room", max_guests=2, description="One queensized bed",
-                         amenities="TV, Caffe Machine", price=165.0),
-                    Room(number="13", type="double room", max_guests=2, description="One queensized bed",
-                         amenities="TV, Caffe Machine", price=165.0),
-                    Room(number="14", type="double room", max_guests=2, description="One kingsized bed",
-                         amenities="TV, Caffe Machine", price=183.0),
-                    Room(number="15", type="double room", max_guests=2, description="One kingsized bed",
-                         amenities="TV, Caffe Machine", price=183.0),
-                ]
-            ),
 
-            Hotel(
-                name="Leonardo Boutique Hotel Rigihof Zurich",
-                stars=3,
-                address=Address(
-                    street=" Universitätstrasse 101",
-                    zip="8006",
-                    city="Zürich"
-                ),
-                rooms=[
-                    Room(number="01", type="double room", max_guests=2, description="Komfort Zimmer",
-                         amenities="TV, Caffe Machine", price=139.0),
-                    Room(number="02", type="double room", max_guests=2, description="Komfort Zimmer",
-                         amenities="TV, Caffe Machine", price=139.0),
-                    Room(number="03", type="double room", max_guests=2, description="Komfort Zimmer",
-                         amenities="TV, Caffe Machine", price=139.0),
-                    Room(number="04", type="double room", max_guests=2, description="Komfort Zimmer",
-                         amenities="TV, Caffe Machine", price=139.0),
-                    Room(number="05", type="double room", max_guests=3, description="Komfort Zimmer",
-                         amenities="TV, Caffe Machine", price=139.0),
-                    Room(number="06", type="double room", max_guests=2, description="Superior Zimmer",
-                         amenities="TV, Caffe Machine", price=141.0),
-                    Room(number="07", type="double room", max_guests=2, description="Superior Zimmer",
-                         amenities="TV, Caffe Machine", price=141.0),
-                    Room(number="11", type="double room", max_guests=2, description="Superior Zimmer",
-                         amenities="TV, Caffe Machine", price=141.0),
-                    Room(number="12", type="suite", max_guests=4, description="Suite",
-                         amenities="TV, Caffe Machine", price=153.0),
-                    Room(number="13", type="suite", max_guests=4, description="Suite",
-                         amenities="TV, Caffe Machine", price=153.0),
-                ]
-            )
-        ]
+                Hotel(
+                    name="Leonardo Boutique Hotel Rigihof Zurich",
+                    stars=3,
+                    address=Address(
+                        street=" Universitätstrasse 101",
+                        zip="8006",
+                        city="Zürich"
+                    ),
+                    rooms=[
+                        Room(number="01", type="double room", max_guests=2, description="Komfort Zimmer",
+                             amenities="TV, Caffe Machine", price=139.0),
+                        Room(number="02", type="double room", max_guests=2, description="Komfort Zimmer",
+                             amenities="TV, Caffe Machine", price=139.0),
+                        Room(number="03", type="double room", max_guests=2, description="Komfort Zimmer",
+                             amenities="TV, Caffe Machine", price=139.0),
+                        Room(number="04", type="double room", max_guests=2, description="Komfort Zimmer",
+                             amenities="TV, Caffe Machine", price=139.0),
+                        Room(number="05", type="double room", max_guests=3, description="Komfort Zimmer",
+                             amenities="TV, Caffe Machine", price=139.0),
+                        Room(number="06", type="double room", max_guests=2, description="Superior Zimmer",
+                             amenities="TV, Caffe Machine", price=141.0),
+                        Room(number="07", type="double room", max_guests=2, description="Superior Zimmer",
+                             amenities="TV, Caffe Machine", price=141.0),
+                        Room(number="11", type="double room", max_guests=2, description="Superior Zimmer",
+                             amenities="TV, Caffe Machine", price=141.0),
+                        Room(number="12", type="suite", max_guests=4, description="Suite",
+                             amenities="TV, Caffe Machine", price=153.0),
+                        Room(number="13", type="suite", max_guests=4, description="Suite",
+                             amenities="TV, Caffe Machine", price=153.0),
+                    ]
+                )
+            ]
 
-        session.add_all(hotels_to_add)
-        session.commit()
+            session.add_all(hotels_to_add)
+            session.commit()
 
-        if verbose:
-            print("#" * 50)
-            print("Hotels added:", len(hotels_to_add))
-            print("#" * 50)
-            for hotel in hotels_to_add:
-                print(hotel)
-                for room in hotel.rooms:
-                    print(f"{' ' * 5}{room}")
+            if verbose:
+                print("#" * 50)
+                print("Hotels added:", len(hotels_to_add))
+                print("#" * 50)
+                for hotel in hotels_to_add:
+                    print(hotel)
+                    for room in hotel.rooms:
+                        print(f"{' ' * 5}{room}")
+        else:
+            if verbose:
+                print("Hotels already exist, skipping hotel generation.")
 
 
 def generate_guests(engine: Engine, verbose):
@@ -292,3 +293,32 @@ def generate_random_registered_bookings(engine: Engine, k: int = 5, s: int = 1, 
             print("#" * 50)
             for booking in registered_bookings_to_add:
                 print(booking)
+
+def generate_room_availability(engine: Engine, days_ahead: int = 365, verbose: bool = False):
+    with Session(engine) as session:
+        if session.query(RoomAvailability).count() == 0:
+            rooms = session.query(Room).all()
+            start_date = date.today()
+            for room in rooms:
+                for i in range(days_ahead):
+                    availability_date = start_date + timedelta(days=i)
+                    room_availability = RoomAvailability(
+                        room_hotel_id=room.hotel_id,
+                        room_number=room.number,
+                        date=availability_date,
+                        available=randint(0, 1) == 1  # Randomly set availability
+                    )
+                    session.add(room_availability)
+            session.commit()
+            if verbose:
+                print("#" * 50)
+                print("Room availabilities added.")
+                print("#" * 50)
+        else:
+            if verbose:
+                print("Room availabilities already exist, skipping availability generation.")
+
+
+def generate_hotels_and_availability(engine: Engine, verbose: bool = False) -> None:
+    generate_hotels(engine, verbose)
+    generate_room_availability(engine, verbose=verbose)
