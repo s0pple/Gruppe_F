@@ -15,6 +15,14 @@ class UserManager:
     def get_session(self):
         return self._session
 
+    def is_valid_email(self,email: str):
+        if "@" in email and "." in email:
+            at_index = email.index("@")
+            dot_index = email.rindex(".")
+            if at_index < dot_index:
+                return True
+        return False
+
     def check_existing_usernames(self, username: str):
         existing_username = self._session.query(Login).filter(Login.username == username).first()
         return existing_username

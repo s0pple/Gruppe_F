@@ -1,5 +1,6 @@
 from business.SearchManager import SearchManager
 from console.console_base import Menu, MenuOption
+from business.ValidationManager import ValidationManager
 from datetime import datetime
 
 
@@ -12,90 +13,9 @@ class SearchMenu(Menu):
 
         self.__main_menu = main_menu
         self.__search_manager = SearchManager()
+        self.__validation_manager = ValidationManager()
         self.__select_hotel_menu = None  # Will be initialized later with hotel_id
 
-
-
-    def get_max_guests(self):
-        while True:
-            input_value = input("(optional) - Enter number of guests you want to search hotels for: ").strip()
-            if input_value == "":
-                return None
-            try:
-                max_guests = int(input_value)
-                if max_guests > 0:
-                    return max_guests
-                else:
-                    print("Error: Please enter a positive number.")
-            except ValueError:
-                print("Error: Invalid input. Please enter a valid number.")
-    def get_star_rating(self):
-        while True:
-            try:
-                input_value = input(
-                    "(optional) - Enter the star rating you want to search hotels for (1-5): ").strip()
-                if input_value == "":
-                    return None
-                stars = int(input_value)
-                if 1 <= stars <= 5:
-                    return stars
-                else:
-                    print("Error: Please enter a number between 1 and 5.")
-            except ValueError:
-                print("Error: Invalid input. Please enter a valid number.")
-
-    def get_start_date(self):
-        while True:
-            start_date = input("(optional) - Enter the start date (dd.mm.yyyy): ")
-            if not start_date:
-                return None  # If the input is optional and user does not enter anything, return None
-
-            try:
-                # Check if the date is in the correct format
-                date_obj_start = datetime.strptime(start_date, "%d.%m.%Y")
-
-                # Check if the date is not in the past
-                if date_obj_start < datetime.now():
-                    print("The date cannot be in the past. Please enter a future date.")
-                    continue
-
-                # Format the date to yyyy-mm-dd
-                # formatted_start_date = date_obj_start.strftime("%Y-%m-%d")
-                return date_obj_start
-
-            except ValueError:
-                print("Invalid date format. Please enter the date in dd.mm.yyyy format.")
-
-
-    def get_end_date(self, date_obj_start=None):
-        if date_obj_start is None:
-            print("Start date is needed to compare with the end date.")
-            return None
-        while True:
-            end_date = input("Enter the end date (dd.mm.yyyy): ")
-            if not end_date:
-                print("End date is needed. ")
-                continue
-
-            try:
-                # Check if the date is in the correct format
-                date_obj_end = datetime.strptime(end_date, "%d.%m.%Y")
-
-                # Check if the date is not in the past
-                if date_obj_end < datetime.now():
-                    print("The date cannot be in the past. Please enter a future date.")
-                    continue
-
-                # Format the date to yyyy-mm-dd
-                # formatted_end_date = date_obj.strftime("%Y-%m-%d")
-
-                if date_obj_end < date_obj_start: #if formatted_end_date < formatted_start_date:
-                    print("The end date must be later than the start date. Please try again.")
-                    continue
-                return date_obj_end
-
-            except ValueError:
-                print("Invalid date format. Please enter the date in dd.mm.yyyy format.")
 
     def __search_by_name_city_guests_star_availability(self):
         # while True:
@@ -104,13 +24,13 @@ class SearchMenu(Menu):
             #hotelname= input("(optional) - Enter the name of the Hotel: ")
             city = input("(optional) - Enter the city you want to search hotels in: ")
             # max_guests = input("(optional) - Enter number of guests you want to search hotels for: ")
-            max_guests= self.get_max_guests()
+            max_guests= self.__validation_manager.input_max_guests()
             # star_rating = input("(optional) - Enter the star rating you want to search hotels for: ")
-            star_rating = self.get_star_rating()
+            star_rating = self.__validation_manager.input_star_rating()
             # start_date, end_date = self.get_start_and_end_dates()
-            start_date = self.get_start_date() #input("(optional) - Enter the start date: ")
+            start_date = self.__validation_manager.input_start_date() #input("(optional) - Enter the start date: ")
             if start_date is not None:
-                end_date = self.get_end_date(start_date) #input("(optional) - Enter the end date: ")
+                end_date = self.__validation_manager.input_end_date(start_date) #input("(optional) - Enter the end date: ")
             else:
                 end_date = None
             all_hotels = self.__search_manager.get_hotels_by_city_guests_star_availability(hotel_name, city, max_guests, star_rating,

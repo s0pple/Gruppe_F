@@ -1,5 +1,6 @@
 # ui/UserMenu.py
 from business.UserManager import UserManager
+from business.ValidationManager import ValidationManager
 from console.console_base import Menu, MenuOption
 from sqlalchemy.orm import Session
 from ui.AdminMenu import AdminMenu
@@ -15,15 +16,22 @@ class UserMenu(Menu):
         self.__main_menu = main_menu
 
         self.__user_manager = UserManager()
+        self.__validation_manager = ValidationManager()
 
     def _navigate(self, choice: int):
         match choice:
             case 1:  # option 1 (Create new user)
                 while True:
-                    username = input("Enter Username: ")
+                    username = input("To create a account please enter E-Mail address: ")
+                    email = username
+                    is_valid_email = self.__user_manager.is_valid_email(email)
+                    if not is_valid_email:
+                        print("Invalid E-Mail address")
+                        continue
+
                     existing_username = self.__user_manager.check_existing_usernames(username)
                     if existing_username:
-                        print("Username already exists. Please choose a different username.")
+                        print("E-Mail already exists. Please choose a different E-Mail.")
                     else:
                         while True:
                             print("Enter Passwort (capital and small letters, at least 10 characters)")
@@ -54,7 +62,7 @@ class UserMenu(Menu):
                             input("Press enter to continue...")
 
             case 2:  # option 2 (Login)
-                username = input("Enter Username: ")
+                username = input("Enter E-Mail address: ")
                 password = input("Enter Password: ")
 
                 login_successful, role = self.__user_manager.login(username, password)
