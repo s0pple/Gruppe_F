@@ -22,45 +22,18 @@ class UserMenu(Menu):
         match choice:
             case 1:  # option 1 (Create new user)
                 while True:
-                    username = input("To create a account please enter E-Mail address: ")
-                    email = username
-                    is_valid_email = self.__user_manager.is_valid_email(email)
-                    if not is_valid_email:
-                        print("Invalid E-Mail address")
+                    print("To creat a new account:")
+                    username = self.__validation_manager.is_valid_email()
+                    username = str(username)
+                    if not username:
                         continue
 
                     existing_username = self.__user_manager.check_existing_usernames(username)
                     if existing_username:
                         print("E-Mail already exists. Please choose a different E-Mail.")
                     else:
-                        while True:
-                            print("Enter Passwort (capital and small letters, at least 10 characters)")
-                            password = input("Your Password: ")
-
-                            if len(password) < 10:
-                                print("Password must contain at least 10 characters, please enter it again")
-                                continue
-                            elif not any(c.isupper() for c in password):
-                                print("Password must contain capital and small letters, please enter it again")
-                                continue
-                            elif not any(c.islower() for c in password):
-                                print("Password must contain capital and small letters, please enter it again")
-                                continue
-                            elif password in ["P123456789", "Qwerty1234", "Qaywsxedcr", "Password12", "Password123",
-                                              "Password1234", "Passwort12", "Passwort123", "Passwort1234"]:
-                                print("Password too weak, please enter another one")
-                                continue
-                            else:
-                                password_check = input("Enter your Password again to verify: ")
-                                if password == password_check:
-                                    self.__user_manager.create_user(username, password)
-                                    print("you have been successfully registered")
-                                    print("please login")
-                                    return self
-                                else:
-                                    print("Passwords are not identical, please enter them again")
-                            input("Press enter to continue...")
-
+                        password = self.__validation_manager.create_password(username)
+                    return self
             case 2:  # option 2 (Login)
                 username = input("Enter E-Mail address: ")
                 password = input("Enter Password: ")

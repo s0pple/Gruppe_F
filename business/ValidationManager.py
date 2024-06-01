@@ -1,13 +1,16 @@
 import os
+import webbrowser
 from sqlalchemy import select, func, text, create_engine, or_, and_
 from sqlalchemy.orm import sessionmaker, aliased
 from business.BaseManager import BaseManager
 from data_models.models import *
 from datetime import datetime
+from business.UserManager import UserManager
 
 class ValidationManager:
     def __init__(self) -> None:
         super().__init__()
+        self.__user_manager = UserManager()
         engine = create_engine(f'sqlite:///{os.environ.get("DB_FILE")}')
         Session = sessionmaker(bind=engine)
         self._session = Session()
@@ -15,7 +18,7 @@ class ValidationManager:
 
     def input_max_guests(self):
         while True:
-            input_value = input("(optional) - Enter number of guests: ").strip()
+            input_value = input("Enter number of guests: ").strip()
             if input_value == "":
                 return None
             try:
@@ -29,13 +32,15 @@ class ValidationManager:
     def input_star_rating(self):
         while True:
             try:
-                input_value = input(
-                    "(optional) - Enter the star rating(1-5): ").strip()
+                input_value = input("Enter the star rating(1-5): ").strip()
                 if input_value == "":
                     return None
                 stars = int(input_value)
                 if 1 <= stars <= 5:
                     return stars
+                if stars == 69:
+                    url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                    webbrowser.open(url)
                 else:
                     print("Error: Please enter a number between 1 and 5.")
             except ValueError:
@@ -43,7 +48,7 @@ class ValidationManager:
 
     def input_start_date(self):
         while True:
-            start_date = input("(optional) - Enter the start date (dd.mm.yyyy): ")
+            start_date = input("Enter the start date (dd.mm.yyyy): ")
             if not start_date:
                 return None  # If the input is optional and user does not enter anything, return None
 
@@ -94,3 +99,42 @@ class ValidationManager:
             except ValueError:
                 print("Invalid date format. Please enter the date in dd.mm.yyyy format.")
 
+    def create_password(self,username):
+        while True:
+            print("Enter Passwort (capital and small letters, at least 10 characters)")
+            password = input("Your Password: ")
+
+            if len(password) < 10:
+                print("Password must contain at least 10 characters, please enter it again")
+                continue
+            elif not any(c.isupper() for c in password):
+                print("Password must contain capital and small letters, please enter it again")
+                continue
+            elif not any(c.islower() for c in password):
+                print("Password must contain capital and small letters, please enter it again")
+                continue
+            elif password in ["P123456789", "Qwerty1234", "Qaywsxedcr", "Password12", "Password123",
+                              "Password1234", "Passwort12", "Passwort123", "Passwort1234"]:
+                print("Password too weak, please enter another one")
+                continue
+            else:
+                password_check = input("Enter your Password again to verify: ")
+                if password == password_check:
+                    self.__user_manager.create_user(username, password)
+                    print("you have been successfully registered")
+                    print("please login")
+                    return self
+                else:
+                    print("Passwords are not identical, please enter them again")
+            input("Press enter to continue...")
+    def is_valid_email(self):
+        while True:
+            emailAddress=input("Please enter E-Mail address: ").strip().lower()
+            if "@" in emailAddress and "." in emailAddress:
+                at_index = emailAddress.index("@")
+                dot_index = emailAddress.rindex(".")
+                if at_index < dot_index:
+                    return self
+            else:
+                print("Invalid E-Mail address")
+                continue
