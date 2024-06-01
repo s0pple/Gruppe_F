@@ -15,7 +15,7 @@ class HotelManager(BaseManager):
     def get_session(self):
         return self
 
-    def add_hotel(self, Hotel, Address, Room):
+    def add_hotel(self):
         print("Enter the following information")
         # adds address
         address = Address(street=str(input("Street:")),
@@ -54,7 +54,7 @@ class HotelManager(BaseManager):
                 print("All rooms have been added to the hotel.")
                 break
 
-    def delete_hotel(self, Hotel, Room):
+    def delete_hotel(self):
         hotel_id = int(input("Enter Hotel ID which will be deleted:"))
         hotel = self._session.query(Hotel).filter_by(id=hotel_id).first()
         if hotel:
@@ -80,7 +80,7 @@ class HotelManager(BaseManager):
         self._session.commit()
         print("Room details have been updated.")
 
-    def edit_hotel(self, Address, Hotel, Room):
+    def edit_hotel(self):
         hotel_name = input("Enter the hotel name you want to adjust: ")
 
         # Retrieve the hotel by name
@@ -128,7 +128,7 @@ class HotelManager(BaseManager):
                         continue
                     self.adjust_room(room)
 
-    def edit_room(self,Hotel, Room):
+    def edit_room(self):
         hotel_name = input("In which hotel should the room be edited? ")
         hotel = self._session.query(Hotel).filter_by(name=hotel_name).first()
         if hotel:
@@ -144,7 +144,7 @@ class HotelManager(BaseManager):
         else:
             print("Hotel not found. Please try again.")
 
-    def add_room(self, Hotel, Room):
+    def add_room(self):
         hotel_name = input("In which hotel should the room be added? ")
         hotel = self._session.query(Hotel).filter_by(name=hotel_name).first()
         if hotel:
@@ -186,7 +186,7 @@ class HotelManager(BaseManager):
         else:
             print("Hotel not found. Please try again.")
 
-    def delete_room(self, Hotel, Room):
+    def delete_room(self):
         hotel_name = input("In which hotel should the room be deleted? ")
         hotel = self._session.query(Hotel).filter_by(name=hotel_name).first()
 
