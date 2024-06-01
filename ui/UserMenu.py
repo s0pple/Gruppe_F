@@ -42,13 +42,12 @@ class UserMenu(Menu):
                 if login_successful:
                     print("You are now logged in.")
                     if role == 'admin':
-                        return AdminMenu(self.__main_menu)
+                        return AdminMenu(self.__main_menu, role)  # pass the role to AdminMenu
                     return self
                 else:
                     print("Login failed. Please try again.")
 
-
-                    return self
+                return self
             case 3:
                 self.__user_manager.register()
             case 4:

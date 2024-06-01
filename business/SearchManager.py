@@ -197,18 +197,6 @@ class SearchManager(BaseManager):
         result = self._session.execute(query).scalar_one()
         return result
 
-    def get_bookings(self, start_date: datetime = None, end_date: datetime = None, hotel_name: str = None):
-        with self._session as session:
-            query = session.query(Booking, Hotel).join(Hotel, Booking.room_hotel_id == Hotel.id)
-
-            if start_date and end_date:
-                query = query.filter(and_(Booking.start_date >= start_date, Booking.end_date <= end_date))
-
-            if hotel_name:
-                query = query.filter(Hotel.name == hotel_name)
-
-            results = query.order_by(Hotel.name).all()
-            return results
 
 if __name__ == '__main__':
     # This is only for testing without Application
