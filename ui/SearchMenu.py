@@ -134,7 +134,7 @@ class SelectHotelMenu(Menu):
 
     def get_start_date(self):
         while True:
-            start_date = input("(optional) - Enter the start date (dd.mm.yyyy): ")
+            start_date = input("Enter the start date (dd.mm.yyyy): ")
             if not start_date:
                 return None  # If the input is optional and user does not enter anything, return None
 
@@ -178,11 +178,11 @@ class SelectHotelMenu(Menu):
                 print("Invalid date format. Please enter the date in dd.mm.yyyy format.")
 
     def __search_rooms(self, hotel_id):
-        room_type = input("(optional) - Enter the room type you want to search for: ")
-        max_guests = input("(optional) - Enter the maximum number of guests you want to search for: ")
-        description = input("(optional) - Enter the description you want to search for: ")
-        amenities = input("(optional) - Enter the amenities you want to search for: ")
-        price = input("(optional) - Enter the price per night you want to search for: ")
+        room_type = input("Enter the room type you want to search for: ")
+        max_guests = input("Enter the maximum number of guests you want to search for: ")
+        description = input("Enter the description you want to search for: ")
+        amenities = input("Enter the amenities you want to search for: ")
+        price = input("Enter the price per night you want to search for: ")
         start_date = self.get_start_date()  # Call get_start_date on self
         end_date = self.get_end_date(start_date) if start_date else None  # Call get_end_date on self
 
@@ -200,7 +200,7 @@ class SelectHotelMenu(Menu):
             for room in rooms:
                 room = room[0]
                 hotel_name = self.__search_manager.get_hotel_name_by_id(room.hotel_id)
-                room_info = (f"{room_counter}. Hotel Name: [{hotel_name}]\n"
+                room_info = (f"{room_counter}. \033[4m{hotel_name}\033[0m\n"
                              f"    Room Number: {room.number}\n"
                              f"    Type: {room.type}\n"
                              f"    Max Guests: {room.max_guests}\n"
@@ -226,7 +226,7 @@ class SelectHotelMenu(Menu):
                     if selected_room:
                         hotel_name = self.__search_manager.get_hotel_name_by_id(selected_room.hotel_id)
                         print("\nYou selected:")
-                        selected_room_info = (f"Hotel Name: [{hotel_name}]\n"
+                        selected_room_info = (f"Hotel Name: \033[4m[{hotel_name}]\033[0m\n"
                                               f"Room Number: {selected_room.number}\n"
                                               f"Type: {selected_room.type}\n"
                                               f"Price per Night: {selected_room.price}")

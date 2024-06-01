@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker, aliased
 from business.BaseManager import BaseManager
 from data_models.models import *
 from datetime import datetime
+from business.ValidationManager import ValidationManager
 
 class SearchManager(BaseManager):
     def __init__(self) -> None:

@@ -145,6 +145,7 @@ class ValidationManager:
                 else:
                     print("Passwords are not identical, please enter them again")
             input("Press enter to continue...")
+
     def is_valid_email(self):
         while True:
             emailaddress=input("Please enter E-Mail address: ").strip().lower()
