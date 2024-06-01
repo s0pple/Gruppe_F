@@ -15,6 +15,10 @@ class UserManager:
     def get_session(self):
         return self._session
 
+    def check_existing_usernames(self, username: str):
+        existing_username = self._session.query(Login).filter(Login.username == username).first()
+        return existing_username
+
     def create_user(self, username: str, password: str):
         # Create a new login instance for the user
         new_login = Login(username=username, password=password, role_id=2)

@@ -8,11 +8,10 @@ from ui.AdminMenu import AdminMenu
 class UserMenu(Menu):
     def __init__(self, main_menu: Menu):
         super().__init__("User Menu")
-        self.add_option(MenuOption("Create new user"))  # option 1
+        self.add_option(MenuOption("register"))  # option 1
         self.add_option(MenuOption("Login"))  # option 2
-        self.add_option(MenuOption("Register")) # option 3
-        self.add_option(MenuOption("Delete user"))  # option 4
-        self.add_option(MenuOption("Back"))  # option 5
+        self.add_option(MenuOption("Delete user"))  # option 3
+        self.add_option(MenuOption("Back"))  # option 4
         self.__main_menu = main_menu
 
         self.__user_manager = UserManager()
@@ -20,40 +19,39 @@ class UserMenu(Menu):
     def _navigate(self, choice: int):
         match choice:
             case 1:  # option 1 (Create new user)
-                username = input("Enter Username: ")
                 while True:
-                    print("Enter Passwort (capital and small letters, at least 10 characters)")
-                    password = str(input("Your Password: "))
-                    if len(password) >= 10:
-                        if any(c.isupper() for c in password):
-                            if any(c.islower() for c in password):
-                                if password not in ["P123456789","Qwerty1234","Qaywsxedcr","Password12","Password123",
-                                                    "Password1234","Passwort12","Passwort123", "Passwort1234"]:
-
-                                    password_check = str(input("Enter your Password again to verify: "))
-                                    if password == password_check:
-                                        self.__user_manager.create_user(username, password)
-                                        return self
-                                    else:
-                                        print("passwords are not identical, please enter them again")
-                                        input("Press enter to continue...")
-                                        continue
-                                else:
-                                    print("password too weak, please enter another one")
-                                    input("Press enter to continue...")
-                                    continue
-                            else:
-                                print("password must contain  capital and small letters, please enter it again")
-                                input("Press enter to continue...")
-                                continue
-                        else:
-                            print("password must contain  capital and small letters, please enter it again")
-                            input("Press enter to continue...")
-                            continue
+                    username = input("Enter Username: ")
+                    existing_username = self.__user_manager.check_existing_usernames(username)
+                    if existing_username:
+                        print("Username already exists. Please choose a different username.")
                     else:
-                        print("password must contain at least 10 characters , please enter it again")
-                        input("Press enter to continue...")
-                        continue
+                        while True:
+                            print("Enter Passwort (capital and small letters, at least 10 characters)")
+                            password = input("Your Password: ")
+
+                            if len(password) < 10:
+                                print("Password must contain at least 10 characters, please enter it again")
+                                continue
+                            elif not any(c.isupper() for c in password):
+                                print("Password must contain capital and small letters, please enter it again")
+                                continue
+                            elif not any(c.islower() for c in password):
+                                print("Password must contain capital and small letters, please enter it again")
+                                continue
+                            elif password in ["P123456789", "Qwerty1234", "Qaywsxedcr", "Password12", "Password123",
+                                              "Password1234", "Passwort12", "Passwort123", "Passwort1234"]:
+                                print("Password too weak, please enter another one")
+                                continue
+                            else:
+                                password_check = input("Enter your Password again to verify: ")
+                                if password == password_check:
+                                    self.__user_manager.create_user(username, password)
+                                    print("you have been successfully registered")
+                                    print("please login")
+                                    return self
+                                else:
+                                    print("Passwords are not identical, please enter them again")
+                            input("Press enter to continue...")
 
             case 2:  # option 2 (Login)
                 username = input("Enter Username: ")
