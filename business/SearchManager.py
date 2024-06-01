@@ -3,7 +3,7 @@ from sqlalchemy import select, func, text, create_engine, or_, and_
 from sqlalchemy.orm import sessionmaker, aliased
 from business.BaseManager import BaseManager
 from data_models.models import *
-
+from datetime import datetime
 
 class SearchManager(BaseManager):
     def __init__(self) -> None:
@@ -18,6 +18,7 @@ class SearchManager(BaseManager):
     def get_all_hotels(self) -> List[Hotel]:
         query = select(Hotel)
         return self.select_all(query)
+
     #
     # def get_hotels_by_name(self, name: str) -> List[Hotel]:
     #     query = select(Hotel).where(func.lower(Hotel.name).like(f"%{name.lower()}%"))
@@ -72,13 +73,15 @@ class SearchManager(BaseManager):
     #     return formatted_hotels
 
     # 1.1.4. Ich möchte alle Hotels in einer Stadt durchsuchen, die während meines Aufenthaltes ("von" (start_date) und "bis" (end_date)) Zimmer für meine Gästezahl zur Verfügung haben, entweder mit oder ohne Anzahl der Sterne, damit ich nur relevante Ergebnisse sehe.
-    def get_hotels_by_city_guests_star_availability(self, hotel_name = None, city=None, max_guests=None, star_rating=None, start_date=None,
+    def get_hotels_by_city_guests_star_availability(self, hotel_name=None, city=None, max_guests=None, star_rating=None,
+                                                    start_date=None,
                                                     end_date=None) -> List[Hotel]:
         query = select(Hotel)
         if hotel_name:
-            query = query.where(Hotel.name.ilike(f"%{hotel_name}%") )
+            query = query.where(Hotel.name.ilike(f"%{hotel_name}%"))
         if city:
-            query = query.join(Address, Hotel.address_id == Address.id).where(Address.city.ilike(f"%{city}%"))  # == city)
+            query = query.join(Address, Hotel.address_id == Address.id).where(
+                Address.city.ilike(f"%{city}%"))  # == city)
 
         # If max_guests is specified, add it to the WHERE clause
         if max_guests:
@@ -121,7 +124,6 @@ class SearchManager(BaseManager):
 
         return self.select_all(query)  # , all_hotels
 
-
     # 1.1.5. Ich möchte die folgenden Informationen pro Hotel sehen: Name, Adresse, Anzahl der Sterne.
     # def display_hotel_info(self):
     #     all_hotels = self.get_all_hotels()
@@ -136,8 +138,8 @@ class SearchManager(BaseManager):
 
     # 1.1.6. Ich möchte ein Hotel auswählen, um die Details zu sehen (z.B.verfügbare Zimmer [siehe 1.2])
 
-# 1.2.1. Ich möchte die folgenden Informationen pro Zimmer sehen: Zimmertyp, max. Anzahl der Gäste, Beschreibung, Ausstattung, Preis pro Nacht und Gesamtpreis.
-# 1.2.2. Ich möchte nur die verfügbaren Zimmer sehen
+    # 1.2.1. Ich möchte die folgenden Informationen pro Zimmer sehen: Zimmertyp, max. Anzahl der Gäste, Beschreibung, Ausstattung, Preis pro Nacht und Gesamtpreis.
+    # 1.2.2. Ich möchte nur die verfügbaren Zimmer sehen
     def get_desired_rooms_by_hotel_id(self, hotel_id=None, number=None, type=None, max_guests=None, amenities=None,
                                       price=None, start_date=None, end_date=None, description=None) -> List[Room]:
         query = select(Room).where(Room.available == True)  # Only select available rooms
@@ -195,6 +197,19 @@ class SearchManager(BaseManager):
         result = self._session.execute(query).scalar_one()
         return result
 
+    def get_bookings(self, start_date: datetime = None, end_date: datetime = None, hotel_name: str = None):
+        with self._session as session:
+            query = session.query(Booking, Hotel).join(Hotel, Booking.room_hotel_id == Hotel.id)
+
+            if start_date and end_date:
+                query = query.filter(and_(Booking.start_date >= start_date, Booking.end_date <= end_date))
+
+            if hotel_name:
+                query = query.filter(Hotel.name == hotel_name)
+
+            results = query.order_by(Hotel.name).all()
+            return results
+
 if __name__ == '__main__':
     # This is only for testing without Application
 
@@ -209,3 +224,6 @@ if __name__ == '__main__':
     all_hotels = search_manager.get_all_hotels()
     for hotel in all_hotels:
         print(hotel)
+
+
+
