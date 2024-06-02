@@ -1,8 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import os
-from business.ValidationManager import ValidationManager
-from data_models.models import Login, Guest, Booking
+from data_models.models import Login, Guest, Booking, Address
 
 
 class UserManager:
@@ -25,9 +24,17 @@ class UserManager:
 
         # Add the new user and login to the session
         self._session.add(new_login)
-
-        # Commit the session to save the new user and login to the database
         self._session.commit()
+
+    def create_user_information(self, firstname, lastname, emailaddress: str,  city, zip, street):
+        guest = Guest(firstname=firstname, email=emailaddress,  lastname=lastname)
+        address = Address(city=city, zip=zip, street=street)
+        self._session.add(guest)
+        self._session.commit()
+        self._session.add(address)
+        self._session.commit()
+        # Commit the session to save the new user and login to the database
+
 
     def login(self, username: str, password: str):
         user = self._session.query(Login).filter_by(username=username, password=password).first()

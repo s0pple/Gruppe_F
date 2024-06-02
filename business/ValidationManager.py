@@ -3,15 +3,18 @@ import webbrowser
 from sqlalchemy import select, func, text, create_engine, or_, and_
 from sqlalchemy.orm import sessionmaker, aliased
 from business.BaseManager import BaseManager
+from business.UserManager import UserManager
 from data_models.models import *
 from datetime import datetime
 
 class ValidationManager:
     def __init__(self) -> None:
         super().__init__()
+
         engine = create_engine(f'sqlite:///{os.environ.get("DB_FILE")}')
         Session = sessionmaker(bind=engine)
         self._session = Session()
+        self.__user_manager = UserManager()
 
     def create_userinfo(self, username: str):
         print("Pleas enter the following user-information: ")
@@ -19,19 +22,22 @@ class ValidationManager:
         lastname = input("Last name: ")
         emailaddress = username
         print("Pleas enter the following address-information: ")
-        city = input("City: ")
         zip = self.input_zip()  # input("Zip Code: ")
+        city = input("City: ")
         street = input('Street and Number ("Examplestreet 11"): ')
         return firstname, lastname, emailaddress, city, zip, street
 
     def input_zip(self):
         while True:
-            zip = input("Zip code: ")
-            if zip == int(zip):
-                return zip
-            else:
-                print("Zip code is not valid")
+            zip_code = input("Zip code: ").strip()
+            if zip_code == "":
+                print("Zip code cannot be empty.")
                 continue
+            try:
+                zip_code = int(zip_code)
+                return zip_code
+            except ValueError:
+                print("Zip code is not valid. Please enter a valid number.")
     def input_max_guests(self):
         while True:
             input_value = input("Enter number of guests: ").strip()
@@ -136,9 +142,7 @@ class ValidationManager:
             else:
                 password_check = input("Enter your Password again to verify: ")
                 if password == password_check:
-                    self.__user_manager.create_user(username, password)
-                    print("you have been successfully registered")
-                    print("please login")
+                    login = self.__user_manager.create_user(username, password)
                     return self
                 else:
                     print("Passwords are not identical, please enter them again")
@@ -146,7 +150,7 @@ class ValidationManager:
 
     def is_valid_email(self):
         while True:
-            emailaddress=input("Please enter E-Mail address: ").strip().lower()
+            emailaddress=str(input("Please enter E-Mail address: ")).strip().lower()
             if "@" in emailaddress and "." in emailaddress:
                 at_index = emailaddress.index("@")
                 dot_index = emailaddress.rindex(".")

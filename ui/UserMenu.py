@@ -3,6 +3,8 @@ from business.UserManager import UserManager
 from business.ValidationManager import ValidationManager
 from console.console_base import Menu, MenuOption
 from sqlalchemy.orm import Session
+
+from data_models.models import Guest
 from ui.AdminMenu import AdminMenu
 
 
@@ -37,7 +39,12 @@ class UserMenu(Menu):
                             if existing_username:
                                 print("E-Mail already exists. Please choose a different E-Mail.")
                             else:
-                                password = self.__validation_manager.create_password(username)
+                                self.__validation_manager.create_password(username)
+
+                                firstname, lastname, emailaddress, city, zip, street = self.__validation_manager.create_userinfo(username)
+                                self.__user_manager.create_user_information(firstname, lastname, emailaddress, city, zip, street)
+                                print("you have been successfully registered")
+                                print("please login")
                         return self
                     case 2:  # option 2 (Login)
                         username = input("Enter E-Mail address: ")
