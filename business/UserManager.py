@@ -37,63 +37,60 @@ class UserManager:
         else:
             return False, None
 
-    def update_user(self):
-        validation_manager = ValidationManager()
-        username = input("Enter your current username: ")
-        password = input("Enter your current password: ")
-        login_successful, _ = self.login(username, password)
-
-        # If the login is successful, update the user
-        if login_successful:
-            # Get the user's login information
-            user_login = self._session.query(Login).filter_by(username=username).first()
-
-            if user_login:
-                # Get the user's guest information
-                user_guest = self._session.query(Guest).filter_by(email=username).first()
-
-                if user_guest:
-                    valid_choices = ['1', '2', '3', '4', '0']  # list of valid choices
-
-                    while True:
-                        print("Which information do you want to update?")
-                        print("1. Username")
-                        print("2. Password")
-                        print("3. First Name")
-                        print("4. Last Name")
-                        print("0. Nothing else")
-
-                        choice = validation_manager.input_integer("Enter your choice: ")
-
-                        if str(choice) not in valid_choices:
-                            print("Invalid choice. Please enter a number from the list.")
-                            continue
-
-                        if choice == 1:
-                            new_username = input("Enter your new username: ")
-                            user_login.username = new_username
-                            user_guest.email = new_username
-                        elif choice == 2:
-                            new_password = input("Enter your new password: ")
-                            user_login.password = new_password
-                        elif choice == 3:
-                            new_firstname = input("Enter your new first name: ")
-                            user_guest.firstname = new_firstname
-                        elif choice == 4:
-                            new_lastname = input("Enter your new last name: ")
-                            user_guest.lastname = new_lastname
-                        elif choice == 0:
-                            break
-
-                    self._session.commit()
-                    print(f"User {username} has been updated.")
-                else:
-                    print("User not found.")
-            else:
-                print("Login failed. Please try again.")
+    def update_user(self, role: str):
+        if role == 'admin':
+            user_id = input("Enter the user ID you want to update: ")
+            user_login = self._session.query(Login).filter_by(id=user_id).first()
+            user_guest = self._session.query(Guest).filter_by(id=user_id).first()
         else:
-            print("Login failed. Please try again.")
+            username = input("Enter your current username: ")
+            password = input("Enter your current password: ")
+            login_successful, _ = self.login(username, password)
 
+            if not login_successful:
+                print("Login failed. Please try again.")
+                return
+
+            user_login = self._session.query(Login).filter_by(username=username).first()
+            user_guest = self._session.query(Guest).filter_by(email=username).first()
+
+        if user_login and user_guest:
+            valid_choices = ['1', '2', '3', '4', '0']  # list of valid choices
+
+            while True:
+                print("Which information do you want to update?")
+                print("1. Username")
+                print("2. Password")
+                print("3. First Name")
+                print("4. Last Name")
+                print("0. Nothing else")
+
+                choice = input("Enter your choice: ")
+
+                if choice not in valid_choices:
+                    print("Invalid choice. Please enter a number from the list.")
+                    continue
+
+                if choice == '1':
+                    new_username = input("Enter your new username: ")
+                    user_login.username = new_username
+                    user_guest.email = new_username
+                elif choice == '2':
+                    new_password = input("Enter your new password: ")
+                    user_login.password = new_password
+                elif choice == '3':
+                    new_firstname = input("Enter your new first name: ")
+                    user_guest.firstname = new_firstname
+                elif choice == '4':
+                    new_lastname = input("Enter your new last name: ")
+                    user_guest.lastname = new_lastname
+                elif choice == '0':
+                    break
+
+            self._session.commit()
+            print(f"User {user_login.username} has been updated.")
+        else:
+            print("User not found.")
     def delete_user(self):
         username = input("Enter your username: ")
         password = input("Enter your password: ")
