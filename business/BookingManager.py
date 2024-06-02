@@ -115,3 +115,67 @@ class BookingManager(BaseManager):
         session.commit()
         print(f"Booking with ID {booking_id} has been updated")
         print(booking)
+
+    def user_edit_booking(self, booking_id, user_id):
+        session = self.get_session()
+        booking = session.query(Booking).filter(Booking.id == booking_id, Booking.guest_id == user_id).first()
+        if not booking:
+            print(f"No booking found with ID {booking_id} for user ID {user_id}")
+            return
+
+        while True:
+            print("Which information do you want to update?")
+            print("1. Room Number")
+            print("2. Number of Guests")
+            print("3. Start Date")
+            print("4. End Date")
+            print("5. Comment")
+            print("0. Nothing else")
+
+            choice = input("Enter your choice: ")
+
+            if choice == '1':
+                room_number = input("Enter new Room Number: ")
+                booking.room_number = room_number
+            elif choice == '2':
+                number_of_guests = self.validation_manager.input_max_guests()
+                booking.number_of_guests = number_of_guests
+            elif choice == '3':
+                start_date = self.validation_manager.input_start_date()
+                booking.start_date = start_date
+            elif choice == '4':
+                end_date = self.validation_manager.input_end_date(booking.start_date)
+                booking.end_date = end_date
+            elif choice == '5':
+                booking.comment = input("Enter new Comment: ")
+            elif choice == '0':
+                break
+            else:
+                print("Invalid choice. Please try again.")
+
+        session.commit()
+        print(f"Booking with ID {booking_id} has been updated")
+        print(booking)
+
+    def delete_booking(self, booking_id):
+        session = self.get_session()
+        booking = session.query(Booking).filter(Booking.id == booking_id).first()
+        if not booking:
+            print(f"No booking found with ID {booking_id}")
+            return
+
+        confirmation = input(f"Are you sure you want to delete booking with ID {booking_id}? (yes/no): ")
+        if confirmation.lower() == 'yes':
+            session.delete(booking)
+            session.commit()
+            print(f"Booking with ID {booking_id} has been deleted.")
+        else:
+            print("Deletion canceled.")
+
+    def view_and_delete_booking(self, guest_id):
+        bookings = self.list_bookings(guest_id)
+        if not bookings:
+            return
+
+        booking_id = int(input("Enter the ID of the booking you want to delete: "))
+        self.delete_booking(booking_id)
