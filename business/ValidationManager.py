@@ -157,3 +157,21 @@ class ValidationManager:
             else:
                 print("Invalid E-Mail address")
                 continue
+
+    def input_text(self, prompt: str):
+        while True:
+            input_value = input(prompt)
+            if isinstance(input_value, str):
+                return input_value
+            else:
+                print("Invalid input. Please enter a text.")
+                continue
+
+    def input_integer(self, prompt: str):
+        while True:
+            input_value = input(prompt)
+            try:
+                return int(input_value)
+            except ValueError:
+                print("Invalid input. Please enter a valid integer.")
+                continue

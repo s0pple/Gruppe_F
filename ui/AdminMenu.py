@@ -18,18 +18,23 @@ class AdminMenu(Menu):
         self.__role = role  # store the role for further admin functionalities like edit_booking
         self.__booking_manager = BookingManager()  # create an instance of BookingManager
 
-    def _navigate(self, choice: int):
-        match choice:
-            case 1:
-                return self
-            case 2:
-                self._display_all_bookings()
-                return self
-            case 3:
-                return self
-            case 4:
-                return self.__main_menu
-
+    def _navigate(self):
+        while True:
+            choice = input("Enter your choice: ")
+            if choice.isdigit() and 1 <= int(choice) <= 4:
+                choice = int(choice)
+                match choice:
+                    case 1:
+                        return self
+                    case 2:
+                        self._display_all_bookings()
+                        return self
+                    case 3:
+                        return self
+                    case 4:
+                        return self.__main_menu
+            else:
+                print("Invalid choice. Please enter a number between 1 and 4.")
     def _display_all_bookings(self):
         booking_manager = BookingManager()
 
