@@ -18,7 +18,7 @@ class SearchMenu(Menu):
 
 
     def __search_by_name_city_guests_star_availability(self):
-        # while True:
+         while True:
             print("Enter the attributes you want to search with, or skip to show all hotels ")
             hotel_name= input("Enter the name of a hotel: ")
             #hotelname= input("(optional) - Enter the name of the Hotel: ")
@@ -39,7 +39,7 @@ class SearchMenu(Menu):
             if not all_hotels:
                 print("No hotels with these conditions were found")
                 input("Press Enter to continue...")
-
+                continue
             else:
                 formatted_hotels = self.__format_hotels(all_hotels)  # Format the hotels
                 #selected_hotel = self.navigate_hotel(formatted_hotels)  # Pass the formatted hotels to navigate_hotel

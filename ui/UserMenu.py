@@ -49,9 +49,7 @@ class UserMenu(Menu):
 
                 return self
             case 3:
-                self.__user_manager.register()
-            case 4:
                 self.__user_manager.delete_user()
                 return self
-            case 5:  # option 5 (Back)
+            case 4:  # option 4 (Back)
                 return self.__main_menu  #
