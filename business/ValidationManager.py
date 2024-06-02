@@ -13,7 +13,7 @@ class ValidationManager:
         Session = sessionmaker(bind=engine)
         self._session = Session()
 
-    def creat_userinfo(self, username: str):
+    def create_userinfo(self, username: str):
         print("Pleas enter the following user-information: ")
         firstname = input("First name: ")
         lastname = input("Last name: ")

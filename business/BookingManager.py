@@ -2,15 +2,20 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from business.BaseManager import BaseManager
-from data_models.models import Booking
 import pathlib
 from datetime import datetime
-from data_models.models import Booking, Hotel, Guest
+from data_models.models import *
+from business.ValidationManager import ValidationManager
+from business.SearchManager import SearchManager
+from business.UserManager import UserManager
 
 
 class BookingManager(BaseManager):
     def __init__(self) -> None:
         super().__init__()
+        self.validation_manager = ValidationManager()
+        self.search_manager = SearchManager()
+        self.user_manager = UserManager()
         engine = create_engine(f'sqlite:///{os.environ.get("DB_FILE")}')
         Session = sessionmaker(bind=engine)
         self._session = Session()
@@ -179,3 +184,67 @@ class BookingManager(BaseManager):
 
         booking_id = int(input("Enter the ID of the booking you want to delete: "))
         self.delete_booking(booking_id)
+
+
+    def add_booking(self, hotel_name=None, city=None, max_guests=None, star_rating=None,
+                    start_date=None, room_type=None, end_date=None, hotel_id=None, room_id=None):
+        session = self.get_session()
+
+        # Assuming hotel_id and room_id are obtained before this point
+        # (e.g., from the search results).
+
+        print(f"Hotel Name: {hotel_name}")
+        print(f"Room Type: {room_type}")
+        print(f"Start Date: {start_date.strftime('%d.%m.%Y')}")
+        print(f"End Date: {end_date.strftime('%d.%m.%Y')}")
+
+        # --- User Handling ---
+        email = input("Please enter your email address: ").strip().lower()
+        user = self.user_manager.check_existing_usernames(email)
+
+        if user:
+            guest = session.query(Guest).filter(Guest.email == email).first()
+            print(f"Welcome back, {guest.firstname} {guest.lastname}. Please review your details:")
+            # ... (Display guest details)
+        else:
+            print("Please provide your details:")
+            firstname, lastname, email, city, zip, street = self.validation_manager.create_userinfo(email)
+            guest = Guest(email=email, firstname=firstname, lastname=lastname, city=city, zip=zip, street=street)
+            session.add(guest)
+            session.commit()
+
+        # --- Booking Details ---
+        number_of_guests = self.validation_manager.input_max_guests()
+        comment = input("Any comments: ").strip()
+
+        # --- Price Calculation ---
+        room = session.query(Room).filter(Room.id == room_id).first()
+        if not room:
+            print("Room information not found.")
+            return
+
+        total_days = (end_date - start_date).days
+        total_price = total_days * room.price_per_night
+        print(f"Total Price: {total_price} for {total_days} nights.")
+
+        # --- Confirmation ---
+        confirmation = input("Do you confirm the booking? (yes/no): ")
+        if confirmation.lower() != 'yes':
+            print("Booking cancelled.")
+            return
+
+        # --- Create and Store Booking ---
+        new_booking = Booking(
+            room_hotel_id=hotel_id,
+            room_number=room_id,  # Assuming you want to store the Room ID, not the number
+            guest_id=guest.id,
+            number_of_guests=number_of_guests,
+            start_date=start_date,
+            end_date=end_date,
+            comment=comment,
+            total_price=total_price
+        )
+
+        session.add(new_booking)
+        session.commit()
+        print("Booking has been successfully added.")
