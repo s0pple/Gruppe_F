@@ -115,7 +115,8 @@ class SelectHotelMenu(Menu):
             self.add_option(MenuOption(hotel))  # Add formatted hotel string as option
 
         self.add_option(MenuOption("Search rooms in selected hotel"))  # Option 3 to search rooms
-        self.add_option(MenuOption("Back"))  # Option 4 to go back
+        self.add_option(MenuOption("Display all available rooms"))  # Option 4 to display all available rooms
+        self.add_option(MenuOption("Back"))  # Option 5 to go back
 
     def _navigate(self, choice: int):
         if choice == 3:
@@ -123,13 +124,45 @@ class SelectHotelMenu(Menu):
                 self.__search_rooms(self._hotel_id)
             return self
         elif choice == 4:
+            if self._hotel_id is not None:
+                self.__display_all_rooms(self._hotel_id)
+            return self
+        elif choice == 5:
             return self.__main_menu
-        elif 1 <= choice <= len(self._options) - 2:
+        elif 1 <= choice <= len(self._options) - 3:
             self._hotel_id = self._options[choice - 1].value.id
             print(f"You selected: {self._options[choice - 1].text}")
             return self
         else:
             print("Invalid choice. Please try again.")
+            return self
+
+    def __display_all_rooms(self, hotel_id):
+        query, rooms = self.__search_manager.get_desired_rooms_by_hotel_id(hotel_id)
+        if not rooms:
+            print("No rooms found.")
+        else:
+            print("\nAvailable rooms:")
+            for index, room in enumerate(rooms, start=1):
+                room = room[0]
+                room_info = (f"{index}. Room Number: {room.number}\n"
+                             f"Type: {room.type}\n"
+                             f"Max Guests: {room.max_guests}\n"
+                             f"Description: {room.description}\n"
+                             f"Amenities: {room.amenities}\n"
+                             f"Price per Night: {room.price}\n")
+                print(room_info)
+                print("-" * 80)
+
+            try:
+                choice = int(input("Enter the number of the room you want to select: "))
+                if 1 <= choice <= len(rooms):
+                    selected_room = rooms[choice - 1][0]
+                    print(f"You selected room number: {selected_room.number}")
+                else:
+                    print("Invalid selection. Please try again.")
+            except ValueError:
+                print("Invalid input. Please enter a valid number.")
             return self
 
     def get_start_date(self):
@@ -178,60 +211,70 @@ class SelectHotelMenu(Menu):
                 print("Invalid date format. Please enter the date in dd.mm.yyyy format.")
 
     def __search_rooms(self, hotel_id):
-        room_type = input("Enter the room type you want to search for: ")
-        max_guests = input("Enter the maximum number of guests you want to search for: ")
-        description = input("Enter the description you want to search for: ")
-        amenities = input("Enter the amenities you want to search for: ")
-        price = input("Enter the price per night you want to search for: ")
+        print("Select the room type you want to search for:")
+        print("1. Single Room")
+        print("2. Double Room")
+        print("3. Family Room")
+        print("4. Suite")
+        room_type_choice = input("Enter your choice (1-4): ")
+
+        room_type_dict = {
+            "1": "single room",
+            "2": "double room",
+            "3": "family room",
+            "4": "suite"
+        }
+
+        room_type = room_type_dict.get(room_type_choice, None)
+        if room_type is None:
+            print("Invalid selection. Please try again.")
+            return self
+
+        while True:
+            max_guests = input("Enter the maximum number of guests you want to search for: ")
+            if max_guests.isdigit() and 1 <= int(max_guests) <= 4:  # Assuming 10 as the maximum limit for guests
+                break
+            else:
+                print(
+                    "Invalid input. Maximum number of guests must be a positive integer and not exceed 4. Please try again.")
+
+        while True:
+            price = input("Enter the price per night you want to search for: ")
+            if price.isdigit() and int(price) > 0:
+                break
+            else:
+                print("Invalid input. Price per night must be a positive integer. Please try again.")
+
         start_date = self.get_start_date()  # Call get_start_date on self
         end_date = self.get_end_date(start_date) if start_date else None  # Call get_end_date on self
 
         query, rooms = self.__search_manager.get_desired_rooms_by_hotel_id(
             hotel_id, type=room_type, max_guests=max_guests,
-            description=description, amenities=amenities, price=price,
-            start_date=start_date, end_date=end_date
+            price=price, start_date=start_date, end_date=end_date
         )
 
         if not rooms:
             print("No rooms found matching the criteria.")
         else:
             print("\nAvailable rooms:")
-            room_counter = 1
-            for room in rooms:
+            for index, room in enumerate(rooms, start=1):
                 room = room[0]
-                hotel_name = self.__search_manager.get_hotel_name_by_id(room.hotel_id)
-                room_info = (f"{room_counter}. \033[4m{hotel_name}\033[0m\n"
+                room_info = (f"{index}. \033[4m{self.__search_manager.get_hotel_name_by_id(room.hotel_id)}\033[0m\n"
                              f"    Room Number: {room.number}\n"
                              f"    Type: {room.type}\n"
                              f"    Max Guests: {room.max_guests}\n"
-                             f"    Description: {room.description}\n"
-                             f"    Amenities: {room.amenities}\n"
                              f"    Price per Night: {room.price}\n")
                 print(room_info)
                 print("-" * 80)
-                room_counter += 1
 
             try:
                 choice = int(input("Enter the number of the room you want to select: "))
-                if 1 <= choice < room_counter:
-                    selected_room = None
-                    room_counter = 1
-                    for room in rooms:
-                        room = room[0]
-                        if room_counter == choice:
-                            selected_room = room
-                            break
-                        room_counter += 1
-
-                    if selected_room:
-                        hotel_name = self.__search_manager.get_hotel_name_by_id(selected_room.hotel_id)
-                        print("\nYou selected:")
-                        selected_room_info = (f"Hotel Name: \033[4m[{hotel_name}]\033[0m\n"
-                                              f"Room Number: {selected_room.number}\n"
-                                              f"Type: {selected_room.type}\n"
-                                              f"Price per Night: {selected_room.price}")
-                        print(selected_room_info)
+                if 1 <= choice <= len(rooms):
+                    selected_room = rooms[choice - 1][0]
+                    print(
+                        f"You selected room number: {selected_room.number} in hotel: {self.__search_manager.get_hotel_name_by_id(selected_room.hotel_id)}")
                 else:
                     print("Invalid selection. Please try again.")
             except ValueError:
                 print("Invalid input. Please enter a valid number.")
+            return self
