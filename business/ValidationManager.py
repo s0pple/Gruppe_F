@@ -5,12 +5,10 @@ from sqlalchemy.orm import sessionmaker, aliased
 from business.BaseManager import BaseManager
 from data_models.models import *
 from datetime import datetime
-from business.UserManager import UserManager
 
 class ValidationManager:
     def __init__(self) -> None:
         super().__init__()
-        self.__user_manager = UserManager()
         engine = create_engine(f'sqlite:///{os.environ.get("DB_FILE")}')
         Session = sessionmaker(bind=engine)
         self._session = Session()

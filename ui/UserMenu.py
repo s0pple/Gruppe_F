@@ -6,15 +6,14 @@ from sqlalchemy.orm import Session
 from ui.AdminMenu import AdminMenu
 
 
-#kommentar test
-
 class UserMenu(Menu):
     def __init__(self, main_menu: Menu):
         super().__init__("User Menu")
-        self.add_option(MenuOption("register"))  # option 1
+        self.add_option(MenuOption("Register"))  # option 1
         self.add_option(MenuOption("Login"))  # option 2
         self.add_option(MenuOption("Delete user"))  # option 3
-        self.add_option(MenuOption("Back"))  # option 4
+        self.add_option(MenuOption("Update user information"))  # option 4
+        self.add_option(MenuOption("Back"))  # option 5
         self.__main_menu = main_menu
 
         self.__user_manager = UserManager()
@@ -23,7 +22,7 @@ class UserMenu(Menu):
     def _navigate(self, choice):
         choice = str(choice)  # convert choice to string
         while True:
-            if choice.isdigit() and 1 <= int(choice) <= 4:
+            if choice.isdigit() and 1 <= int(choice) <= 5:
                 choice = int(choice)
                 match choice:
                     case 1:  # option 1 (Create new user)
@@ -57,8 +56,11 @@ class UserMenu(Menu):
                     case 3:
                         self.__user_manager.delete_user()
                         return self
-                    case 4:  # option 4 (Back)
+                    case 4:  # option 4 (Update user information)
+                        self.__user_manager.update_user()
+                        return self
+                    case 5:  # option 5 (Back)
                         return self.__main_menu
             else:
-                print("Invalid choice. Please enter a number between 1 and 4.")
+                print("Invalid choice. Please enter a number between 1 and 5.")
                 choice = input("Enter your choice: ")
