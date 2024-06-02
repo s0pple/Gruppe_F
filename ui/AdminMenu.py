@@ -11,25 +11,24 @@ class AdminMenu(Menu):
         super().__init__("Admin Menu")
         self.add_option(MenuOption("Clients"))
         self.add_option(MenuOption("Bookings"))
-        self.add_option(MenuOption("Hotels"))
+        self.add_option(MenuOption("Update user"))
         self.add_option(MenuOption("Logout"))
         self.__main_menu = main_menu
         self.__user_manager = UserManager()
         self.__role = role  # store the role for further admin functionalities like edit_booking
         self.__booking_manager = BookingManager()  # create an instance of BookingManager
 
-    def _navigate(self):
+    def _navigate(self, choice):
         while True:
-            choice = input("Enter your choice: ")
-            if choice.isdigit() and 1 <= int(choice) <= 4:
-                choice = int(choice)
+            if 1 <= choice <= 4:
                 match choice:
                     case 1:
                         return self
                     case 2:
                         self._display_all_bookings()
                         return self
-                    case 3:
+                    case 3:  # option 3 (Update user)
+                        self.__user_manager.update_user(self.__role)  # pass the role to update_user
                         return self
                     case 4:
                         return self.__main_menu
