@@ -4,6 +4,7 @@ from business.UserManager import UserManager  # import UserManager
 from datetime import datetime
 from business.BookingManager import BookingManager
 from business.BookingManager import BookingManager
+from ui.LoggedInMenu import LoggedInMenu
 
 
 class AdminMenu(Menu):
@@ -19,21 +20,27 @@ class AdminMenu(Menu):
         self.__booking_manager = BookingManager()  # create an instance of BookingManager
 
     def _navigate(self, choice):
-        while True:
-            if 1 <= choice <= 4:
-                match choice:
-                    case 1:
-                        return self
-                    case 2:
-                        self._display_all_bookings()
-                        return self
-                    case 3:  # option 3 (Update user)
-                        self.__user_manager.update_user(self.__role)  # pass the role to update_user
-                        return self
-                    case 4:
-                        return self.__main_menu
-            else:
-                print("Invalid choice. Please enter a number between 1 and 4.")
+        if choice == 1:  # Show Bookings
+            self.list_bookings(self.__user_id)
+            return self
+        elif choice == 2:  # Edit Booking
+            # Implement the logic for editing a booking
+            return self
+        elif choice == 3:  # Cancel Booking
+            # Implement the logic for canceling a booking
+            return self
+        elif choice == 4:  # Update user
+            # Implement the logic for updating a user
+            return self
+        elif choice == 5:  # Delete user
+            # Implement the logic for deleting a user
+            return self
+        elif choice == 6:  # Back
+            return self.__main_menu
+        else:
+            print("Invalid choice. Please enter a number between 1 and 6.")
+            return self
+
     def _display_all_bookings(self):
         booking_manager = BookingManager()
 
@@ -79,7 +86,7 @@ class AdminMenu(Menu):
                 if 1 <= booking_number <= len(results):
                     booking_to_modify = results[booking_number - 1][0]  # get the Booking object from the results
                     booking_manager.edit_booking(
-                        booking_to_modify.id)  # call the edit_booking method with the booking id
+                        booking_to_modify.guest_id)  # call the edit_booking method with the guest id
                 else:
                     print("Invalid booking number. Please try again.")
             else:

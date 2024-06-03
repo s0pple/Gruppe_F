@@ -31,9 +31,24 @@ class BookingManager(BaseManager):
             return []
 
         print(f"Bookings for guest_id {guest_id}:")
-        for booking in bookings:
+        for i, booking in enumerate(bookings, start=1):
             print(
-                f"ID: {booking.id}, Room Number: {booking.room_number}, Start Date: {booking.start_date}, End Date: {booking.end_date}")
+                f"{i}. ID: {booking.id}, Room Number: {booking.room_number}, Start Date: {booking.start_date}, End Date: {booking.end_date}")
+
+        while True:
+            print_choice = input("Do you want to print a booking? (yes/no) ").lower()
+            if print_choice in ['yes', 'no']:
+                break
+            else:
+                print("Invalid input. Please enter 'yes' or 'no'.")
+
+        if print_choice == 'yes':
+            if len(bookings) == 1:
+                booking_id = bookings[0].id
+            else:
+                booking_id = input("Enter the number of the booking you want to print: ")
+            self.print_booking(booking_id, "booking.txt")  # replace "booking.txt" with your desired filename
+
         return bookings
 
     def print_booking(self, booking_id, file_name):
@@ -75,91 +90,43 @@ class BookingManager(BaseManager):
             results = query.order_by(Hotel.name).all()
             return results
 
-    def edit_booking(self, booking_id):
-        from business.ValidationManager import ValidationManager
-        validation_manager = ValidationManager()
+    def edit_booking(self, user_id):
         session = self.get_session()
-        booking = session.query(Booking).filter(Booking.id == booking_id).first()
-        if not booking:
-            print(f"No booking found with ID {booking_id}")
+        bookings = session.query(Booking).filter(Booking.guest_id == user_id).all()
+        if not bookings:
+            print("No bookings found.")
             return
 
-        valid_choices = ['1', '2', '3', '4', '5', '6', '0']  # list of valid choices
+        for i, booking in enumerate(bookings, start=1):
+            print(f"{i}. {booking}")
 
         while True:
-            print("Which information do you want to update?")
-            print("1. Room Hotel ID")
-            print("2. Room Number")
-            print("3. Number of Guests")
-            print("4. Start Date")
-            print("5. End Date")
-            print("6. Comment")
-            print("0. Nothing else")
-
-            choice = validation_manager.input_integer("Enter your choice: ")
-
-            if str(choice) not in valid_choices:
-                print("Invalid choice. Please enter a number from the list.")
-                continue
-
-            if choice == 1:
-                booking.room_hotel_id = validation_manager.input_integer("Enter new Room Hotel ID: ")
-            elif choice == 2:
-                booking.room_number = validation_manager.input_integer("Enter new Room Number: ")
-            elif choice == 3:
-                booking.number_of_guests = validation_manager.input_integer("Enter new Number of Guests: ")
-            elif choice == 4:
-                booking.start_date = validation_manager.input_start_date()
-            elif choice == 5:
-                booking.end_date = validation_manager.input_end_date(booking.start_date)
-            elif choice == 6:
-                booking.comment = validation_manager.input_text("Enter new Comment: ")
-            elif choice == 0:
-                break
-
-        session.commit()
-        print(f"Booking with ID {booking_id} has been updated")
-        print(booking)
-
-    def user_edit_booking(self, booking_id, user_id):
-        session = self.get_session()
-        booking = session.query(Booking).filter(Booking.id == booking_id, Booking.guest_id == user_id).first()
-        if not booking:
-            print(f"No booking found with ID {booking_id} for user ID {user_id}")
-            return
-
-        while True:
-            print("Which information do you want to update?")
-            print("1. Room Number")
-            print("2. Number of Guests")
-            print("3. Start Date")
-            print("4. End Date")
-            print("5. Comment")
-            print("0. Nothing else")
-
-            choice = input("Enter your choice: ")
-
-            if choice == '1':
-                room_number = input("Enter new Room Number: ")
-                booking.room_number = room_number
-            elif choice == '2':
-                number_of_guests = self.validation_manager.input_max_guests()
-                booking.number_of_guests = number_of_guests
-            elif choice == '3':
-                start_date = self.validation_manager.input_start_date()
-                booking.start_date = start_date
-            elif choice == '4':
-                end_date = self.validation_manager.input_end_date(booking.start_date)
-                booking.end_date = end_date
-            elif choice == '5':
-                booking.comment = input("Enter new Comment: ")
-            elif choice == '0':
+            choice = input("Enter the number of the booking you want to edit: ")
+            if choice.isdigit() and 1 <= int(choice) <= len(bookings):
+                booking = bookings[int(choice) - 1]
                 break
             else:
                 print("Invalid choice. Please try again.")
 
+        fields_to_update = [
+            ('room_number', 'Enter new Room Number (press enter to skip): '),
+            ('number_of_guests', 'Enter new Number of Guests (press enter to skip): ',
+             self.validation_manager.input_max_guests),
+            ('start_date', 'Enter new Start Date (press enter to skip): ', self.validation_manager.input_start_date),
+            ('end_date', 'Enter new End Date (press enter to skip): ', self.validation_manager.input_end_date),
+            ('comment', 'Enter new Comment (press enter to skip): ')
+        ]
+
+        for field, prompt, validation_func in fields_to_update:
+            print(prompt)
+            new_value = input()
+            if new_value:  # if the user entered a value
+                if validation_func:
+                    new_value = validation_func(new_value)
+                setattr(booking, field, new_value)
+
         session.commit()
-        print(f"Booking with ID {booking_id} has been updated")
+        print(f"Booking with ID {booking.id} has been updated")
         print(booking)
 
     def delete_booking(self, booking_id):
@@ -184,7 +151,6 @@ class BookingManager(BaseManager):
 
         booking_id = int(input("Enter the ID of the booking you want to delete: "))
         self.delete_booking(booking_id)
-
 
     def add_booking(self, hotel_name=None, city=None, max_guests=None, star_rating=None,
                     start_date=None, room_type=None, end_date=None, hotel_id=None, room_id=None):

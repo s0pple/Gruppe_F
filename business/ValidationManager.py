@@ -7,6 +7,7 @@ from business.UserManager import UserManager
 from data_models.models import *
 from datetime import datetime
 
+
 class ValidationManager:
     def __init__(self) -> None:
         super().__init__()
@@ -38,6 +39,7 @@ class ValidationManager:
                 return zip_code
             except ValueError:
                 print("Zip code is not valid. Please enter a valid number.")
+
     def input_max_guests(self):
         while True:
             input_value = input("\033[4mNumber of guests       :\033[0m    ").strip()
@@ -51,6 +53,7 @@ class ValidationManager:
                     print("Error: Please enter a positive number.")
             except ValueError:
                 print("Error: Invalid input. Please enter a valid number.")
+
     def input_star_rating(self):
         while True:
             try:
@@ -90,7 +93,6 @@ class ValidationManager:
             except ValueError:
                 print("Invalid date format. Please enter the date in dd.mm.yyyy format.")
 
-
     def input_end_date(self, date_obj_start=None):
         if date_obj_start is None:
             print("Start date is needed to compare with the end date.")
@@ -113,7 +115,7 @@ class ValidationManager:
                 # Format the date to yyyy-mm-dd
                 # formatted_end_date = date_obj.strftime("%Y-%m-%d")
 
-                if date_obj_end < date_obj_start: #if formatted_end_date < formatted_start_date:
+                if date_obj_end < date_obj_start:  #if formatted_end_date < formatted_start_date:
                     print("The end date must be later than the start date. Please try again.")
                     continue
                 return date_obj_end
@@ -121,7 +123,7 @@ class ValidationManager:
             except ValueError:
                 print("Invalid date format. Please enter the date in dd.mm.yyyy format.")
 
-    def create_password(self,username):
+    def create_password(self, username):
         while True:
             print("Enter Passwort (capital and small letters, at least 10 characters)")
             password = input("Your Password: ")
@@ -150,7 +152,7 @@ class ValidationManager:
 
     def is_valid_email(self):
         while True:
-            emailaddress=str(input("Please enter E-Mail address: ")).strip().lower()
+            emailaddress = str(input("Please enter E-Mail address: ")).strip().lower()
             if "@" in emailaddress and "." in emailaddress:
                 at_index = emailaddress.index("@")
                 dot_index = emailaddress.rindex(".")
@@ -177,3 +179,27 @@ class ValidationManager:
             except ValueError:
                 print("Invalid input. Please enter a valid integer.")
                 continue
+
+    def room_max_guests(self, max_capacity):
+        while True:
+            input_value = input("Enter the number of guests: ").strip()
+            if input_value.isdigit():
+                number_of_guests = int(input_value)
+                if 1 <= number_of_guests <= max_capacity:
+                    return number_of_guests
+                else:
+                    print(f"Error: The number of guests cannot be less than 1 or more than {max_capacity}.")
+            else:
+                print("Error: Invalid input. Please enter a valid number.")
+
+    def input_future_date(self, start_date=None):
+        while True:
+            input_date = input("Enter the date (dd.mm.yyyy): ").strip()
+            try:
+                date_obj = datetime.strptime(input_date, "%d.%m.%Y")
+                if date_obj > datetime.now() and (start_date is None or date_obj > start_date):
+                    return date_obj
+                else:
+                    print("Error: The date must be in the future and after the start date if provided.")
+            except ValueError:
+                print("Error: Invalid date format. Please enter the date in dd.mm.yyyy format.")
