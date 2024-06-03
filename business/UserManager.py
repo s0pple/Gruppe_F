@@ -27,14 +27,21 @@ class UserManager:
         self._session.commit()
 
     def create_user_information(self, firstname, lastname, emailaddress: str,  city, zip, street):
-        guest = Guest(firstname=firstname, email=emailaddress,  lastname=lastname)
-        address = Address(city=city, zip=zip, street=street)
+        #guest = Guest(firstname=firstname, email=emailaddress,  lastname=lastname)
+        #address = Address(city=city, zip=zip, street=street)
+        #self._session.add(guest)
+        #self._session.commit()
+        #self._session.add(address)
+        #self._session.commit()
+        # Commit the session to save the new user and login to the database
+        new_address = Address(city=city, zip=zip, street=street)
+        self._session.add(new_address)
+        self._session.flush()  # Sicherstellen, dass die Adresse in die DB geschrieben wird und eine ID erhält
+
+        # Jetzt den Benutzer speichern und die address_id setzen
+        guest = Guest(firstname=firstname, lastname=lastname, email=emailaddress, address_id=new_address.id, type='registered')
         self._session.add(guest)
         self._session.commit()
-        self._session.add(address)
-        self._session.commit()
-        # Commit the session to save the new user and login to the database
-
 
     def login(self, username: str, password: str):
         user = self._session.query(Login).filter_by(username=username, password=password).first()
