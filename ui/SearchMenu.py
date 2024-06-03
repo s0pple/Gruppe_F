@@ -20,9 +20,9 @@ class SearchMenu(Menu):
     def __search_by_name_city_guests_star_availability(self):
          while True:
             print("Enter the attributes you want to search with, or skip to show all hotels ")
-            hotel_name= input("Enter the name of a hotel: ")
+            hotel_name= input("\033[4mName of hotel          :\033[0m    ")
             #hotelname= input("(optional) - Enter the name of the Hotel: ")
-            city = input("Enter the city you want to search hotels in: ")
+            city = input("\033[4mCity                   :\033[0m    ")
             # max_guests = input("(optional) - Enter number of guests you want to search hotels for: ")
             max_guests= self.__validation_manager.input_max_guests()
             # star_rating = input("(optional) - Enter the star rating you want to search hotels for: ")
@@ -52,7 +52,7 @@ class SearchMenu(Menu):
 
                 if choice is not None:
                     choice_hotel_id = all_hotels[choice - 1].id
-                    print(f"You selected: {formatted_hotels[choice - 1]}")
+                    #print(f"You selected: {formatted_hotels[choice - 1]}")
                     self.__select_hotel_menu = SelectHotelMenu(self.__main_menu, formatted_hotels, hotel_id=choice_hotel_id)
                 return self.__select_hotel_menu
 
@@ -64,7 +64,7 @@ class SearchMenu(Menu):
             try:
                 choice = input("Enter the number of your choice, or 'x' to go back: ")
                 if choice.lower() == 'x':
-                    return None
+                    self.__search_by_name_city_guests_star_availability()
                 choice = int(choice)
                 if 1 <= choice <= len(formatted_hotels):
                     return choice
@@ -76,7 +76,7 @@ class SearchMenu(Menu):
     def __format_hotels(self, all_hotels):
         hotels_info = []
         for hotel in all_hotels:
-            hotel_info = f"Hotel Name: {hotel.name}\n"
+            hotel_info = f"\033[4m{hotel.name}\033[0m\n"
             hotel_info += f"Address: {hotel.address.street}, {hotel.address.zip} {hotel.address.city}\n"
             hotel_info += f"Stars: {hotel.stars}\n"
             hotel_info += "-" * 90  # Separator for better readability
@@ -105,7 +105,7 @@ class SearchMenu(Menu):
 class SelectHotelMenu(Menu):
 
     def __init__(self, main_menu: Menu, formatted_hotels: list, hotel_id=None):
-        super().__init__("Select Hotel")
+        super().__init__("Search Rooms")
 
         self.__main_menu = main_menu
         self._hotel_id = hotel_id  # Storing the hotel_id

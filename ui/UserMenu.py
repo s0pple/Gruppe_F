@@ -27,7 +27,7 @@ class UserMenu(Menu):
             if choice.isdigit() and 1 <= int(choice) <= 5:
                 choice = int(choice)
                 match choice:
-                    case 1:  # option 1 (Create new user)
+                    case 1:  # option 1 (Create a new account)
                         while True:
                             print("To create a new account:")
                             username = self.__validation_manager.is_valid_email()

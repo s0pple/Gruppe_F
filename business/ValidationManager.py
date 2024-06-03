@@ -20,12 +20,12 @@ class ValidationManager:
         print("Pleas enter the following user-information: ")
         firstname = input("First name: ")
         lastname = input("Last name: ")
-        emailaddress = username
+        emailaddress = str(username)
         print("Pleas enter the following address-information: ")
         zip = self.input_zip()  # input("Zip Code: ")
         city = input("City: ")
         street = input('Street and Number ("Examplestreet 11"): ')
-        return firstname, lastname, emailaddress, city, zip, street
+        return firstname, lastname, str(emailaddress), city, zip, street
 
     def input_zip(self):
         while True:
@@ -40,7 +40,7 @@ class ValidationManager:
                 print("Zip code is not valid. Please enter a valid number.")
     def input_max_guests(self):
         while True:
-            input_value = input("Enter number of guests: ").strip()
+            input_value = input("\033[4mNumber of guests       :\033[0m    ").strip()
             if input_value == "":
                 return None
             try:
@@ -54,7 +54,7 @@ class ValidationManager:
     def input_star_rating(self):
         while True:
             try:
-                input_value = input("Enter the star rating(1-5): ").strip()
+                input_value = input("\033[4mStar rating(1-5)       :\033[0m    ").strip()
                 if input_value == "":
                     return None
                 stars = int(input_value)
@@ -70,7 +70,7 @@ class ValidationManager:
 
     def input_start_date(self):
         while True:
-            start_date = input("Enter the start date (dd.mm.yyyy): ")
+            start_date = input("\033[4mStart date (dd.mm.yyyy):\033[0m    ")
             if not start_date:
                 return None  # If the input is optional and user does not enter anything, return None
 
@@ -96,7 +96,7 @@ class ValidationManager:
             print("Start date is needed to compare with the end date.")
             return None
         while True:
-            end_date = input("Enter the end date (dd.mm.yyyy): ")
+            end_date = input("\033[4mEnd date (dd.mm.yyyy)  :\033[0m    ")
             if not end_date:
                 print("End date is needed. ")
                 continue
@@ -155,7 +155,7 @@ class ValidationManager:
                 at_index = emailaddress.index("@")
                 dot_index = emailaddress.rindex(".")
                 if at_index < dot_index:
-                    return self
+                    return emailaddress
             else:
                 print("Invalid E-Mail address")
                 continue
