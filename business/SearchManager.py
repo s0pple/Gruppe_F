@@ -143,7 +143,7 @@ class SearchManager(BaseManager):
     # 1.2.2. Ich möchte nur die verfügbaren Zimmer sehen
     def get_desired_rooms_by_hotel_id(self, hotel_id=None, number=None, type=None, max_guests=None, amenities=None,
                                       price=None, start_date=None, end_date=None, description=None) -> List[Room]:
-        query = select(Room).where(Room.available == True)  # Only select available rooms
+        query = select(Room)
 
         if hotel_id:
             query = query.where(Room.hotel_id == hotel_id)
@@ -161,7 +161,7 @@ class SearchManager(BaseManager):
             query = query.where(Room.amenities == amenities)
 
         if price:
-            query = query.where(Room.price == price)
+            query = query.where(Room.price <= price)
 
         if description:
             query = query.where(Room.description == description)

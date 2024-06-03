@@ -145,12 +145,11 @@ class SelectHotelMenu(Menu):
             print("\nAvailable rooms:")
             for index, room in enumerate(rooms, start=1):
                 room = room[0]
-                room_info = (f"{index}. Room Number: {room.number}\n"
-                             f"Type: {room.type}\n"
-                             f"Max Guests: {room.max_guests}\n"
-                             f"Description: {room.description}\n"
-                             f"Amenities: {room.amenities}\n"
-                             f"Price per Night: {room.price}\n")
+                hotel_name = self.__search_manager.get_hotel_name_by_id(room.hotel_id)  # Retrieve the hotel name
+                room_info = (f"{index}. \033[4m[{hotel_name}]\033[0m\n"
+                             f"    Room Number: {room.number}\n"
+                             f"    Type: {room.type}\n"
+                             f"    Price per Night: {room.price}\n")
                 print(room_info)
                 print("-" * 80)
 
@@ -259,6 +258,7 @@ class SelectHotelMenu(Menu):
             print("\nAvailable rooms:")
             for index, room in enumerate(rooms, start=1):
                 room = room[0]
+                hotel_name = self.__search_manager.get_hotel_name_by_id(room.hotel_id)
                 room_info = (f"{index}. \033[4m{self.__search_manager.get_hotel_name_by_id(room.hotel_id)}\033[0m\n"
                              f"    Room Number: {room.number}\n"
                              f"    Type: {room.type}\n"
@@ -271,8 +271,12 @@ class SelectHotelMenu(Menu):
                 choice = int(input("Enter the number of the room you want to select: "))
                 if 1 <= choice <= len(rooms):
                     selected_room = rooms[choice - 1][0]
-                    print(
-                        f"You selected room number: {selected_room.number} in hotel: {self.__search_manager.get_hotel_name_by_id(selected_room.hotel_id)}")
+                    hotel_name = self.__search_manager.get_hotel_name_by_id(selected_room.hotel_id)
+                    selected_room_info = (f"Hotel Name: \033[4m[{hotel_name}]\033[0m\n"
+                                          f"Room Number: {selected_room.number}\n"
+                                          f"Type: {selected_room.type}\n"
+                                          f"Price per Night: {selected_room.price}")
+                    print(selected_room_info)
                 else:
                     print("Invalid selection. Please try again.")
             except ValueError:
