@@ -4,6 +4,7 @@ from business.UserManager import UserManager  # import UserManager
 from datetime import datetime
 from business.BookingManager import BookingManager
 from business.BookingManager import BookingManager
+from business.HotelManager import HotelManager
 from ui.LoggedInMenu import LoggedInMenu
 
 
@@ -18,7 +19,7 @@ class AdminMenu(Menu):
         self.__user_manager = UserManager()
         self.__role = role  # store the role for further admin functionalities like edit_booking
         self.__booking_manager = BookingManager()  # create an instance of BookingManager
-
+        self.__hotel_manager = HotelManager() # creates an instance of HotelManager
     def _navigate(self, choice):
         if choice == 1:  # Show Bookings
             self.list_bookings(self.__user_id)
