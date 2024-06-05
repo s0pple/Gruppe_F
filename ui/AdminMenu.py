@@ -6,6 +6,7 @@ from business.BookingManager import BookingManager
 from business.BookingManager import BookingManager
 from business.HotelManager import HotelManager
 from ui.LoggedInMenu import LoggedInMenu
+from ui.HotelMenu import HotelMenu
 
 
 class AdminMenu(Menu):
@@ -18,8 +19,9 @@ class AdminMenu(Menu):
         self.__main_menu = main_menu
         self.__user_manager = UserManager()
         self.__role = role  # store the role for further admin functionalities like edit_booking
-        self.__booking_manager = BookingManager()  # create an instance of BookingManager
-        self.__hotel_manager = HotelManager() # creates an instance of HotelManager
+        self.__booking_manager = BookingManager()  # create an instance of Boo§kingManager
+        self.__hotel_manager = HotelManager()  # creates an instance of HotelManager
+        self.__hotel_menu = HotelMenu  #creates an instance of HotelMenu
     def _navigate(self, choice):
         if choice == 1:  # Show Bookings
             self.list_bookings(self.__user_id)
@@ -30,16 +32,18 @@ class AdminMenu(Menu):
         elif choice == 3:  # Cancel Booking
             # Implement the logic for canceling a booking
             return self
-        elif choice == 4:  # Update user
+        elif choice == 4: # Adjust hotel information
+            # connection to HotelMenu and it's options
+        elif choice == 5:  # Update user
             # Implement the logic for updating a user
             return self
-        elif choice == 5:  # Delete user
+        elif choice == 6:  # Delete user
             # Implement the logic for deleting a user
             return self
-        elif choice == 6:  # Back
+        elif choice == 7:  # Back
             return self.__main_menu
         else:
-            print("Invalid choice. Please enter a number between 1 and 6.")
+            print("Invalid choice. Please enter a number between 1 and 7.")
             return self
 
     def _display_all_bookings(self):
