@@ -34,9 +34,10 @@ class AdminMenu(Menu):
             return self
         elif choice == 4: # Adjust hotel information
             # connection to HotelMenu and it's options
-        elif choice == 5:  # Update user
-            # Implement the logic for updating a user
             return self
+        elif choice == 5:  # Update user
+            # Indented block of code
+            print("Update user selected.")
         elif choice == 6:  # Delete user
             # Implement the logic for deleting a user
             return self

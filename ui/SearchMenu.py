@@ -215,37 +215,32 @@ class SelectHotelMenu(Menu):
         print("2. Double Room")
         print("3. Family Room")
         print("4. Suite")
-        room_type_choice = input("Enter your choice (1-4): ")
+        room_type_choice = input("Enter your choice (1-4 / Enter): ")
 
         room_type_dict = {
             "1": "single room",
             "2": "double room",
             "3": "family room",
-            "4": "suite"
+            "4": "suite",
+            "": "all",
         }
 
-        room_type = room_type_dict.get(room_type_choice, None)
-        if room_type is None:
-            print("Invalid selection. Please try again.")
-            return self
+        room_type = room_type_dict.get(room_type_choice, "all")
+        if room_type == "all":
+            room_type = None
 
-        while True:
-            max_guests = input("Enter the maximum number of guests you want to search for: ")
-            if max_guests.isdigit() and 1 <= int(max_guests) <= 4:  # Assuming 10 as the maximum limit for guests
-                break
-            else:
-                print(
-                    "Invalid input. Maximum number of guests must be a positive integer and not exceed 4. Please try again.")
+        max_guests = input("Enter the maximum number of guests you want to search for or press Enter for all: ")
+        max_guests = int(max_guests) if max_guests.isdigit() and 1 <= int(max_guests) <= 4 else None
 
-        while True:
-            price = input("Enter the price per night you want to search for: ")
-            if price.isdigit() and int(price) > 0:
-                break
-            else:
-                print("Invalid input. Price per night must be a positive integer. Please try again.")
+        price = input("Enter the price per night you want to search for or press Enter for all: ")
+        price = int(price) if price.isdigit() and int(price) > 0 else None
 
-        start_date = self.get_start_date()  # Call get_start_date on self
-        end_date = self.get_end_date(start_date) if start_date else None  # Call get_end_date on self
+        start_date = self.get_start_date()
+        end_date = self.get_end_date(start_date) if start_date else None
+
+        # Check if all inputs are skipped
+        if not any([room_type, max_guests, price, start_date, end_date]):
+            return self.__display_all_rooms(hotel_id)
 
         query, rooms = self.__search_manager.get_desired_rooms_by_hotel_id(
             hotel_id, type=room_type, max_guests=max_guests,
@@ -257,9 +252,8 @@ class SelectHotelMenu(Menu):
         else:
             print("\nAvailable rooms:")
             for index, room in enumerate(rooms, start=1):
-                room = room[0]
                 hotel_name = self.__search_manager.get_hotel_name_by_id(room.hotel_id)
-                room_info = (f"{index}. \033[4m{self.__search_manager.get_hotel_name_by_id(room.hotel_id)}\033[0m\n"
+                room_info = (f"{index}. \033[4m{hotel_name}\033[0m\n"
                              f"    Room Number: {room.number}\n"
                              f"    Type: {room.type}\n"
                              f"    Max Guests: {room.max_guests}\n"
@@ -270,7 +264,7 @@ class SelectHotelMenu(Menu):
             try:
                 choice = int(input("Enter the number of the room you want to select: "))
                 if 1 <= choice <= len(rooms):
-                    selected_room = rooms[choice - 1][0]
+                    selected_room = rooms[choice - 1]
                     hotel_name = self.__search_manager.get_hotel_name_by_id(selected_room.hotel_id)
                     selected_room_info = (f"Hotel Name: \033[4m[{hotel_name}]\033[0m\n"
                                           f"Room Number: {selected_room.number}\n"
@@ -281,4 +275,4 @@ class SelectHotelMenu(Menu):
                     print("Invalid selection. Please try again.")
             except ValueError:
                 print("Invalid input. Please enter a valid number.")
-            return self
+        return self
