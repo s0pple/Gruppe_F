@@ -152,27 +152,24 @@ class SearchManager(BaseManager):
                                       price=None, start_date=None, end_date=None, description=None) -> List[Room]:
         query = select(Room)
 
+        # Add filters based on the provided criteria
         if hotel_id:
             query = query.where(Room.hotel_id == hotel_id)
 
         if number:
             query = query.where(Room.number == number)
-
         if type:
             query = query.where(Room.type == type)
-
         if max_guests:
             query = query.where(Room.max_guests == max_guests)
-
         if amenities:
             query = query.where(Room.amenities == amenities)
-
         if price:
             query = query.where(Room.price <= price)
-
         if description:
             query = query.where(Room.description == description)
 
+        # Filter by room availability within the given date range
         if start_date and end_date:
             br = aliased(Booking)
 

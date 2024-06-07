@@ -8,8 +8,8 @@ class SearchMenu(Menu):
 
     def __init__(self, main_menu: Menu):
         super().__init__("Search Hotel")
-        self.add_option(MenuOption("Search hotels with desired attributes "))  # option 1
-        self.add_option(MenuOption("Back"))  # option 2
+        self.add_option(MenuOption("Search hotels with desired attributes "))  # Option to search hotels
+        self.add_option(MenuOption("Back"))  # Option to go back to the main menu
 
         self.__main_menu = main_menu
         self.__search_manager = SearchManager()
@@ -33,6 +33,8 @@ class SearchMenu(Menu):
                 end_date = self.__validation_manager.input_end_date(start_date) #input("(optional) - Enter the end date: ")
             else:
                 end_date = None
+
+            # Perform the hotel search based on the provided criteria
             all_hotels = self.__search_manager.get_hotels_by_city_guests_star_availability(hotel_name, city, max_guests, star_rating,
                                                                                            start_date, end_date)
 
@@ -53,6 +55,7 @@ class SearchMenu(Menu):
                 if choice is not None:
                     choice_hotel_id = all_hotels[choice - 1].id
                     #print(f"You selected: {formatted_hotels[choice - 1]}")
+                    # Initialize SelectHotelMenu with the selected hotel ID
                     self.__select_hotel_menu = SelectHotelMenu(self.__main_menu, formatted_hotels, hotel_id=choice_hotel_id)
                 return self.__select_hotel_menu
 
@@ -67,7 +70,7 @@ class SearchMenu(Menu):
                     self.__search_by_name_city_guests_star_availability()
                 choice = int(choice)
                 if 1 <= choice <= len(formatted_hotels):
-                    return choice
+                    return choice # Return the user's choice if it is valid
                 else:
                     print("Invalid number. Please try again.")
             except ValueError:
@@ -81,14 +84,14 @@ class SearchMenu(Menu):
             hotel_info += f"Stars: {hotel.stars}\n"
             hotel_info += "-" * 90  # Separator for better readability
             hotels_info.append(hotel_info)
-        return hotels_info
+        return hotels_info # Return formatted hotel information for display
 
     def _navigate(self, choice: int):
         match choice:
             case 1:
                 return self.__search_by_name_city_guests_star_availability()
             case 2:
-                return self.__main_menu
+                return self.__main_menu # Navigate back to the main menu
 
     def __display_rooms(self):
         rooms = self.__search_manager.get_desired_rooms_by_hotel_id(self._hotel_id, start_date, end_date)
@@ -128,7 +131,7 @@ class SelectHotelMenu(Menu):
                 self.__display_all_rooms(self._hotel_id)
             return self
         elif choice == 5:
-            return self.__main_menu
+            return self.__main_menu # Navigate back to the main menu
         elif 1 <= choice <= len(self._options) - 3:
             self._hotel_id = self._options[choice - 1].value.id
             print(f"You selected: {self._options[choice - 1].text}")
@@ -222,12 +225,12 @@ class SelectHotelMenu(Menu):
             "2": "double room",
             "3": "family room",
             "4": "suite",
-            "": "all",
+            "": "all", # Default to 'all' if no choice is made
         }
 
         room_type = room_type_dict.get(room_type_choice, "all")
         if room_type == "all":
-            room_type = None
+            room_type = None # Treat 'all' as no specific room type
 
         max_guests = input("Enter the maximum number of guests you want to search for or press Enter for all: ")
         max_guests = int(max_guests) if max_guests.isdigit() and 1 <= int(max_guests) <= 4 else None
@@ -238,7 +241,7 @@ class SelectHotelMenu(Menu):
         start_date = self.get_start_date()
         end_date = self.get_end_date(start_date) if start_date else None
 
-        # Check if all inputs are skipped
+        # If all inputs are skipped, display all rooms
         if not any([room_type, max_guests, price, start_date, end_date]):
             return self.__display_all_rooms(hotel_id)
 
