@@ -54,8 +54,7 @@ class UserMenu(Menu):
                         username = Console.format_text("Login", "Enter E-Mail address: ")
                         password = Console.format_text("Login", "Enter Password: ")
 
-                        login_successful, role, user_id = self.__user_manager.login(username,
-                                                                                    password)  # get the user ID from the login method
+                        login_successful, role, user_id = self.__user_manager.login(username, password)
                         if login_successful:
                             Console.clear()
                             Console.format_text("You are now logged in.")
