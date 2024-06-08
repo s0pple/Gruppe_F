@@ -10,36 +10,50 @@ from ui.HotelMenu import HotelMenu
 
 
 class AdminMenu(Menu):
-    def __init__(self, main_menu: Menu, role: str):
+    def __init__(self, main_menu: Menu, role: str, user_id: int):
         super().__init__("Admin Menu")
-        self.add_option(MenuOption("Clients"))
-        self.add_option(MenuOption("Bookings"))
+        self.add_option(MenuOption("Search Bookings"))
+        self.add_option(MenuOption("Edit Bookings"))
+        self.add_option(MenuOption("Cancel Bookings"))
+        self.add_option(MenuOption("Adjust hotel information"))
         self.add_option(MenuOption("Update user"))
+        self.add_option(MenuOption("Delete user"))
         self.add_option(MenuOption("Logout"))
         self.__main_menu = main_menu
         self.__user_manager = UserManager()
-        self.__role = role  # store the role for further admin functionalities like edit_booking
-        self.__booking_manager = BookingManager()  # create an instance of Boo§kingManager
-        self.__hotel_manager = HotelManager()  # creates an instance of HotelManager
-        self.__hotel_menu = HotelMenu  #creates an instance of HotelMenu
+        self.__role = role
+        self.__booking_manager = BookingManager()
+        self.__hotel_manager = HotelManager()
+        self.__hotel_menu = HotelMenu
+        self.__user_id = user_id
+
     def _navigate(self, choice):
         if choice == 1:  # Show Bookings
-            self.list_bookings(self.__user_id)
+            print("#" * 30)
+            print("#" + "Show Bookings".center(28) + "#")
+            print("#" * 30)
+            user_id = input("Enter a user ID: ")
+            if user_id.isdigit():
+                self.__booking_manager.list_bookings(int(user_id))
+            else:
+                print("Invalid input. Please enter a valid number.")
             return self
         elif choice == 2:  # Edit Booking
-            # Implement the logic for editing a booking
+            booking_id = input("Enter the Guest_ID to see bookings: ")
+            self.__booking_manager.edit_booking(booking_id)
             return self
         elif choice == 3:  # Cancel Booking
-            # Implement the logic for canceling a booking
+            booking_id = input("Enter Booking ID to Cancel a Booking: ")
+            self.__booking_manager.delete_booking(booking_id)
             return self
-        elif choice == 4: # Adjust hotel information
-            # connection to HotelMenu and it's options
+        elif choice == 4:  # Adjust hotel information
+            self.__hotel_manager.edit_hotel()
             return self
-        elif choice == 5:  # Update user
-            # Indented block of code
-            print("Update user selected.")
+        elif choice == 5:
+            self.__user_manager.update_user(self.__role, self.__user_id, self)
+            return self
         elif choice == 6:  # Delete user
-            # Implement the logic for deleting a user
+            self.__user_manager.delete_user()
             return self
         elif choice == 7:  # Back
             return self.__main_menu

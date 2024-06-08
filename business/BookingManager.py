@@ -109,12 +109,12 @@ class BookingManager(BaseManager):
                 print("Invalid choice. Please try again.")
 
         fields_to_update = [
-            ('room_number', 'Enter new Room Number (press enter to skip): '),
+            ('room_number', 'Enter new Room Number (press enter to skip): ', lambda x: x),  # Added lambda function
             ('number_of_guests', 'Enter new Number of Guests (press enter to skip): ',
              self.validation_manager.input_max_guests),
             ('start_date', 'Enter new Start Date (press enter to skip): ', self.validation_manager.input_start_date),
             ('end_date', 'Enter new End Date (press enter to skip): ', self.validation_manager.input_end_date),
-            ('comment', 'Enter new Comment (press enter to skip): ')
+            ('comment', 'Enter new Comment (press enter to skip): ', lambda x: x)
         ]
 
         for field, prompt, validation_func in fields_to_update:
