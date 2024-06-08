@@ -1,4 +1,4 @@
-from console.console_base import Menu, MenuOption
+from console.console_base import Menu, MenuOption, Console
 from data_models.models import Booking, Hotel
 from business.UserManager import UserManager  # import UserManager
 from datetime import datetime
@@ -29,10 +29,7 @@ class AdminMenu(Menu):
 
     def _navigate(self, choice):
         if choice == 1:  # Show Bookings
-            print("#" * 30)
-            print("#" + "Show Bookings".center(28) + "#")
-            print("#" * 30)
-            user_id = input("Enter a user ID: ")
+            user_id = Console.format_text("Show Bookings", "Enter a user ID: ")
             if user_id.isdigit():
                 self.__booking_manager.list_bookings(int(user_id))
             else:

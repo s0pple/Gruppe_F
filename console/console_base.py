@@ -12,6 +12,20 @@ class Console(object):
     def clear():
         os.system('cls' if os.name == 'nt' else 'clear')
 
+    @staticmethod
+    def format_text(title, prompt=None, width=90):
+        left = "# "
+        right = " #"
+        print("#" * width)
+        space = " " * (width - len(left) - len(title) - len(right))
+        print(f"{left}{title}{space}{right}")
+        if prompt:
+            space = " " * (width - len(left) - len(prompt) - len(right))
+            print(f"{left}{prompt}{space}{right}")
+        print("#" * width)
+        if prompt:
+            return input()
+
 
 class Application(object):
 
