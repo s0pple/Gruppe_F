@@ -230,7 +230,7 @@ class SelectHotelMenu(Menu):
 
         room_type = room_type_dict.get(room_type_choice, "all")
         if room_type == "all":
-            room_type = None # Treat 'all' as no specific room type
+            room_type = None  # Treat 'all' as no specific room type
 
         max_guests = input("Enter the maximum number of guests you want to search for or press Enter for all: ")
         max_guests = int(max_guests) if max_guests.isdigit() and 1 <= int(max_guests) <= 4 else None
@@ -255,14 +255,16 @@ class SelectHotelMenu(Menu):
         else:
             print("\nAvailable rooms:")
             for index, room in enumerate(rooms, start=1):
-                hotel_name = self.__search_manager.get_hotel_name_by_id(room.hotel_id)
-                room_info = (f"{index}. \033[4m{hotel_name}\033[0m\n"
-                             f"    Room Number: {room.number}\n"
-                             f"    Type: {room.type}\n"
-                             f"    Max Guests: {room.max_guests}\n"
-                             f"    Price per Night: {room.price}\n")
-                print(room_info)
-                print("-" * 80)
+                try:
+                    hotel_name = self.__search_manager.get_hotel_name_by_id(room.hotel_id)
+                    room_info = (f"{index}. \033[4m{hotel_name}\033[0m\n"
+                                 f"    Room Number: {room.number}\n"
+                                 f"    Type: {room.type}\n"
+                                 f"    Price per Night: {room.price}\n")
+                    print(room_info)
+                    print("-" * 80)
+                except AttributeError as e:
+                    print(f"Error: {e}. Room attributes: {room._mapping}")
 
             try:
                 choice = int(input("Enter the number of the room you want to select: "))

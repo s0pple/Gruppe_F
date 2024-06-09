@@ -145,12 +145,15 @@ class SearchManager(BaseManager):
     def get_all_rooms_by_hotel_id(self, hotel_id):
         query = select(Room).where(Room.hotel_id == hotel_id)
         result = self._session.execute(query)
-        all_rooms = result.fetchall()
+        all_rooms = result.scalars().all()
         return all_rooms
 
     def get_desired_rooms_by_hotel_id(self, hotel_id=None, number=None, type=None, max_guests=None, amenities=None,
                                       price=None, start_date=None, end_date=None, description=None) -> List[Room]:
         query = select(Room)
+
+        if not any([hotel_id, number, type, max_guests, amenities, price, start_date, end_date, description]):
+            return self.get_all_rooms_by_hotel_id(hotel_id)
 
         # Add filters based on the provided criteria
         if hotel_id:
