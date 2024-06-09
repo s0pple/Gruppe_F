@@ -1,5 +1,5 @@
 # ui/MainMenu.py
-from console.console_base import Menu, MenuOption
+from console.console_base import Menu, MenuOption, Console
 from ui.SearchMenu import SearchMenu, SelectHotelMenu
 from ui.UserMenu import UserMenu
 from ui.AdminMenu import AdminMenu
@@ -25,6 +25,7 @@ class MainMenu(Menu):
                 return self._search_menu
             # TODO: Add further navigation options according to the added MenuOptions in the constructor.
             case 2:
+                Console.clear()
                 return self._user_menu
             case 3:
                 return None

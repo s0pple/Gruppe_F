@@ -2,6 +2,7 @@ import os
 from sqlalchemy import select, func, text, create_engine, or_, and_
 from sqlalchemy.orm import sessionmaker, aliased
 from business.BaseManager import BaseManager
+from console.console_base import Console
 from data_models.models import *
 
 
@@ -26,7 +27,7 @@ class HotelManager(BaseManager):
         print("Address has been added to the database. Address ID is", address.id)
 
         # Add new hotels with the addresses
-        hotels = Hotel(name=str(input("Hotelname:")),
+        hotels = Hotel(name=str(Console.format_text("Add Hotel", "Hotelname:")),
                        stars=int(input("Rating:")),
                        address_id=address.id)
         self._session.add(hotels)
@@ -73,7 +74,8 @@ class HotelManager(BaseManager):
         print("Adjusting room details. Press enter to skip.")
         room.number = int(input(f"Enter new room number (current: {room.number}): ")) or room.number
         room.type = str(input(f"Enter new room type (current: {room.type}): ")) or room.type
-        room.max_guests = int(input(f"Enter new maximum number of guests (current: {room.max_guests}): ")) or room.max_guests
+        room.max_guests = int(
+            input(f"Enter new maximum number of guests (current: {room.max_guests}): ")) or room.max_guests
         room.description = str(input(f"Enter new description (current: {room.description}): ")) or room.description
         room.amenities = str(input(f"Enter new amenities (current: {room.amenities}): ")) or room.amenities
         room.price = float(input(f"Enter new room price (current: {room.price}): ")) or room.price
@@ -120,7 +122,7 @@ class HotelManager(BaseManager):
                 if room_number == 'done':
                     break
                 #elif room_number == 'add':
-                 #   add_room_to_hotel(hotel.id, Room)
+                #   add_room_to_hotel(hotel.id, Room)
                 else:
                     room = self._session.query(Room).filter_by(hotel_id=hotel.id, number=room_number).first()
                     if not room:

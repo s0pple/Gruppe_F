@@ -5,7 +5,7 @@ from datetime import datetime
 from business.BookingManager import BookingManager
 from business.BookingManager import BookingManager
 from business.HotelManager import HotelManager
-from ui.LoggedInMenu import LoggedInMenu
+from ui.RegisteredUserMenu import LoggedInMenu
 from ui.HotelMenu import HotelMenu
 
 

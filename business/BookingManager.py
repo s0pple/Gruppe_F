@@ -4,6 +4,8 @@ from sqlalchemy.orm import sessionmaker
 from business.BaseManager import BaseManager
 import pathlib
 from datetime import datetime
+
+from console.console_base import Console
 from data_models.models import *
 from business.ValidationManager import ValidationManager
 from business.SearchManager import SearchManager
@@ -27,26 +29,26 @@ class BookingManager(BaseManager):
         session = self.get_session()
         bookings = session.query(Booking).filter(Booking.guest_id == guest_id).all()
         if not bookings:
-            print(f"No bookings found for guest_id {guest_id}")
+            Console.format_text("No bookings found", f"For guest_id {guest_id}")
             return []
 
-        print(f"Bookings for guest_id {guest_id}:")
+        Console.format_text("Bookings for guest_id", f"{guest_id}:")
         for i, booking in enumerate(bookings, start=1):
-            print(
+            Console.format_text(
                 f"{i}. ID: {booking.id}, Room Number: {booking.room_number}, Start Date: {booking.start_date}, End Date: {booking.end_date}")
 
         while True:
-            print_choice = input("Do you want to print a booking? (yes/no) ").lower()
+            print_choice = Console.format_text("Do you want to print a booking?", "(yes/no)").lower()
             if print_choice in ['yes', 'no']:
                 break
             else:
-                print("Invalid input. Please enter 'yes' or 'no'.")
+                Console.format_text("Invalid input", "Please enter 'yes' or 'no'.")
 
         if print_choice == 'yes':
             if len(bookings) == 1:
                 booking_id = bookings[0].id
             else:
-                booking_id = input("Enter the number of the booking you want to print: ")
+                booking_id = Console.format_text("Enter the number of the booking", "you want to print: ")
             self.print_booking(booking_id, "booking.txt")  # replace "booking.txt" with your desired filename
 
         return bookings

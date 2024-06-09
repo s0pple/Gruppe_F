@@ -1,14 +1,11 @@
 # ui/UserMenu.py
-import os
-
 from business.UserManager import UserManager
 from business.ValidationManager import ValidationManager
 from console.console_base import Menu, MenuOption, Console
 from sqlalchemy.orm import Session
-
 from data_models.models import Guest
 from ui.AdminMenu import AdminMenu
-from ui.LoggedInMenu import LoggedInMenu
+from ui.RegisteredUserMenu import LoggedInMenu
 
 
 class UserMenu(Menu):
@@ -42,8 +39,8 @@ class UserMenu(Menu):
                             else:
                                 self.__validation_manager.create_password(username)
 
-                                firstname, lastname, emailaddress, city, zip, street = self.__validation_manager.create_userinfo(
-                                    username)
+                                firstname, lastname, emailaddress, city, zip, street = (
+                                    self.__validation_manager.create_userinfo(username))
                                 self.__user_manager.create_user_information(firstname, lastname, emailaddress, city,
                                                                             zip, street)
                                 Console.format_text("you have been successfully registered")
