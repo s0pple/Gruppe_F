@@ -14,15 +14,15 @@ class Console(object):
 
     @staticmethod
     def format_text(title, prompt=None, width=90):
-        left = "# "
-        right = " #"
-        print("#" * width)
+        left = "* "
+        right = " *"
+        print("*" * width)
         space = " " * (width - len(left) - len(title) - len(right))
         print(f"{left}{title}{space}{right}")
         if prompt:
             space = " " * (width - len(left) - len(prompt) - len(right))
             print(f"{left}{prompt}{space}{right}")
-        print("#" * width)
+        print("*" * width)
         if prompt:
             return input()
 
@@ -71,17 +71,17 @@ class Menu(Console):
         self._options.remove(option)
 
     def _show(self):
-        print("#" * self._width)
-        left = "# "
-        right = "#"
+        print("*" * self._width)
+        left = "*"
+        right = "*"
         space = " " * (self._width - len(left) - len(self._title) - len(right))
         print(f"{left}{self._title}{space}{right}")
-        print("#" * self._width)
+        print("*" * self._width)
         for i, option in enumerate(self, 1):
             index = f"{i}: "
             space = " " * (self._width - len(left) - len(index) - len(option) - len(right))
             print(f"{left}{index}{option}{space}{right}")
-        print("#" * self._width)
+        print("*" * self._width)
 
     def _make_choice(self) -> int:
         choice = input("Enter Option: ")
