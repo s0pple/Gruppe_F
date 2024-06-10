@@ -44,11 +44,16 @@ class UserManager:
         self._session.add(guest)
         self._session.commit()
 
-    def login(self, username: str, password: str):
+    def login(self, username: str, password: str, main_menu):
         user = self._session.query(Login).filter_by(username=username, password=password).first()
         if user:
             role = 'admin' if user.role_id == 1 else 'user'
-            return True, role, user.id  # return the user ID along with the role
+            if role == 'admin':
+                from ui.AdminMenu import AdminMenu  # lazy import AdminMenu
+                return True, AdminMenu(main_menu, role, user.id), role
+            else:
+                from ui.RegisteredUserMenu import RegisteredUserMenu  # lazy import RegisteredUserMenu
+                return True, RegisteredUserMenu(main_menu, role, username, user.id), role
         else:
             return False, None, None
 

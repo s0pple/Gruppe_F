@@ -4,7 +4,7 @@ from business.UserManager import UserManager
 from business.BookingManager import BookingManager
 
 
-class LoggedInMenu(Menu):
+class RegisteredUserMenu(Menu):
     def __init__(self, main_menu: Menu, role: str, username: str, user_id: int):
         super().__init__("Logged In Menu")
         self.add_option(MenuOption("Show Bookings"))  # option 1

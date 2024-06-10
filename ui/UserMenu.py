@@ -5,7 +5,7 @@ from console.console_base import Menu, MenuOption, Console
 from sqlalchemy.orm import Session
 from data_models.models import Guest
 from ui.AdminMenu import AdminMenu
-from ui.RegisteredUserMenu import LoggedInMenu
+from ui.RegisteredUserMenu import RegisteredUserMenu
 
 
 class UserMenu(Menu):
@@ -51,14 +51,12 @@ class UserMenu(Menu):
                         username = Console.format_text("Login", "Enter E-Mail address: ")
                         password = Console.format_text("Login", "Enter Password: ")
 
-                        login_successful, role, user_id = self.__user_manager.login(username, password)
+                        login_successful, menu_instance, role = self.__user_manager.login(username, password,
+                                                                                          self.__main_menu)
                         if login_successful:
                             Console.clear()
                             Console.format_text("You are now logged in.")
-                            if role == 'admin':
-                                return AdminMenu(self.__main_menu, role, user_id)  # pass the user ID to AdminMenu
-                            return LoggedInMenu(self.__main_menu, role, username,
-                                                user_id)  # pass the user ID to LoggedInMenu
+                            return menu_instance  # return the appropriate menu instance
                         else:
                             Console.format_text("Login failed. Please try again.")
 
