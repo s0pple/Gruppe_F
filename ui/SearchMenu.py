@@ -157,10 +157,10 @@ class SelectHotelMenu(Menu):
                 print("-" * 80)
 
             try:
-                choice = int(input("Enter the number of the room you want to select: "))
+                choice = int(input("Enter the number you want to select: "))
                 if 1 <= choice <= len(rooms):
                     selected_room = rooms[choice - 1][0]
-                    print(f"You selected room number: {selected_room.number}")
+                    print(f"You selected: room number: {selected_room.number}")
                 else:
                     print("Invalid selection. Please try again.")
             except ValueError:
@@ -256,28 +256,23 @@ class SelectHotelMenu(Menu):
             print("\nAvailable rooms:")
             for index, room in enumerate(rooms, start=1):
                 try:
-                    hotel_name = self.__search_manager.get_hotel_name_by_id(room.hotel_id)
+                    hotel_name = self.__search_manager.get_hotel_name_by_id(room.Room.hotel_id)
                     room_info = (f"{index}. \033[4m{hotel_name}\033[0m\n"
-                                 f"    Room Number: {room.number}\n"
-                                 f"    Type: {room.type}\n"
-                                 f"    Price per Night: {room.price}\n")
+                                 f"    Room Number: {room.Room.number}\n"
+                                 f"    Type: {room.Room.type}\n"
+                                 f"    Price per Night: {room.Room.price}\n")
                     print(room_info)
                     print("-" * 80)
                 except AttributeError as e:
                     print(f"Error: {e}. Room attributes: {room._mapping}")
 
             try:
-                choice = int(input("Enter the number of the room you want to select: "))
+                choice = int(input("Enter the number you want to select: "))
                 if 1 <= choice <= len(rooms):
-                    selected_room = rooms[choice - 1]
-                    hotel_name = self.__search_manager.get_hotel_name_by_id(selected_room.hotel_id)
-                    selected_room_info = (f"Hotel Name: \033[4m[{hotel_name}]\033[0m\n"
-                                          f"Room Number: {selected_room.number}\n"
-                                          f"Type: {selected_room.type}\n"
-                                          f"Price per Night: {selected_room.price}")
-                    print(selected_room_info)
+                    selected_room = rooms[choice - 1].Room
+                    print(f"You selected: room number: {selected_room.number}")
                 else:
                     print("Invalid selection. Please try again.")
             except ValueError:
                 print("Invalid input. Please enter a valid number.")
-        return self
+            return self
