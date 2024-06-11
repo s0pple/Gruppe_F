@@ -30,6 +30,8 @@ This project has been a collaborative effort, reflecting the contributions and t
 - 3 Admin: 3.2 As an admin user of the booking system, I want to see all bookings of all hotels to get an overview.
 - 3 Admin: 3.3 I want to edit all bookings to add missing information (e.g., phone number)
 - UI / Menus & Submenus creation
+- Contributed to UserMenu, AdminMenu, RegisteredUserMenu, UserManager, BookingManager, Validation Manager, UI Implementation
+- Modelled the AdminMenu and Registered User Menu
 
 ### Nydegger Patrick
 - Registering GitHub Premium & integrating with PyCharm
@@ -51,6 +53,7 @@ This project has been a collaborative effort, reflecting the contributions and t
 - Setting up Kanban
 - 3 Admin: 3.1 As an admin user of the booking system, I want to be able to maintain hotel information to keep the system up-to-date. (with Michael Schüpbach)
 - GUI as a PPTX file
+- Modelled the AdminMenu and Registered User Menu 
 
 ## Using the Application
 

@@ -51,6 +51,9 @@ class UserMenu(Menu):
                         username = Console.format_text("Login", "Enter E-Mail address: ")
                         password = Console.format_text("Login", "Enter Password: ")
 
+                        if username != 'admin':
+                            username = self.__validation_manager.is_valid_email(username)
+
                         login_successful, menu_instance, role = self.__user_manager.login(username, password,
                                                                                           self.__main_menu)
                         if login_successful:

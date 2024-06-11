@@ -150,17 +150,16 @@ class ValidationManager:
                     print("Passwords are not identical, please enter them again")
             input("Press enter to continue...")
 
-    def is_valid_email(self):
+    def is_valid_email(self, mail: str):
         while True:
-            emailaddress = str(input("Please enter E-Mail address: ")).strip().lower()
-            if "@" in emailaddress and "." in emailaddress:
-                at_index = emailaddress.index("@")
-                dot_index = emailaddress.rindex(".")
+            if "@" in mail and "." in mail:
+                at_index = mail.index("@")
+                dot_index = mail.rindex(".")
                 if at_index < dot_index:
-                    return emailaddress
-            else:
-                print("Invalid E-Mail address")
-                continue
+                    return mail
+                else:
+                    print("Invalid E-Mail address")
+                    mail = str(input("Please enter E-Mail address again: ")).strip().lower()
 
     def input_text(self, prompt: str):
         while True:

@@ -23,8 +23,10 @@ class Console(object):
             space = " " * (width - len(left) - len(prompt) - len(right))
             print(f"{left}{prompt}{space}{right}")
         print("*" * width)
+        user_input = None
         if prompt:
-            return input()
+            user_input = input()
+        return user_input
 
 
 class Application(object):

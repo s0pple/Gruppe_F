@@ -1,7 +1,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import os
+from console.console_base import Console
 from data_models.models import Login, Guest, Booking, Address
+
 
 
 class UserManager:
@@ -59,7 +61,7 @@ class UserManager:
 
     def update_user(self, role: str, user_id=None, menu_instance=None):
         if role == 'admin' and user_id is None:
-            user_id = input("Enter the user ID you want to update: ")
+            user_id = input(Console.format_text("Update User", "Enter the user ID you want to update: "))
 
         user_login = self._session.query(Login).filter_by(id=user_id).first()
         user_guest = self._session.query(Guest).filter_by(id=user_id).first()
@@ -73,8 +75,7 @@ class UserManager:
             ]
 
             for field, prompt in fields_to_update:
-                print(prompt)
-                new_value = input()
+                new_value = Console.format_text("Update User", prompt)
                 if new_value:  # if the user entered a value
                     if field in ['username', 'password']:
                         setattr(user_login, field, new_value)
@@ -84,15 +85,15 @@ class UserManager:
                         setattr(user_guest, field, new_value)
 
             self._session.commit()
-            print(f"User {user_login.username} has been updated.")
+            Console.format_text(f"User {user_login.username} has been updated.")
         else:
-            print("User not found.")
+            Console.format_text("User not found.")
 
         return menu_instance
 
     def delete_user(self):
-        username = input("Enter your username: ")
-        password = input("Enter your password: ")
+        username = Console.format_text("Delete User", "Enter your username: ")
+        password = Console.format_text("Delete User", "Enter your password: ")
         login_successful, _ = self.login(username, password)
 
         # If the login is successful, delete the user
@@ -119,8 +120,8 @@ class UserManager:
                 self._session.delete(user_login)
 
                 self._session.commit()
-                print(f"User {username} has been deleted.")
+                Console.format_text(f"User {username} has been deleted.")
             else:
-                print("User not found.")
+                Console.format_text("User not found.")
         else:
-            print("Login failed. Please try again.")
+            Console.format_text("Login failed. Please try again.")

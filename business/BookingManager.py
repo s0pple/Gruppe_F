@@ -4,7 +4,6 @@ from sqlalchemy.orm import sessionmaker
 from business.BaseManager import BaseManager
 import pathlib
 from datetime import datetime
-
 from console.console_base import Console
 from data_models.models import *
 from business.ValidationManager import ValidationManager
@@ -29,13 +28,13 @@ class BookingManager(BaseManager):
         session = self.get_session()
         bookings = session.query(Booking).filter(Booking.guest_id == guest_id).all()
         if not bookings:
-            Console.format_text("No bookings found", f"For guest_id {guest_id}")
+            Console.format_text("No bookings found for guest_id {guest_id}")
             return []
 
-        Console.format_text("Bookings for guest_id", f"{guest_id}:")
+        Console.format_text(f"Bookings for {guest_id}:", )
         for i, booking in enumerate(bookings, start=1):
-            Console.format_text(
-                f"{i}. ID: {booking.id}, Room Number: {booking.room_number}, Start Date: {booking.start_date}, End Date: {booking.end_date}")
+            Console.format_text(f"{i}. ID: {booking.id}, Room Number: {booking.room_number},"
+                                f" Start Date: {booking.start_date}, End Date: {booking.end_date}")
 
         while True:
             print_choice = Console.format_text("Do you want to print a booking?", "(yes/no)").lower()
@@ -45,6 +44,13 @@ class BookingManager(BaseManager):
                 Console.format_text("Invalid input", "Please enter 'yes' or 'no'.")
 
         if print_choice == 'yes':
+            Console.clear()
+            # Print all bookings again before asking for the booking number
+            Console.format_text("Bookings for guest_id", f"{guest_id}:")
+            for i, booking in enumerate(bookings, start=1):
+                Console.format_text(
+                    f"{i}. ID: {booking.id}, Room Number: {booking.room_number}, Start Date: {booking.start_date}, End Date: {booking.end_date}")
+
             if len(bookings) == 1:
                 booking_id = bookings[0].id
             else:
@@ -57,15 +63,14 @@ class BookingManager(BaseManager):
         session = self.get_session()
         booking = session.query(Booking).filter(Booking.id == booking_id).first()
         if not booking:
-            print(f"No booking found with ID {booking_id}")
+            Console.format_text(f"No booking found with ID {booking_id}")
             return
 
-        # Get the path to the user's Downloads directory
         downloads_path = os.path.join(pathlib.Path.home(), "Downloads")
-        file_path = os.path.join(downloads_path, file_name)
+        file_path = os.path.join(downloads_path, file_name)  # Get the path to the user's Downloads directory
 
         with open(file_path, 'w') as file:
-            file.write(f"ID: {booking.id}\n")
+            file.write(f"Booking ID: {booking.id}\n")
             file.write(f"Room Hotel ID: {booking.room_hotel_id}\n")
             file.write(f"Room Number: {booking.room_number}\n")
             file.write(f"Guest ID: {booking.guest_id}\n")
@@ -73,7 +78,8 @@ class BookingManager(BaseManager):
             file.write(f"Start Date: {booking.start_date}\n")
             file.write(f"End Date: {booking.end_date}\n")
             file.write(f"Comment: {booking.comment}\n")
-        print(f"Booking with ID {booking_id} has been saved to {file_path}")
+        Console.clear()
+        Console.format_text(f"Booking with ID {booking_id} has been saved to {file_path}")
 
     def get_bookings(self, start_date: datetime = None, end_date: datetime = None, hotel_name: str = None,
                      booking_id: int = None):
@@ -92,7 +98,7 @@ class BookingManager(BaseManager):
             results = query.order_by(Hotel.name).all()
             return results
 
-    def edit_booking(self, user_id):
+    def edit_booking(self, user_id, role):
         session = self.get_session()
         bookings = session.query(Booking).filter(Booking.guest_id == user_id).all()
         if not bookings:
@@ -111,13 +117,15 @@ class BookingManager(BaseManager):
                 print("Invalid choice. Please try again.")
 
         fields_to_update = [
-            ('room_number', 'Enter new Room Number (press enter to skip): ', lambda x: x),
             ('number_of_guests', 'Enter new Number of Guests (press enter to skip): ',
              self.validation_manager.input_max_guests),
             ('start_date', 'Enter new Start Date (press enter to skip): ', self.validation_manager.input_start_date),
             ('end_date', 'Enter new End Date (press enter to skip): ', self.validation_manager.input_end_date),
             ('comment', 'Enter new Comment (press enter to skip): ', lambda x: x)
         ]
+
+        if role == 'admin':
+            fields_to_update.insert(0, ('room_number', 'Enter new Room Number (press enter to skip): ', lambda x: x))
 
         for field, prompt, validation_func in fields_to_update:
             print(prompt)

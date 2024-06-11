@@ -27,7 +27,7 @@ class RegisteredUserMenu(Menu):
             self.__booking_manager.list_bookings(self.__user_id)
             return self
         elif choice == 2:  # Edit Booking
-            self.__booking_manager.edit_booking(self.__user_id)
+            self.__booking_manager.edit_booking(self.__user_id, self.__role)
             return self
         elif choice == 3:  # Cancel Booking
             self.__booking_manager.delete_booking(self.__user_id)
