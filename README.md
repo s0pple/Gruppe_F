@@ -17,10 +17,13 @@ This project has been a collaborative effort, reflecting the contributions and t
 ### Gwerder Oliver
 - Initializing GitHub repository
 - Registering GitHub Premium & integrating with PyCharm
+- Initializing and maintaining the database
 - Updating the structure -> to the UE3 Classroom (scalability)
 - 1 Guest User: 1.1 As a guest user, I want to search available hotels so that I can choose the one that meets my preferences. (with Patrick Nydegger)
 - 1 Guest User: 1.2 As a guest user, I want to see details of different room types (single, double, family rooms) available in a hotel, including the maximum number of guests, description, price, and amenities, so that I can make an informed decision.
 - UI / Menus & Submenus creation
+- Creation of entity relationship diagram (ERD)
+- Constructing the class diagram
 - Creating the README.md file
 
 ### Haag Robin

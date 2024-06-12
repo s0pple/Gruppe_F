@@ -123,38 +123,10 @@ class Room(Base):
     description: Mapped[str] = mapped_column("description", nullable=True)
     amenities: Mapped[str] = mapped_column("amenities", nullable=True)
     price: Mapped[float] = mapped_column("price")
-#     available: Mapped[bool] = mapped_column("available", default=True)  # Ensure this line exists
-#     availability = relationship(
-#         "RoomAvailability",
-#         back_populates="room",
-#         foreign_keys="[RoomAvailability.room_hotel_id, RoomAvailability.room_number]"
-#     )
-#
+
     def __repr__(self) -> str:
         return f"Room(hotel_id={self.hotel_id!r}, number={self.number!r}, type={self.type!r}, max_guests={self.max_guests!r}, description={self.description!r}, amenities={self.amenities!r}, price={self.price!r})"
-# available={self.available!r} - (add if it still not works, my previous version)
-#
-# class RoomAvailability(Base):
-#     __tablename__ = "room_availability"
-#     room_hotel_id: Mapped[int] = mapped_column("room_hotel_id", ForeignKey("room.hotel_id"), primary_key=True)
-#     room_number: Mapped[str] = mapped_column("room_number", ForeignKey("room.number"), primary_key=True)
-#     date: Mapped[date] = mapped_column("date", primary_key=True)
-#     available: Mapped[bool] = mapped_column("available", default=True)
-#     room = relationship(
-#         "Room",
-#         back_populates="availability",
-#         foreign_keys="[RoomAvailability.room_hotel_id, RoomAvailability.room_number]"
-#     )
-#
-#     __table_args__ = (
-#         ForeignKeyConstraint(
-#             ['room_hotel_id', 'room_number'],
-#             ['room.hotel_id', 'room.number'],
-#         ),
-#     )
-#
-#     def __repr__(self) -> str:
-#         return f"RoomAvailability(room_hotel_id={self.room_hotel_id!r}, room_number={self.room_number!r}, date={self.date!r}, available={self.available!r})"
+
 
 class Booking(Base):
     '''
