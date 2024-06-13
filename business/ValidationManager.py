@@ -42,7 +42,7 @@ class ValidationManager:
 
     def input_max_guests(self):
         while True:
-            input_value = input("\033[4mNumber of guests       :\033[0m    ").strip()
+            input_value = input("Number of guests       :").strip()
             if input_value == "":
                 return None
             try:
@@ -57,7 +57,7 @@ class ValidationManager:
     def input_star_rating(self):
         while True:
             try:
-                input_value = input("\033[4mStar rating(1-5)       :\033[0m    ").strip()
+                input_value = input("Star rating(1-5)       :").strip()
                 if input_value == "":
                     return None
                 stars = int(input_value)
@@ -73,7 +73,7 @@ class ValidationManager:
 
     def input_start_date(self):
         while True:
-            start_date = input("\033[4mStart date (dd.mm.yyyy):\033[0m    ")
+            start_date = input("Start date (dd.mm.yyyy):")
             if not start_date:
                 return None  # If the input is optional and user does not enter anything, return None
 
@@ -98,7 +98,7 @@ class ValidationManager:
             print("Start date is needed to compare with the end date.")
             return None
         while True:
-            end_date = input("\033[4mEnd date (dd.mm.yyyy)  :\033[0m    ")
+            end_date = input("End date (dd.mm.yyyy)  :")
             if not end_date:
                 print("End date is needed. ")
                 continue

@@ -26,8 +26,12 @@ class SearchMenu(Menu):
     def __search_by_name_city_guests_star_availability(self):
         while True:
             print("Enter the attributes you want to search with, or skip to show all hotels ")
-            hotel_name = input("\033[4mName of hotel          :\033[0m    ")
-            city = input("\033[4mCity                   :\033[0m    ")
+
+            #Incorrect user entries are included based on the SQL statements
+            hotel_name = input("Name of hotel          :")
+            city = input("City                   :")
+
+            #input in the validation manager so that it can be easily accessed,
             max_guests = self.__validation_manager.input_max_guests()
             star_rating = self.__validation_manager.input_star_rating()
             start_date = self.__validation_manager.input_start_date()
@@ -36,8 +40,8 @@ class SearchMenu(Menu):
                     start_date)  # input("(optional) - Enter the end date: ")
             else:
                 end_date = None
-
-            # Perform the hotel search based on the provided criteria
+            Console.clear()
+            # Perform the hotel search and selection based on the provided criteria
             choice_hotel_id = self.__search_manager.get_hotels_by_city_guests_star_availability(hotel_name, city,
                                                                                                 max_guests, star_rating,
                                                                                                 start_date, end_date)
@@ -56,6 +60,7 @@ class SearchMenu(Menu):
                 self.__user_manager.create_guest_user()
                 return self.__search_by_name_city_guests_star_availability()
             case 2:
+                Console.clear()
                 return self.__main_menu  # Navigate back to the main menu
 
 

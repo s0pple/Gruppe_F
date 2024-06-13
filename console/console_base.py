@@ -13,7 +13,7 @@ class Console(object):
         os.system('cls' if os.name == 'nt' else 'clear')
 
     @staticmethod
-    def format_text(title, prompt=None, width=90):
+    def format_text(title, prompt=None, width=60):
         left = "* "
         right = " *"
         print("*" * width)
