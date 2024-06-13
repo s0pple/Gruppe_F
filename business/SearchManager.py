@@ -84,7 +84,9 @@ class SearchManager(BaseManager):
     def get_hotels_by_city_guests_star_availability(self, hotel_name=None, city=None, max_guests=None, star_rating=None,
                                                     start_date=None,
                                                     end_date=None) -> List[Hotel]:
-        query = select(Hotel)
+
+
+        query = select(Hotel).distinct().select_from(Hotel)
         if hotel_name:
             query = query.where(Hotel.name.ilike(f"%{hotel_name}%"))
         if city:
@@ -126,11 +128,39 @@ class SearchManager(BaseManager):
                 )
             ).where(booking_subquery.c.room_hotel_id == None).group_by(Hotel.id)
 
-        result = self._session.execute(query)
-        # all_hotels = result.fetchall()
-        # return all_hotels
+        query = query.distinct(Hotel.id)
 
-        return self.select_all(query)  # , all_hotels
+        result = self._session.execute(query)
+        hotels = result.scalars().all()
+        # return all_hotels
+        print(hotels)
+
+        Console.format_text("Available Hotels:")
+        seen_hotel_names = set()  # Verwende ein Set, um bereits gesehene Hotelnamen zu speichern
+        for i, hotel in enumerate(hotels, start=1):
+            if hotel.name not in seen_hotel_names:
+                Console.format_text(f"{i} \033[4m{hotel.name}\033[0m\n"
+                                    f"Address: {hotel.address.street}, {hotel.address.zip} {hotel.address.city}\n"
+                                    f"Stars: {hotel.stars}")
+                seen_hotel_names.add(hotel.name)
+
+        while True:
+            try:
+                choice = input("Enter the number of your choice, or 'x' to go back: ")
+                if choice.lower() == 'x':
+                    break
+                choice = int(choice)
+                if 1 <= choice <= len(hotels):
+                    return choice  # Return the user's choice if it is valid
+                else:
+                    print("Invalid number. Please try again.")
+            except ValueError:
+                print("Invalid input. Please enter a number.")
+
+        if choice is not None:
+            print(f"You selected: {hotels[choice - 1]}")
+            choice_hotel_id = hotels[choice - 1].id
+            return choice_hotel_id
 
     # 1.1.5. Ich möchte die folgenden Informationen pro Hotel sehen: Name, Adresse, Anzahl der Sterne.
     # def display_hotel_info(self):

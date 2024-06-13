@@ -27,14 +27,10 @@ class SearchMenu(Menu):
         while True:
             print("Enter the attributes you want to search with, or skip to show all hotels ")
             hotel_name = input("\033[4mName of hotel          :\033[0m    ")
-            #hotelname= input("(optional) - Enter the name of the Hotel: ")
             city = input("\033[4mCity                   :\033[0m    ")
-            # max_guests = input("(optional) - Enter number of guests you want to search hotels for: ")
             max_guests = self.__validation_manager.input_max_guests()
-            # star_rating = input("(optional) - Enter the star rating you want to search hotels for: ")
             star_rating = self.__validation_manager.input_star_rating()
-            # start_date, end_date = self.get_start_and_end_dates()
-            start_date = self.__validation_manager.input_start_date()  #input("(optional) - Enter the start date: ")
+            start_date = self.__validation_manager.input_start_date()
             if start_date is not None:
                 end_date = self.__validation_manager.input_end_date(
                     start_date)  #input("(optional) - Enter the end date: ")
@@ -42,58 +38,17 @@ class SearchMenu(Menu):
                 end_date = None
 
             # Perform the hotel search based on the provided criteria
-            all_hotels = self.__search_manager.get_hotels_by_city_guests_star_availability(hotel_name, city, max_guests,
+            choice_hotel_id = self.__search_manager.get_hotels_by_city_guests_star_availability(hotel_name, city, max_guests,
                                                                                            star_rating,
                                                                                            start_date, end_date)
 
-            if not all_hotels:
+            if not choice_hotel_id:
                 print("No hotels with these conditions were found")
                 input("Press Enter to continue...")
                 continue
             else:
-                formatted_hotels = self.__format_hotels(all_hotels)  # Format the hotels
-                #selected_hotel = self.navigate_hotel(formatted_hotels)  # Pass the formatted hotels to navigate_hotel
-                choice = self.navigate_hotel(formatted_hotels)
-                # if not all_hotels:
-                #     print("No hotels with these conditions were found")
-                # else:
-                #     formatted_hotels = self.__format_hotels(all_hotels)
-                #     choice = self.navigate_hotel(formatted_hotels)
-
-                if choice is not None:
-                    choice_hotel_id = all_hotels[choice - 1].id
-                    #print(f"You selected: {formatted_hotels[choice - 1]}")
-                    # Initialize SelectHotelMenu with the selected hotel ID
-                    self.__select_hotel_menu = SelectHotelMenu(self.__main_menu, formatted_hotels,
-                                                               hotel_id=choice_hotel_id)
+                self.__select_hotel_menu = SelectHotelMenu(self.__main_menu, hotel_id=choice_hotel_id)
                 return self.__select_hotel_menu
-
-    def navigate_hotel(self, formatted_hotels: list):
-        while True:
-            print("#" * 90)
-            for index, hotel in enumerate(formatted_hotels, start=1):
-                print(f"{index}. {hotel}")
-            try:
-                choice = input("Enter the number of your choice, or 'x' to go back: ")
-                if choice.lower() == 'x':
-                    self.__search_by_name_city_guests_star_availability()
-                choice = int(choice)
-                if 1 <= choice <= len(formatted_hotels):
-                    return choice  # Return the user's choice if it is valid
-                else:
-                    print("Invalid number. Please try again.")
-            except ValueError:
-                print("Invalid input. Please enter a number.")
-
-    def __format_hotels(self, all_hotels):
-        hotels_info = []
-        for hotel in all_hotels:
-            hotel_info = f"\033[4m{hotel.name}\033[0m\n"
-            hotel_info += f"Address: {hotel.address.street}, {hotel.address.zip} {hotel.address.city}\n"
-            hotel_info += f"Stars: {hotel.stars}\n"
-            hotel_info += "-" * 90  # Separator for better readability
-            hotels_info.append(hotel_info)
-        return hotels_info  # Return formatted hotel information for display
 
     def _navigate(self, choice: int):
         match choice:
@@ -104,22 +59,10 @@ class SearchMenu(Menu):
             case 2:
                 return self.__main_menu  # Navigate back to the main menu
 
-    # def __display_rooms(self):
-    #     rooms = self.__search_manager.get_desired_rooms_by_hotel_id(self._hotel_id, start_date, end_date)
-    #     for room in rooms:
-    #         room_info = f"Room Type: {room.type}\n"
-    #         room_info += f"Max Guests: {room.max_guests}\n"
-    #         room_info += f"Description: {room.description}\n"
-    #         room_info += f"Equipment: {room.equipment}\n"
-    #         room_info += f"Price per Night: {room.price_per_night}\n"
-    #         room_info += f"Total Price: {room.total_price}\n"
-    #         print(room_info)
 
-
-####################start of SelectHotelMenu class###########################
 class SelectHotelMenu(Menu):
 
-    def __init__(self, main_menu: Menu, formatted_hotels: list, hotel_id=None):
+    def __init__(self, main_menu: Menu, hotel_id=None):
         super().__init__("Search Rooms")
 
         self.__main_menu = main_menu
@@ -130,9 +73,6 @@ class SelectHotelMenu(Menu):
         engine = create_engine(f'sqlite:///{os.environ.get("DB_FILE")}')
         Session = sessionmaker(bind=engine)
         self._session = Session()
-
-        # for hotel in formatted_hotels:
-        #     self.add_option(MenuOption(hotel))  # Add formatted hotel string as option
 
         self.add_option(MenuOption("Search rooms in selected hotel"))  # Option 1 to search rooms
         self.add_option(MenuOption("Display all available rooms"))  # Option 2 to display all available rooms
