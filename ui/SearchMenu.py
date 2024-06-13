@@ -203,8 +203,8 @@ class SelectHotelMenu(Menu):
         price = input("Enter the price per night you want to search for or press Enter for all: ")
         price = int(price) if price.isdigit() and int(price) > 0 else None
 
-        start_date = self.get_start_date()
-        end_date = self.get_end_date(start_date) if start_date else None
+        start_date = self.__validation_manager.input_start_date()  # Replace get_start_date with input_start_date
+        end_date = self.__validation_manager.input_end_date(start_date) if start_date else None
 
         # If all inputs are skipped, display all rooms
         if not any([room_type, max_guests, price, start_date, end_date]):

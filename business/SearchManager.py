@@ -12,6 +12,7 @@ class SearchManager(BaseManager):
         engine = create_engine(f'sqlite:///{os.environ.get("DB_FILE")}')
         Session = sessionmaker(bind=engine)
         self._session = Session()
+        self.__validation_manager = ValidationManager()
 
     def get_session(self):
         return self._session
@@ -149,11 +150,11 @@ class SearchManager(BaseManager):
         return all_rooms
 
     def get_desired_rooms_by_hotel_id(self, hotel_id=None, number=None, type=None, max_guests=None, amenities=None,
-                                      price=None, start_date=None, end_date=None, description=None) -> List[Room]:
+                                      price=None, description=None, start_date=None, end_date=None) -> List[Room]:
         query = select(Room)
 
-        if not any([hotel_id, number, type, max_guests, amenities, price, start_date, end_date, description]):
-            return self.get_all_rooms_by_hotel_id(hotel_id)
+        # if not any([hotel_id, number, type, max_guests, amenities, price, description]):
+        #     return self.get_all_rooms_by_hotel_id(hotel_id)
 
         # Add filters based on the provided criteria
         if hotel_id:
@@ -171,6 +172,13 @@ class SearchManager(BaseManager):
             query = query.where(Room.price <= price)
         if description:
             query = query.where(Room.description == description)
+
+        # Fetch start and end dates from ValidationManager
+        start_date = self.__validation_manager.input_start_date()
+        if start_date is not None:
+            end_date = self.__validation_manager.input_end_date(start_date)
+        else:
+            end_date = None
 
         # Filter by room availability within the given date range
         if start_date and end_date:
@@ -220,6 +228,3 @@ if __name__ == '__main__':
     all_hotels = search_manager.get_all_hotels()
     for hotel in all_hotels:
         print(hotel)
-
-
-
