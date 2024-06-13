@@ -7,51 +7,55 @@ from datetime import datetime
 from business.ValidationManager import ValidationManager
 from console.console_base import Console
 
-
 class SearchManager(BaseManager):
     def __init__(self) -> None:
         super().__init__()
+        # Setting up the database connection
         engine = create_engine(f'sqlite:///{os.environ.get("DB_FILE")}')
         Session = sessionmaker(bind=engine)
-        self._session = Session()
-        self.__validation_manager = ValidationManager()
+        self._session = Session() # Initialize a session for database operations
+        self.__validation_manager = ValidationManager() # Initialize validation manager for input validation
 
     def get_session(self):
+        # Provide a method to access the current session
         return self._session
 
     def get_all_hotels(self) -> List[Hotel]:
+        # Query to get all hotels
         query = select(Hotel)
         return self.select_all(query)
 
     def get_hotel_name_by_id(self, hotel_id):
+        # Query to get the name of a hotel by its ID
         query = select(Hotel.name).where(Hotel.id == hotel_id)
-        result = self._session.execute(query).scalar_one()
+        result = self._session.execute(query).scalar_one() # Execute the query and return a single scalar result
         return result
 
-    # 1.1.1. Ich möchte alle Hotels in einer Stadt durchsuchen, damit ich das Hotel nach meinem bevorzugten Standort (Stadt) auswählen kann.
-    # 1.1.2. Ich möchte alle Hotels in einer Stadt nach der Anzahl der Sterne durchsuchen.
-    # 1.1.3. Ich möchte alle Hotels in einer Stadt durchsuchen, die Zimmer haben, die meiner Gästezahl entsprechen (nur 1 Zimmer pro Buchung), entweder mit oder ohne Anzahl der Sterne.
-    # 1.1.4. Ich möchte alle Hotels in einer Stadt durchsuchen, die während meines Aufenthaltes ("von" (start_date) und "bis" (end_date)) Zimmer für meine Gästezahl zur Verfügung haben, entweder mit oder ohne Anzahl der Sterne, damit ich nur relevante Ergebnisse sehe.
-    # 1.1.5. Ich möchte die folgenden Informationen pro Hotel sehen: Name, Adresse, Anzahl der Sterne.
-    # 1.1.6. Ich möchte ein Hotel auswählen, um die Details zu sehen (z.B.verfügbare Zimmer [siehe 1.2])
     def get_hotels_by_city_guests_star_availability(self, hotel_name=None, city=None, max_guests=None, star_rating=None,
                                                     start_date=None,
                                                     end_date=None) -> List[Hotel]:
+
         # basic query to show all hotels
         query = select(Hotel).select_from(Hotel)
         # If hotel_name is specified, it is added to the WHERE clause
+
+
+        # Start building the query to get hotels with various optional filters
+        query = select(Hotel).distinct().select_from(Hotel)
+
         if hotel_name:
+            # Filter by hotel name if provided
             query = query.where(Hotel.name.ilike(f"%{hotel_name}%"))
-        # If city is specified, it is added to the WHERE clause
         if city:
+            # Join with Address table to filter by city
             query = query.join(Address, Hotel.address_id == Address.id).where(
                 Address.city.ilike(f"%{city}%"))  # == city)
 
-        # If max_guests is specified, it is added to the WHERE clause
+        # If max_guests is specified, add it to the WHERE clause
         if max_guests:
             query = query.where(Hotel.rooms.any(max_guests <= Room.max_guests))
 
-        # If star_rating is specified, it is added to the WHERE clause
+        # If star_rating is specified, add it to the WHERE clause
         if star_rating:
             query = query.where(Hotel.stars == star_rating)
 
@@ -60,7 +64,7 @@ class SearchManager(BaseManager):
             # Alias for the Booking table to avoid name conflicts
             br = aliased(Booking)
 
-            # Subquery to find booked rooms
+            # Subquery to find booked room_hotel_id combinations
             booking_subquery = (
                 select(br.room_hotel_id, br.room_number)
                 .where(
@@ -86,9 +90,11 @@ class SearchManager(BaseManager):
 
         result = self._session.execute(query)
         hotels = result.scalars().all()
+        # return all_hotels
+        print(hotels)
 
         Console.format_text("Available Hotels:")
-        seen_hotel_names = set()  # Workaround with set, so that the hotels are not listed more than once.
+        seen_hotel_names = set()  # Verwende ein Set, um bereits gesehene Hotelnamen zu speichern
         for i, hotel in enumerate(hotels, start=1):
             if hotel.name not in seen_hotel_names:
                 Console.format_text(f"{i} \033[4m{hotel.name}\033[0m\n"
@@ -112,9 +118,6 @@ class SearchManager(BaseManager):
             #     print(f"You selected: {hotels[choice - 1]}")
             #     choice_hotel_id = hotels[choice - 1].id
             #     return choice_hotel_id
-
-    # 1.2.1. Ich möchte die folgenden Informationen pro Zimmer sehen: Zimmertyp, max. Anzahl der Gäste, Beschreibung, Ausstattung, Preis pro Nacht und Gesamtpreis.
-    # 1.2.2. Ich möchte nur die verfügbaren Zimmer sehen
 
     def get_all_rooms_by_hotel_id(self, hotel_id):
         query = select(Room).where(Room.hotel_id == hotel_id)
@@ -174,15 +177,17 @@ class SearchManager(BaseManager):
         return self.select_all(query), all_rooms
 
     def display_all_rooms(self, hotel_id):
+        # Display all rooms for a specific hotel
         query, rooms = self.get_desired_rooms_by_hotel_id(hotel_id)
+
         if not rooms:
             print("No rooms found.")
         else:
             print("\nAvailable rooms:")
             for index, room in enumerate(rooms, start=1):
-                room = room[0]
+                room = room[0]  # Fetch the room details from the query result
                 hotel_name = self.get_hotel_name_by_id(room.hotel_id)  # Retrieve the hotel name
-                room_info = (f"{index}. \033[4m[{hotel_name}]\033[0m\n"
+                room_info = (f"{index}. \033[4m{hotel_name}\033[0m\n"
                              f"    Room Number: {room.number}\n"
                              f"    Type: {room.type}\n"
                              f"    Price per Night: {room.price}\n")
@@ -190,6 +195,7 @@ class SearchManager(BaseManager):
                 print("-" * 80)
 
             try:
+                # Prompt the user to select a room
                 choice = int(input("Enter the number you want to select: "))
                 if 1 <= choice <= len(rooms):
                     selected_room = rooms[choice - 1][0]
@@ -197,10 +203,12 @@ class SearchManager(BaseManager):
                 else:
                     print("Invalid selection. Please try again.")
             except ValueError:
+                # Handle non-integer input
                 print("Invalid input. Please enter a valid number.")
-            return self
+        return self
 
     def search_rooms(self, hotel_id):
+        # Prompts the user to search for rooms based on various criteria
         print("Select the room type you want to search for:")
         print("1. Single Room")
         print("2. Double Room")
@@ -221,12 +229,12 @@ class SearchManager(BaseManager):
             room_type = None  # Treat 'all' as no specific room type
 
         max_guests = input("Enter the maximum number of guests you want to search for or press Enter for all: ")
-        max_guests = int(max_guests) if max_guests.isdigit() and 1 <= int(max_guests) <= 4 else None
+        max_guests = int(max_guests) if max_guests.isdigit() and int(max_guests) > 0 else None
 
         price = input("Enter the price per night you want to search for or press Enter for all: ")
         price = int(price) if price.isdigit() and int(price) > 0 else None
 
-        start_date = self.__validation_manager.input_start_date()  # Replace get_start_date with input_start_date
+        start_date = self.__validation_manager.input_start_date()
         end_date = self.__validation_manager.input_end_date(start_date) if start_date else None
 
         # If all inputs are skipped, display all rooms
@@ -258,11 +266,7 @@ class SearchManager(BaseManager):
                 choice = int(input("Enter the number you want to select: "))
                 if 1 <= choice <= len(rooms):
                     selected_room = rooms[choice - 1].Room
-                    print(f"\nYou selected: \033[4m{hotel_name}\033[0m\n"
-                          f"    Room Number: {selected_room.number}\n"
-                          f"    Type: {selected_room.type}\n"
-                          f"    Price per Night: {selected_room.price}\n")
-                    print("-" * 80)
+                    Console.format_text(f"You selected: room number: {selected_room.number}")
 
                     # Ask if the user has a login
                     has_login = input("Do you have a login? (yes/no): ")
@@ -289,13 +293,10 @@ class SearchManager(BaseManager):
                         self._session.add(guest)
                         self._session.commit()
 
-                    booking_manager = BookingManager()  # Assuming you have a BookingManager class
+                    booking_manager = BookingManager()  
                     hotel_name = self.get_hotel_name_by_id(selected_room.hotel_id)
                     start_date = self.__validation_manager.input_start_date()
-                    if start_date is not None:
-                        end_date = self.__validation_manager.input_end_date(start_date)
-                    else:
-                        end_date = None
+                    end_date = self.__validation_manager.input_end_date(start_date) if start_date else None
 
                     # Ask the user for the number of guests
                     number_of_guests = input("Enter the number of guests: ")
@@ -306,20 +307,13 @@ class SearchManager(BaseManager):
                                                 room_id=selected_room.number, guest_id=guest.id,
                                                 number_of_guests=number_of_guests)
                 else:
-                    print("Invalid selection. Please try again.")
+                    Console.format_text("Invalid selection. Please try again.")
             except ValueError:
-                print("Invalid input. Please enter a valid number.")
-            return self
-
+                Console.format_text("Invalid input. Please enter a valid number.")
+        return self
 
 if __name__ == '__main__':
-    # This is only for testing without Application
-
-    # You should set the variable in the run configuration
-    # Because we are executing this file in the folder ./business/
-    # we need to relatively navigate first one folder up and therefore,
-    # use ../data in the path instead of ./data
-    # if the environment variable is not set, set it to a default
+    # Set the database file path if not set in the environment
     if not os.environ.get('DB_FILE'):
         os.environ['DB_FILE'] = '../data/test.db'
     search_manager = SearchManager()
