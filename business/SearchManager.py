@@ -259,7 +259,11 @@ class SearchManager(BaseManager):
                 choice = int(input("Enter the number you want to select: "))
                 if 1 <= choice <= len(rooms):
                     selected_room = rooms[choice - 1].Room
-                    Console.format_text(f"You selected: room number: {selected_room.number}")
+                    print(f"\nYou selected: \033[4m{hotel_name}\033[0m\n"
+                          f"    Room Number: {selected_room.number}\n"
+                          f"    Type: {selected_room.type}\n"
+                          f"    Price per Night: {selected_room.price}\n")
+                    print("-" * 80)
 
                     # Ask if the user has a login
                     has_login = input("Do you have a login? (yes/no): ")
@@ -303,9 +307,9 @@ class SearchManager(BaseManager):
                                                 room_id=selected_room.number, guest_id=guest.id,
                                                 number_of_guests=number_of_guests)
                 else:
-                    Console.format_text("Invalid selection. Please try again.")
+                    print("Invalid selection. Please try again.")
             except ValueError:
-                Console.format_text("Invalid input. Please enter a valid number.")
+                print("Invalid input. Please enter a valid number.")
             return self
 
 if __name__ == '__main__':
