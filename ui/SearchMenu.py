@@ -25,8 +25,8 @@ class SearchMenu(Menu):
 
     def __search_by_name_city_guests_star_availability(self):
         while True:
-            print("Enter the attributes you want to search with, or skip to show all hotels ")
-
+            # print("Enter the attributes you want to search with, or skip to show all hotels ")
+            Console.format_text("Enter the attributes you want to search with, or skip to show all hotels", "press Enter to continue...")
             #Incorrect user entries are included based on the SQL statements
             hotel_name = input("Name of hotel          :")
             city = input("City                   :")
@@ -40,7 +40,7 @@ class SearchMenu(Menu):
                     start_date)  # input("(optional) - Enter the end date: ")
             else:
                 end_date = None
-            Console.clear()
+
             # Perform the hotel search and selection based on the provided criteria
             choice_hotel_id = self.__search_manager.get_hotels_by_city_guests_star_availability(hotel_name, city,
                                                                                                 max_guests, star_rating,

@@ -37,7 +37,7 @@ class SearchManager(BaseManager):
     def get_hotels_by_city_guests_star_availability(self, hotel_name=None, city=None, max_guests=None, star_rating=None,
                                                     start_date=None,
                                                     end_date=None) -> List[Hotel]:
-        #basic query to show all hotels
+        # basic query to show all hotels
         query = select(Hotel).select_from(Hotel)
         # If hotel_name is specified, it is added to the WHERE clause
         if hotel_name:
@@ -98,21 +98,20 @@ class SearchManager(BaseManager):
 
         while True:
             try:
-                choice = input("Enter the number of your choice, or 'x' to go back: ")
-                if choice.lower() == 'x':
-                    break
+                choice = Console.format_text("To select the hotel of your choice ", "enter the number:").lower()
                 choice = int(choice)
                 if 1 <= choice <= len(hotels):
+
                     return choice  # Return the user's choice if it is valid
                 else:
                     print("Invalid number. Please try again.")
             except ValueError:
                 print("Invalid input. Please enter a number.")
 
-        if choice is not None:
-            print(f"You selected: {hotels[choice - 1]}")
-            choice_hotel_id = hotels[choice - 1].id
-            return choice_hotel_id
+            # if choice is not None:
+            #     print(f"You selected: {hotels[choice - 1]}")
+            #     choice_hotel_id = hotels[choice - 1].id
+            #     return choice_hotel_id
 
     # 1.2.1. Ich möchte die folgenden Informationen pro Zimmer sehen: Zimmertyp, max. Anzahl der Gäste, Beschreibung, Ausstattung, Preis pro Nacht und Gesamtpreis.
     # 1.2.2. Ich möchte nur die verfügbaren Zimmer sehen
