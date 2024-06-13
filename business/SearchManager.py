@@ -183,37 +183,79 @@ class SearchManager(BaseManager):
         if not rooms:
             print("No rooms found.")
         else:
-            print("\nAvailable rooms:")
+            Console.format_text("Available rooms:")
             for index, room in enumerate(rooms, start=1):
                 room = room[0]  # Fetch the room details from the query result
                 hotel_name = self.get_hotel_name_by_id(room.hotel_id)  # Retrieve the hotel name
                 room_info = (f"{index}. \033[4m{hotel_name}\033[0m\n"
                              f"    Room Number: {room.number}\n"
                              f"    Type: {room.type}\n"
-                             f"    Price per Night: {room.price}\n")
+                             f"    Price per Night: {room.price}")
                 print(room_info)
-                print("-" * 80)
+                print("******************************************************************************************")
 
-            try:
-                # Prompt the user to select a room
-                choice = int(input("Enter the number you want to select: "))
-                if 1 <= choice <= len(rooms):
-                    selected_room = rooms[choice - 1][0]
-                    print(f"You selected: room number: {selected_room.number}")
+        try:
+            choice = int(input("Enter the number you want to select: "))
+            if 1 <= choice <= len(rooms):
+                selected_room = rooms[choice - 1][0]  # Access the room details from the list
+                Console.format_text(f"You selected: room number: {selected_room.number}")
+
+                has_login = input("Do you have a login? (yes/no): ").strip().lower()
+                if has_login == 'yes':
+                    username = input("Enter your username: ")
+                    password = input("Enter your password: ")
+                    guest = self._session.query(Guest).join(Login).filter(
+                        Login.username == username,
+                        Login.password == password
+                    ).first()
                 else:
-                    print("Invalid selection. Please try again.")
-            except ValueError:
-                # Handle non-integer input
-                print("Invalid input. Please enter a valid number.")
+                    firstname = input("Enter your first name: ")
+                    lastname = input("Enter your last name: ")
+                    email = input("Enter your email: ")
+                    street = input("Enter your street and house number: ")
+                    zip = input("Enter your zip code: ")
+                    city = input("Enter your city: ")
+
+                    address = Address(street=street, zip=zip, city=city)
+                    self._session.add(address)
+                    self._session.commit()
+
+                    guest = Guest(firstname=firstname, lastname=lastname, email=email, address_id=address.id)
+                    self._session.add(guest)
+                    self._session.commit()
+
+                booking_manager = BookingManager()
+                hotel_name = self.get_hotel_name_by_id(selected_room.hotel_id)
+                start_date = self.__validation_manager.input_start_date()
+                end_date = self.__validation_manager.input_end_date(start_date) if start_date else None
+
+                number_of_guests = input("Enter the number of guests: ").strip()
+                number_of_guests = int(number_of_guests) if number_of_guests.isdigit() else None
+
+                booking_manager.add_booking(
+                    hotel_name=hotel_name,
+                    start_date=start_date,
+                    end_date=end_date,
+                    hotel_id=selected_room.hotel_id,
+                    room_id=selected_room.number,
+                    guest_id=guest.id,
+                    number_of_guests=number_of_guests
+                )
+            else:
+                Console.format_text("Invalid selection. Please try again.")
+        except ValueError:
+            Console.format_text("Invalid input. Please enter a valid number.")
         return self
 
     def search_rooms(self, hotel_id):
         # Prompts the user to search for rooms based on various criteria
-        print("Select the room type you want to search for:")
+        Console.format_text("Select the room type you want to search for:")
         print("1. Single Room")
         print("2. Double Room")
         print("3. Family Room")
         print("4. Suite")
+        print("Enter. for all room types")
+        print("******************************************************************************************")
         room_type_choice = input("Enter your choice (1-4 / Enter): ")
 
         room_type_dict = {
@@ -247,23 +289,23 @@ class SearchManager(BaseManager):
         )
 
         if not rooms:
-            print("No rooms found matching the criteria.")
+            Console.format_text("No rooms found matching the criteria.")
         else:
-            print("\nAvailable rooms:")
+            Console.format_text("Available rooms:")
             for index, room in enumerate(rooms, start=1):
                 try:
                     hotel_name = self.get_hotel_name_by_id(room.Room.hotel_id)
                     room_info = (f"{index}. \033[4m{hotel_name}\033[0m\n"
-                                 f"    Room Number: {room.Room.number}\n"
-                                 f"    Type: {room.Room.type}\n"
-                                 f"    Price per Night: {room.Room.price}\n")
+                                 f"   Room Number: {room.Room.number}\n"
+                                 f"   Type: {room.Room.type}\n"
+                                 f"   Price per Night: {room.Room.price}")
                     print(room_info)
-                    print("-" * 80)
+                    print("******************************************************************************************")
                 except AttributeError as e:
                     print(f"Error: {e}. Room attributes: {room._mapping}")
 
             try:
-                choice = int(input("Enter the number you want to select: "))
+                choice = Console.format_text(int(input("Enter the number you want to select: ")))
                 if 1 <= choice <= len(rooms):
                     selected_room = rooms[choice - 1].Room
                     Console.format_text(f"You selected: room number: {selected_room.number}")
@@ -293,7 +335,7 @@ class SearchManager(BaseManager):
                         self._session.add(guest)
                         self._session.commit()
 
-                    booking_manager = BookingManager()  
+                    booking_manager = BookingManager()
                     hotel_name = self.get_hotel_name_by_id(selected_room.hotel_id)
                     start_date = self.__validation_manager.input_start_date()
                     end_date = self.__validation_manager.input_end_date(start_date) if start_date else None
