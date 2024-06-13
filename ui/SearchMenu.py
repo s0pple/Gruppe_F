@@ -33,15 +33,14 @@ class SearchMenu(Menu):
             start_date = self.__validation_manager.input_start_date()
             if start_date is not None:
                 end_date = self.__validation_manager.input_end_date(
-                    start_date)  #input("(optional) - Enter the end date: ")
+                    start_date)  # input("(optional) - Enter the end date: ")
             else:
                 end_date = None
 
             # Perform the hotel search based on the provided criteria
-            choice_hotel_id = self.__search_manager.get_hotels_by_city_guests_star_availability(hotel_name, city, max_guests,
-                                                                                           star_rating,
-                                                                                           start_date, end_date)
-
+            choice_hotel_id = self.__search_manager.get_hotels_by_city_guests_star_availability(hotel_name, city,
+                                                                                                max_guests, star_rating,
+                                                                                                start_date, end_date)
             if not choice_hotel_id:
                 print("No hotels with these conditions were found")
                 input("Press Enter to continue...")
