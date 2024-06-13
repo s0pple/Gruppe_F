@@ -28,7 +28,8 @@ class UserMenu(Menu):
                     case 1:  # option 1 (Create a new account)
                         while True:
                             Console.format_text("To create a new account:")
-                            username = self.__validation_manager.is_valid_email()
+                            mail =input("Please enter E-Mail address: ").strip().lower()
+                            username = self.__validation_manager.is_valid_email(mail)
                             username = str(username)
                             if not username:
                                 continue

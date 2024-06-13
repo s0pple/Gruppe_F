@@ -126,8 +126,8 @@ class SelectHotelMenu(Menu):
         Session = sessionmaker(bind=engine)
         self._session = Session()
 
-        for hotel in formatted_hotels:
-            self.add_option(MenuOption(hotel))  # Add formatted hotel string as option
+        # for hotel in formatted_hotels:
+        #     self.add_option(MenuOption(hotel))  # Add formatted hotel string as option
 
         self.add_option(MenuOption("Search rooms in selected hotel"))  # Option 3 to search rooms
         self.add_option(MenuOption("Display all available rooms"))  # Option 4 to display all available rooms
