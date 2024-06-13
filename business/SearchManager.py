@@ -7,6 +7,7 @@ from datetime import datetime
 from business.ValidationManager import ValidationManager
 from console.console_base import Console
 
+
 class SearchManager(BaseManager):
     def __init__(self) -> None:
         super().__init__()
@@ -36,20 +37,21 @@ class SearchManager(BaseManager):
     def get_hotels_by_city_guests_star_availability(self, hotel_name=None, city=None, max_guests=None, star_rating=None,
                                                     start_date=None,
                                                     end_date=None) -> List[Hotel]:
-
-
-        query = select(Hotel).distinct().select_from(Hotel)
+        #basic query to show all hotels
+        query = select(Hotel).select_from(Hotel)
+        # If hotel_name is specified, it is added to the WHERE clause
         if hotel_name:
             query = query.where(Hotel.name.ilike(f"%{hotel_name}%"))
+        # If city is specified, it is added to the WHERE clause
         if city:
             query = query.join(Address, Hotel.address_id == Address.id).where(
                 Address.city.ilike(f"%{city}%"))  # == city)
 
-        # If max_guests is specified, add it to the WHERE clause
+        # If max_guests is specified, it is added to the WHERE clause
         if max_guests:
             query = query.where(Hotel.rooms.any(max_guests <= Room.max_guests))
 
-        # If star_rating is specified, add it to the WHERE clause
+        # If star_rating is specified, it is added to the WHERE clause
         if star_rating:
             query = query.where(Hotel.stars == star_rating)
 
@@ -58,7 +60,7 @@ class SearchManager(BaseManager):
             # Alias for the Booking table to avoid name conflicts
             br = aliased(Booking)
 
-            # Subquery to find booked room_hotel_id combinations
+            # Subquery to find booked rooms
             booking_subquery = (
                 select(br.room_hotel_id, br.room_number)
                 .where(
@@ -84,11 +86,9 @@ class SearchManager(BaseManager):
 
         result = self._session.execute(query)
         hotels = result.scalars().all()
-        # return all_hotels
-        print(hotels)
 
         Console.format_text("Available Hotels:")
-        seen_hotel_names = set()  # Verwende ein Set, um bereits gesehene Hotelnamen zu speichern
+        seen_hotel_names = set()  # Workaround with set, so that the hotels are not listed more than once.
         for i, hotel in enumerate(hotels, start=1):
             if hotel.name not in seen_hotel_names:
                 Console.format_text(f"{i} \033[4m{hotel.name}\033[0m\n"
@@ -307,6 +307,7 @@ class SearchManager(BaseManager):
             except ValueError:
                 Console.format_text("Invalid input. Please enter a valid number.")
             return self
+
 
 if __name__ == '__main__':
     # This is only for testing without Application

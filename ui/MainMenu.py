@@ -22,6 +22,7 @@ class MainMenu(Menu):
         match choice:
             case 1:
                 # return the menu for search, therefore display as next the search menu
+                Console.clear()
                 return self._search_menu
             # TODO: Add further navigation options according to the added MenuOptions in the constructor.
             case 2:
