@@ -121,6 +121,7 @@ class SelectHotelMenu(Menu):
         self.__main_menu = main_menu
         self._hotel_id = hotel_id  # Storing the hotel_id
         self.__search_manager = SearchManager()
+        self.__validation_manager = ValidationManager()
 
         engine = create_engine(f'sqlite:///{os.environ.get("DB_FILE")}')
         Session = sessionmaker(bind=engine)
@@ -134,23 +135,20 @@ class SelectHotelMenu(Menu):
         self.add_option(MenuOption("Back"))  # Option 5 to go back
 
     def _navigate(self, choice: int):
-        if choice == 3:
-            if self._hotel_id is not None:
-                self.__search_rooms(self._hotel_id)
-            return self
-        elif choice == 4:
-            if self._hotel_id is not None:
-                self.__display_all_rooms(self._hotel_id)
-            return self
-        elif choice == 5:
-            return self.__main_menu  # Navigate back to the main menu
-        elif 1 <= choice <= len(self._options) - 3:
-            self._hotel_id = self._options[choice - 1].value.id
-            print(f"You selected: {self._options[choice - 1].text}")
-            return self
-        else:
-            print("Invalid choice. Please try again.")
-            return self
+        match choice:
+            case 1:
+                if self._hotel_id is not None:
+                    self.__search_rooms(self._hotel_id)
+                return self
+            case 2:
+                if self._hotel_id is not None:
+                    self.__display_all_rooms(self._hotel_id)
+                return self
+            case 3:
+                return self.__main_menu  # Navigate back to the main menu
+            case _:
+                print("Invalid choice. Please enter a number between 1 and 3.")
+                return self
 
     def __display_all_rooms(self, hotel_id):
         query, rooms = self.__search_manager.get_desired_rooms_by_hotel_id(hotel_id)
@@ -178,51 +176,6 @@ class SelectHotelMenu(Menu):
             except ValueError:
                 print("Invalid input. Please enter a valid number.")
             return self
-
-    def get_start_date(self):
-        while True:
-            start_date = input("Enter the start date (dd.mm.yyyy): ")
-            if not start_date:
-                return None  # If the input is optional and user does not enter anything, return None
-
-            try:
-                # Check if the date is in the correct format
-                date_obj_start = datetime.strptime(start_date, "%d.%m.%Y")
-
-                # Check if the date is not in the past
-                if date_obj_start < datetime.now():
-                    print("The date cannot be in the past. Please enter a future date.")
-                    continue
-
-                return date_obj_start
-
-            except ValueError:
-                print("Invalid date format. Please enter the date in dd.mm.yyyy format.")
-
-    def get_end_date(self, date_obj_start=None):
-        if date_obj_start is None:
-            print("Start date is needed to compare with the end date.")
-            return None
-        while True:
-            end_date = input("Enter the end date (dd.mm.yyyy): ")
-            if not end_date:
-                print("End date is needed. ")
-                continue
-
-            try:
-                date_obj_end = datetime.strptime(end_date, "%d.%m.%Y")
-
-                if date_obj_end < datetime.now():
-                    print("The date cannot be in the past. Please enter a future date.")
-                    continue
-
-                if date_obj_end < date_obj_start:
-                    print("The end date must be later than the start date. Please try again.")
-                    continue
-                return date_obj_end
-
-            except ValueError:
-                print("Invalid date format. Please enter the date in dd.mm.yyyy format.")
 
     def __search_rooms(self, hotel_id):
         print("Select the room type you want to search for:")
@@ -311,8 +264,11 @@ class SelectHotelMenu(Menu):
 
                     booking_manager = BookingManager()  # Assuming you have a BookingManager class
                     hotel_name = self.__search_manager.get_hotel_name_by_id(selected_room.hotel_id)
-                    start_date = self.get_start_date()
-                    end_date = self.get_end_date(start_date)
+                    start_date = self.__validation_manager.input_start_date()
+                    if start_date is not None:
+                        end_date = self.__validation_manager.input_end_date(start_date)
+                    else:
+                        end_date = None
 
                     # Ask the user for the number of guests
                     number_of_guests = input("Enter the number of guests: ")
