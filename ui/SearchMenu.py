@@ -1,6 +1,7 @@
 from business.BookingManager import BookingManager
 from business.SearchManager import SearchManager
 from console.console_base import Menu, MenuOption, Console
+from business.UserManager import UserManager
 from business.ValidationManager import ValidationManager
 from datetime import datetime
 from sqlalchemy import create_engine
@@ -19,6 +20,7 @@ class SearchMenu(Menu):
         self.__main_menu = main_menu
         self.__search_manager = SearchManager()
         self.__validation_manager = ValidationManager()
+        self.__user_manager = UserManager()
         self.__select_hotel_menu = None  # Will be initialized later with hotel_id
 
     def __search_by_name_city_guests_star_availability(self):
@@ -96,6 +98,8 @@ class SearchMenu(Menu):
     def _navigate(self, choice: int):
         match choice:
             case 1:
+                # Create a guest user when the user selects the "Search Hotels" option
+                self.__user_manager.create_guest_user()
                 return self.__search_by_name_city_guests_star_availability()
             case 2:
                 return self.__main_menu  # Navigate back to the main menu

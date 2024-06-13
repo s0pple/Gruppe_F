@@ -20,6 +20,13 @@ class UserManager:
         existing_username = self._session.query(Login).filter(Login.username == username).first()
         return existing_username
 
+    def create_guest_user(self):
+        # Create a new guest user with default values
+        guest = Guest(firstname="Guest", lastname="User", email="guest@user.com", address_id=1, type='guest')
+        self._session.add(guest)
+        self._session.commit()
+        return guest
+
     def create_user(self, username: str, password: str):
         # Create a new login instance for the user
         new_login = Login(username=username, password=password, role_id=2)
