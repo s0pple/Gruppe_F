@@ -40,8 +40,11 @@ This project has been a collaborative effort, reflecting the contributions and t
 - Registering GitHub Premium & integrating with PyCharm
 - Converting user stories into BPMN processes
 - 1 Guest User: 1.1 As a guest user, I want to search available hotels so that I can choose the one that meets my preferences. (with Oliver Gwerder)
+- existing individual search functions combined and summarized, basic concept of building SQLAlchemy query (standard search and specification using “append”) defined, also for the other database interactions
 - 1 Guest User: 1.6 As a guest user, I want to register with my email address and a personal identifier (password) to use additional functionalities (e.g., booking history, booking changes, etc. [see 2.1]).
 - UI / Menus & Submenus creation
+- concept and structure of the hotel reservation system with menu and submenu, definition of interactions between methods (with Vadivel Vaagisan, Schüpbach Michael , Haag Robin)
+- construction and implementation of a validation manager to intercept incorrect and repetitive user entries
 
 ### Schüpbach Michael
 - Registering GitHub Premium & integrating with PyCharm
@@ -58,6 +61,11 @@ This project has been a collaborative effort, reflecting the contributions and t
 - GUI as a PPTX file
 - Modelled the AdminMenu and Registered User Menu 
 
+### All
+- Mutual support when coding
+- Weekly exchange and notification of work status, problems and challenges (every Sunday evening and Monday morning, and sometimes during the week)
+- Extreme-coding-event on Saturday, June 01, 2024 09:30 am to 10:00 pm
+  
 ## Using the Application
 
 ### Step-by-Step Guide
@@ -116,6 +124,17 @@ To select an option, simply type the number of the option and press Enter.
 
 When you select the "Search hotels with desired attributes" option, you'll be prompted to enter your desired attributes. Here's how you can do it:
 
+1. no entry: If no entries are made for any of the following search options, all hotels from the database are displayed. The entries are complementary so that combinations are also possible. 
+2. name of hotel: If the name or a part of it is known and entered, the names of the hotels in the database are compared with it and the matching hotels are displayed. Thanks to the “ilike(f”%{hotel_name}%“)” implementation, the hotels are output as soon as the input is also present in the name in any form. Example: if you enter “aMA”, “Hotel Amaris” is displayed.
+3. city: The same for the city. This allows spelling mistakes to be partially ignored.
+4. number of guests: The maximum number of guests that should be in a room can be entered here.
+5. star rating(1-5): This filters the hotels according to the number of stars.
+6. start date(dd.mm.yyyy): The start date can be entered here.
+7. end date(dd.mm.yyyy): This is only asked to be entered if a start date has been entered, but it is then mandatory to enter it.
+8. if no hotels match the conditions, the entries are queried again with the message that no hotel was found.
+Otherwise the hotels are listed and you can select one of them. The room search is started by the selection.
+
+**???NOCH ÜBERARBEITEN**
 1. Select the room type: You'll see a list of room types to choose from. Type the number of your desired room type and press Enter. If you want to search for all room types, just press Enter without typing anything.  
 2. Enter the maximum number of guests: Type the maximum number of guests you want to search for and press Enter. If you want to search for all numbers of guests, just press Enter without typing anything.  
 3. Enter the price per night: Type the price per night you want to search for and press Enter. If you want to search for all prices, just press Enter without typing anything.  
