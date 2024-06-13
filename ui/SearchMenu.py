@@ -1,7 +1,12 @@
+from business.BookingManager import BookingManager
 from business.SearchManager import SearchManager
-from console.console_base import Menu, MenuOption
+from console.console_base import Menu, MenuOption, Console
 from business.ValidationManager import ValidationManager
 from datetime import datetime
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+import os
+from data_models.models import Address, Guest, Login
 
 
 class SearchMenu(Menu):
@@ -16,26 +21,27 @@ class SearchMenu(Menu):
         self.__validation_manager = ValidationManager()
         self.__select_hotel_menu = None  # Will be initialized later with hotel_id
 
-
     def __search_by_name_city_guests_star_availability(self):
-         while True:
+        while True:
             print("Enter the attributes you want to search with, or skip to show all hotels ")
-            hotel_name= input("\033[4mName of hotel          :\033[0m    ")
+            hotel_name = input("\033[4mName of hotel          :\033[0m    ")
             #hotelname= input("(optional) - Enter the name of the Hotel: ")
             city = input("\033[4mCity                   :\033[0m    ")
             # max_guests = input("(optional) - Enter number of guests you want to search hotels for: ")
-            max_guests= self.__validation_manager.input_max_guests()
+            max_guests = self.__validation_manager.input_max_guests()
             # star_rating = input("(optional) - Enter the star rating you want to search hotels for: ")
             star_rating = self.__validation_manager.input_star_rating()
             # start_date, end_date = self.get_start_and_end_dates()
-            start_date = self.__validation_manager.input_start_date() #input("(optional) - Enter the start date: ")
+            start_date = self.__validation_manager.input_start_date()  #input("(optional) - Enter the start date: ")
             if start_date is not None:
-                end_date = self.__validation_manager.input_end_date(start_date) #input("(optional) - Enter the end date: ")
+                end_date = self.__validation_manager.input_end_date(
+                    start_date)  #input("(optional) - Enter the end date: ")
             else:
                 end_date = None
 
             # Perform the hotel search based on the provided criteria
-            all_hotels = self.__search_manager.get_hotels_by_city_guests_star_availability(hotel_name, city, max_guests, star_rating,
+            all_hotels = self.__search_manager.get_hotels_by_city_guests_star_availability(hotel_name, city, max_guests,
+                                                                                           star_rating,
                                                                                            start_date, end_date)
 
             if not all_hotels:
@@ -46,22 +52,23 @@ class SearchMenu(Menu):
                 formatted_hotels = self.__format_hotels(all_hotels)  # Format the hotels
                 #selected_hotel = self.navigate_hotel(formatted_hotels)  # Pass the formatted hotels to navigate_hotel
                 choice = self.navigate_hotel(formatted_hotels)
-        # if not all_hotels:
-        #     print("No hotels with these conditions were found")
-        # else:
-        #     formatted_hotels = self.__format_hotels(all_hotels)
-        #     choice = self.navigate_hotel(formatted_hotels)
+                # if not all_hotels:
+                #     print("No hotels with these conditions were found")
+                # else:
+                #     formatted_hotels = self.__format_hotels(all_hotels)
+                #     choice = self.navigate_hotel(formatted_hotels)
 
                 if choice is not None:
                     choice_hotel_id = all_hotels[choice - 1].id
                     #print(f"You selected: {formatted_hotels[choice - 1]}")
                     # Initialize SelectHotelMenu with the selected hotel ID
-                    self.__select_hotel_menu = SelectHotelMenu(self.__main_menu, formatted_hotels, hotel_id=choice_hotel_id)
+                    self.__select_hotel_menu = SelectHotelMenu(self.__main_menu, formatted_hotels,
+                                                               hotel_id=choice_hotel_id)
                 return self.__select_hotel_menu
 
     def navigate_hotel(self, formatted_hotels: list):
         while True:
-            print("#" * 90 )
+            print("#" * 90)
             for index, hotel in enumerate(formatted_hotels, start=1):
                 print(f"{index}. {hotel}")
             try:
@@ -70,7 +77,7 @@ class SearchMenu(Menu):
                     self.__search_by_name_city_guests_star_availability()
                 choice = int(choice)
                 if 1 <= choice <= len(formatted_hotels):
-                    return choice # Return the user's choice if it is valid
+                    return choice  # Return the user's choice if it is valid
                 else:
                     print("Invalid number. Please try again.")
             except ValueError:
@@ -84,14 +91,14 @@ class SearchMenu(Menu):
             hotel_info += f"Stars: {hotel.stars}\n"
             hotel_info += "-" * 90  # Separator for better readability
             hotels_info.append(hotel_info)
-        return hotels_info # Return formatted hotel information for display
+        return hotels_info  # Return formatted hotel information for display
 
     def _navigate(self, choice: int):
         match choice:
             case 1:
                 return self.__search_by_name_city_guests_star_availability()
             case 2:
-                return self.__main_menu # Navigate back to the main menu
+                return self.__main_menu  # Navigate back to the main menu
 
     def __display_rooms(self):
         rooms = self.__search_manager.get_desired_rooms_by_hotel_id(self._hotel_id, start_date, end_date)
@@ -104,6 +111,7 @@ class SearchMenu(Menu):
             room_info += f"Total Price: {room.total_price}\n"
             print(room_info)
 
+
 ####################start of SelectHotelMenu class###########################
 class SelectHotelMenu(Menu):
 
@@ -113,6 +121,10 @@ class SelectHotelMenu(Menu):
         self.__main_menu = main_menu
         self._hotel_id = hotel_id  # Storing the hotel_id
         self.__search_manager = SearchManager()
+
+        engine = create_engine(f'sqlite:///{os.environ.get("DB_FILE")}')
+        Session = sessionmaker(bind=engine)
+        self._session = Session()
 
         for hotel in formatted_hotels:
             self.add_option(MenuOption(hotel))  # Add formatted hotel string as option
@@ -131,7 +143,7 @@ class SelectHotelMenu(Menu):
                 self.__display_all_rooms(self._hotel_id)
             return self
         elif choice == 5:
-            return self.__main_menu # Navigate back to the main menu
+            return self.__main_menu  # Navigate back to the main menu
         elif 1 <= choice <= len(self._options) - 3:
             self._hotel_id = self._options[choice - 1].value.id
             print(f"You selected: {self._options[choice - 1].text}")
@@ -225,7 +237,7 @@ class SelectHotelMenu(Menu):
             "2": "double room",
             "3": "family room",
             "4": "suite",
-            "": "all", # Default to 'all' if no choice is made
+            "": "all",  # Default to 'all' if no choice is made
         }
 
         room_type = room_type_dict.get(room_type_choice, "all")
@@ -270,9 +282,48 @@ class SelectHotelMenu(Menu):
                 choice = int(input("Enter the number you want to select: "))
                 if 1 <= choice <= len(rooms):
                     selected_room = rooms[choice - 1].Room
-                    print(f"You selected: room number: {selected_room.number}")
+                    Console.format_text(f"You selected: room number: {selected_room.number}")
+
+                    # Ask if the user has a login
+                    has_login = input("Do you have a login? (yes/no): ")
+                    if has_login.lower() == 'yes':
+                        # If the user has a login, retrieve the Guest instance associated with that login
+                        username = input("Enter your username: ")
+                        password = input("Enter your password: ")
+                        guest = self._session.query(Guest).join(Login).filter(Login.username == username,
+                                                                              Login.password == password).first()
+                    else:
+                        # If the user doesn't have a login, ask for their details and create a new Guest instance
+                        firstname = input("Enter your first name: ")
+                        lastname = input("Enter your last name: ")
+                        email = input("Enter your email: ")
+                        street = input("Enter your street and house number: ")
+                        zip = input("Enter your zip code: ")
+                        city = input("Enter your city: ")
+
+                        address = Address(street=street, zip=zip, city=city)
+                        self._session.add(address)
+                        self._session.commit()
+
+                        guest = Guest(firstname=firstname, lastname=lastname, email=email, address_id=address.id)
+                        self._session.add(guest)
+                        self._session.commit()
+
+                    booking_manager = BookingManager()  # Assuming you have a BookingManager class
+                    hotel_name = self.__search_manager.get_hotel_name_by_id(selected_room.hotel_id)
+                    start_date = self.get_start_date()
+                    end_date = self.get_end_date(start_date)
+
+                    # Ask the user for the number of guests
+                    number_of_guests = input("Enter the number of guests: ")
+                    number_of_guests = int(number_of_guests) if number_of_guests.isdigit() else None
+
+                    booking_manager.add_booking(hotel_name=hotel_name, start_date=start_date,
+                                                end_date=end_date, hotel_id=selected_room.hotel_id,
+                                                room_id=selected_room.number, guest_id=guest.id,
+                                                number_of_guests=number_of_guests)
                 else:
-                    print("Invalid selection. Please try again.")
+                    Console.format_text("Invalid selection. Please try again.")
             except ValueError:
-                print("Invalid input. Please enter a valid number.")
+                Console.format_text("Invalid input. Please enter a valid number.")
             return self

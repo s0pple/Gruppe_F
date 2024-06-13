@@ -9,7 +9,7 @@ class MainMenu(Menu):
     def __init__(self):
 
         super().__init__("Main Menu")
-        self.add_option(MenuOption("Search Hotel"))  # option 1
+        self.add_option(MenuOption("Search Hotels"))  # option 1
         self.add_option(MenuOption("User Menu"))  # option 2
         # we need the search menu to navigate to it
         self._search_menu = SearchMenu(self)
