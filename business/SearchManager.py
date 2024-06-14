@@ -33,6 +33,24 @@ class SearchManager(BaseManager):
         result = self._session.execute(query).scalar_one() # Execute the query and return a single scalar result
         return result
 
+    # Subquery to find booked room_hotel_id combinations
+    def get_booking_subquery(self, start_date, end_date):
+        br = aliased(Booking)
+
+        # Subquery to find booked room_hotel_id combinations
+        booking_subquery = (
+            select(br.room_hotel_id, br.room_number)
+            .where(
+                or_(
+                    and_(br.start_date <= start_date, br.end_date >= end_date),
+                    and_(br.start_date >= start_date, br.start_date <= end_date),
+                    and_(br.end_date >= start_date, br.end_date <= end_date)
+                )
+            )
+            .subquery()
+        )
+
+        return booking_subquery
 
     def get_hotels_by_city_guests_star_availability(self, hotel_name=None, city=None, max_guests=None, star_rating=None,
                                                     start_date=None,
@@ -63,20 +81,22 @@ class SearchManager(BaseManager):
         # If the start_date and end_date are specified, check availability
         if start_date and end_date:
             # Alias for the Booking table to avoid name conflicts
-            br = aliased(Booking)
 
-            # Subquery to find booked room_hotel_id combinations
-            booking_subquery = (
-                select(br.room_hotel_id, br.room_number)
-                .where(
-                    or_(
-                        and_(br.start_date <= start_date, br.end_date >= end_date),
-                        and_(br.start_date >= start_date, br.start_date <= end_date),
-                        and_(br.end_date >= start_date, br.end_date <= end_date)
-                    )
-                )
-                .subquery()
-            )
+            booking_subquery = self.get_booking_subquery(start_date, end_date)
+
+
+            # br = aliased(Booking)
+            # booking_subquery = (
+            #     select(br.room_hotel_id, br.room_number)
+            #     .where(
+            #         or_(
+            #             and_(br.start_date <= start_date, br.end_date >= end_date),
+            #             and_(br.start_date >= start_date, br.start_date <= end_date),
+            #             and_(br.end_date >= start_date, br.end_date <= end_date)
+            #         )
+            #     )
+            #     .subquery()
+            # )
 
             # Main query to exclude hotels with booked rooms during the requested period
             query = query.join(Room, Hotel.id == Room.hotel_id).outerjoin(
@@ -121,18 +141,18 @@ class SearchManager(BaseManager):
                 except ValueError:
                     print("Invalid input. Please enter a number.")
 
-<<<<<<< HEAD
+
                 # if choice is not None:
                 #     print(f"You selected: {hotels[choice - 1]}")
                 #     choice_hotel_id = hotels[choice - 1].id
                 #     return choice_hotel_id
-=======
+
     def get_all_rooms_by_hotel_id(self, hotel_id):
         query = select(Room).where(Room.hotel_id == hotel_id)
         result = self._session.execute(query)
         all_rooms = result.scalars().all()
         return all_rooms
->>>>>>> 7f6f3af483c8191e878fb1c3a367a239818c06da
+
 
     def get_desired_rooms_by_hotel_id(self, hotel_id=None, number=None, type=None, max_guests=None, amenities=None,
                                       price=None, description=None, start_date=None, end_date=None) -> List[Room]:
