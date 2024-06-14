@@ -27,39 +27,39 @@ class SearchMenu(Menu):
             case 1:
                 # Create a guest user when the user selects the "Search Hotels" option
                 self.__user_manager.create_guest_user()
-                return self.search_by_name_city_guests_star_availability()
+                while True:
+                    # print("Enter the attributes you want to search with, or skip to show all hotels ")
+                    Console.format_text("Enter the attributes you want to search with, or skip to show all hotels",
+                                        "press Enter to continue...")
+                    # Incorrect user entries are included based on the SQL statements
+                    hotel_name = input("Name of hotel          :")
+                    city = input("City                   :")
+
+                    # input in the validation manager so that it can be easily accessed,
+                    max_guests = self.__validation_manager.input_max_guests()
+                    star_rating = self.__validation_manager.input_star_rating()
+                    start_date = self.__validation_manager.input_start_date()
+                    if start_date is not None:
+                        end_date = self.__validation_manager.input_end_date(
+                            start_date)
+                    else:
+                        end_date = None
+
+                    # Perform the hotel search and selection based on the provided criteria
+                    choice_hotel_id = self.__search_manager.get_hotels_by_city_guests_star_availability(hotel_name,
+                                                                                                        city,
+                                                                                                        max_guests,
+                                                                                                        star_rating,
+                                                                                                        start_date,
+                                                                                                        end_date)
+                    if not choice_hotel_id:
+                        continue
+                    else:
+                        self.__select_hotel_menu = RoomSearchAndBookingMenu(self.__main_menu, hotel_id=choice_hotel_id)
+                        return self.__select_hotel_menu
             case 2:
                 Console.clear()
                 return self.__main_menu  # Navigate back to the main menu
-
-    def search_by_name_city_guests_star_availability(self):
-        while True:
-            # print("Enter the attributes you want to search with, or skip to show all hotels ")
-            Console.format_text("Enter the attributes you want to search with, or skip to show all hotels", "press Enter to continue...")
-            #Incorrect user entries are included based on the SQL statements
-            hotel_name = input("Name of hotel          :")
-            city = input("City                   :")
-
-            #input in the validation manager so that it can be easily accessed,
-            max_guests = self.__validation_manager.input_max_guests()
-            star_rating = self.__validation_manager.input_star_rating()
-            start_date = self.__validation_manager.input_start_date()
-            if start_date is not None:
-                end_date = self.__validation_manager.input_end_date(
-                    start_date)
-            else:
-                end_date = None
-
-            # Perform the hotel search and selection based on the provided criteria
-            choice_hotel_id = self.__search_manager.get_hotels_by_city_guests_star_availability(hotel_name, city,
-                                                                                                max_guests, star_rating,
-                                                                                                start_date, end_date)
-            if not choice_hotel_id:
-                continue
-            else:
-                self.__select_hotel_menu = RoomSearchAndBookingMenu(self.__main_menu, hotel_id=choice_hotel_id)
-                return self.__select_hotel_menu
-
 
 class RoomSearchAndBookingMenu(Menu):
     def __init__(self, main_menu: Menu, hotel_id=None):
