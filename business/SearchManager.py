@@ -3,14 +3,18 @@ from sqlalchemy import select, func, text, create_engine, or_, and_
 from sqlalchemy.orm import sessionmaker, aliased
 from business.BaseManager import BaseManager
 from data_models.models import *
+from console.console_base import Menu, MenuOption, Console
 from datetime import datetime
 from business.ValidationManager import ValidationManager
 from console.console_base import Console
+
+
 
 class SearchManager(BaseManager):
     def __init__(self) -> None:
         super().__init__()
         # Setting up the database connection
+        self.__select_hotel_menu = None
         engine = create_engine(f'sqlite:///{os.environ.get("DB_FILE")}')
         Session = sessionmaker(bind=engine)
         self._session = Session() # Initialize a session for database operations
@@ -30,6 +34,7 @@ class SearchManager(BaseManager):
         query = select(Hotel.name).where(Hotel.id == hotel_id)
         result = self._session.execute(query).scalar_one() # Execute the query and return a single scalar result
         return result
+
 
     def get_hotels_by_city_guests_star_availability(self, hotel_name=None, city=None, max_guests=None, star_rating=None,
                                                     start_date=None,

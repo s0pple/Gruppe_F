@@ -23,6 +23,16 @@ class SearchMenu(Menu):
         self.__user_manager = UserManager()
         self.__select_hotel_menu = None  # Will be initialized later with hotel_id
 
+    def _navigate(self, choice: int):
+        match choice:
+            case 1:
+                # Create a guest user when the user selects the "Search Hotels" option
+                self.__user_manager.create_guest_user()
+                return self.__search_by_name_city_guests_star_availability()
+            case 2:
+                Console.clear()
+                return self.__main_menu  # Navigate back to the main menu
+
     def __search_by_name_city_guests_star_availability(self):
         while True:
             # print("Enter the attributes you want to search with, or skip to show all hotels ")
@@ -45,22 +55,12 @@ class SearchMenu(Menu):
             choice_hotel_id = self.__search_manager.get_hotels_by_city_guests_star_availability(hotel_name, city,
                                                                                                 max_guests, star_rating,
                                                                                                 start_date, end_date)
-            # If no hotel was found, the entries are queried again
             if not choice_hotel_id:
                 continue
             else:
                 self.__select_hotel_menu = SelectHotelMenu(self.__main_menu, hotel_id=choice_hotel_id)
                 return self.__select_hotel_menu
 
-    def _navigate(self, choice: int):
-        match choice:
-            case 1:
-                # Create a guest user when the user selects the "Search Hotels" option
-                self.__user_manager.create_guest_user()
-                return self.__search_by_name_city_guests_star_availability()
-            case 2:
-                Console.clear()
-                return self.__main_menu  # Navigate back to the main menu
 
 
 class SelectHotelMenu(Menu):
