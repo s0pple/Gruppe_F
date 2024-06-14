@@ -208,10 +208,10 @@ class SearchManager(BaseManager):
                 print("******************************************************************************************")
 
         try:
-            choice = int(input("Enter the number you want to select: "))
+            choice = int(input("Enter the number you want to book: "))
             if 1 <= choice <= len(rooms):
-                selected_room = rooms[choice - 1][0]  # Access the room details from the list
-                Console.format_text(f"You selected: room number: {selected_room.number}")
+                selected_room = rooms[choice - 1].Room
+                Console.format_text(f"You selected the following room number for booking: {selected_room.number}")
 
                 has_login = input("Do you have a login? (yes/no): ").strip().lower()
                 if has_login == 'yes':
@@ -318,10 +318,10 @@ class SearchManager(BaseManager):
                     print(f"Error: {e}. Room attributes: {room._mapping}")
 
             try:
-                choice = Console.format_text(int(input("Enter the number you want to select: ")))
+                choice = int(input("Enter the number you want to book: "))
                 if 1 <= choice <= len(rooms):
                     selected_room = rooms[choice - 1].Room
-                    Console.format_text(f"You selected: room number: {selected_room.number}")
+                    Console.format_text(f"You selected the following room number for booking: {selected_room.number}")
 
                     # Ask if the user has a login
                     has_login = input("Do you have a login? (yes/no): ")
