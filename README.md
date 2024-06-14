@@ -134,19 +134,26 @@ When you select the "Search hotels with desired attributes" option, you'll be pr
 8. if no hotels match the conditions, the entries are queried again with the message that no hotel was found.
 Otherwise the hotels are listed and you can select one of them. The room search is started by the selection.
 
-**???NOCH ÜBERARBEITEN**
-1. Select the room type: You'll see a list of room types to choose from. Type the number of your desired room type and press Enter. If you want to search for all room types, just press Enter without typing anything.  
-2. Enter the maximum number of guests: Type the maximum number of guests you want to search for and press Enter. If you want to search for all numbers of guests, just press Enter without typing anything.  
-3. Enter the price per night: Type the price per night you want to search for and press Enter. If you want to search for all prices, just press Enter without typing anything.  
-4. Enter the start and end dates: You'll be prompted to enter the start and end dates of your stay. Type the dates in the format DD-MM-YYYY and press Enter. If you want to search for all dates, just press Enter without typing anything.  
+**Search Rooms**
 
-After entering your desired attributes, the application will display a list of hotels that match your criteria. You can then select a hotel to see more details.  
+After selecting the desired hotel you can choose one of the following options:
 
-***Select a Hotel***
+1. Search rooms in selected hotel
+   *  Why: To find rooms based on specific criteria.
+   * What next: Enter search criteria.
+   * How: Enter room type, maximum number of guests, price per night (budget), and availability during a specific date range (you can also skip with Enter all the criterias you want to skip).
+   * last step: View and select the room you want to book.
 
-When you see the list of hotels, you can select a hotel to see more details. To select a hotel, simply type the number of the hotel and press Enter.
+5. Display all available rooms
+   * Why: To see all rooms without filters.
+   * What next: View and select a room.
+   * How: Only enter the start and end date of the desired stay or skip (press Enter) to show all.
+   * last step: View and select the room you want to book.
 
-Once you've selected a hotel, you'll see a list of available rooms in that hotel. You can then select a room to book.  
+9. Back
+   * Why: To return to the main menu.
+   * What next: Navigate to the previous menu.
+   
 
 ***Book a Room***
 
