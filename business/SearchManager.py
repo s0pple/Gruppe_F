@@ -134,8 +134,10 @@ class SearchManager(BaseManager):
 
     def get_desired_rooms_by_hotel_id(self, hotel_id=None, number=None, type=None, max_guests=None, amenities=None,
                                       price=None, description=None, start_date=None, end_date=None) -> List[Room]:
+        # Start by creating a basic query to select all rooms
         query = select(Room)
 
+        # Filter the query based on the provided criteria
         if hotel_id:
             query = query.where(Room.hotel_id == hotel_id)
         if number:
@@ -151,17 +153,19 @@ class SearchManager(BaseManager):
         if description:
             query = query.where(Room.description == description)
 
+        # Get the start and end dates for the booking period
         start_date = self.__validation_manager.input_start_date()
         if start_date is not None:
             end_date = self.__validation_manager.input_end_date(start_date)
         else:
             end_date = None
 
+        # If both start and end dates are provided, filter out booked rooms during this period
         if start_date and end_date:
-            # Alias for the Booking table to avoid name conflicts
+            # Create an alias for the Booking table to avoid name conflicts
             br = aliased(Booking)
 
-            # Subquery to find booked room_hotel_id combinations
+            # Subquery to find rooms that are already booked during the given period
             booking_subquery = (
                 select(br.room_hotel_id, br.room_number)
                 .where(
@@ -183,6 +187,7 @@ class SearchManager(BaseManager):
                 )
             ).where(booking_subquery.c.room_hotel_id == None).group_by(Room.number)
 
+        # Execute the query and fetch all results
         result = self._session.execute(query)
         all_rooms = result.fetchall()
         return self.select_all(query), all_rooms
@@ -279,7 +284,7 @@ class SearchManager(BaseManager):
 
         room_type = room_type_dict.get(room_type_choice, "all")
         if room_type == "all":
-            room_type = None  # Treat 'all' as no specific room type
+            room_type = None  # Treat "all" as no specific room type
 
         max_guests = input("Enter the maximum number of guests you want to search for or press Enter for all: ")
         max_guests = int(max_guests) if max_guests.isdigit() and int(max_guests) > 0 else None
@@ -366,7 +371,6 @@ class SearchManager(BaseManager):
         return self
 
 if __name__ == '__main__':
-    # Set the database file path if not set in the environment
     if not os.environ.get('DB_FILE'):
         os.environ['DB_FILE'] = '../data/test.db'
     search_manager = SearchManager()
