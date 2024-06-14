@@ -40,23 +40,19 @@ class SearchManager(BaseManager):
                                                     start_date=None,
                                                     end_date=None) -> List[Hotel]:
 
-        # basic query to show all hotels
+        # Start of building the query to get hotels with various optional filters
         query = select(Hotel).select_from(Hotel)
-        # If hotel_name is specified, it is added to the WHERE clause
-
-
-        # Start building the query to get hotels with various optional filters
-        query = select(Hotel).distinct().select_from(Hotel)
 
         # If hotel_name is specified, add it to the WHERE clause
         if hotel_name:
             # Filter by hotel name if provided
             query = query.where(Hotel.name.ilike(f"%{hotel_name}%"))
+
         # If city is specified, add it to the WHERE clause
         if city:
             # Join with Address table to filter by city
             query = query.join(Address, Hotel.address_id == Address.id).where(
-                Address.city.ilike(f"%{city}%"))  # == city)
+                Address.city.ilike(f"%{city}%"))
 
         # If max_guests is specified, add it to the WHERE clause
         if max_guests:
@@ -126,11 +122,6 @@ class SearchManager(BaseManager):
                         print("Invalid number. Please try again.")
                 except ValueError:
                     print("Invalid input. Please enter a number.")
-
-                # if choice is not None:
-                #     print(f"You selected: {hotels[choice - 1]}")
-                #     choice_hotel_id = hotels[choice - 1].id
-                #     return choice_hotel_id
 
     def get_all_rooms_by_hotel_id(self, hotel_id):
         query = select(Room).where(Room.hotel_id == hotel_id)
