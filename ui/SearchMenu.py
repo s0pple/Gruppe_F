@@ -96,7 +96,3 @@ class RoomSearchAndBookingMenu(Menu):
             case 3:
                 # Navigate back to the main menu
                 return self.__main_menu
-            case _:
-                # Handle invalid menu choice
-                print("Invalid choice. Please enter a number between 1 and 3.")
-                return self

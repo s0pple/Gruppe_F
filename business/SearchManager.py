@@ -1,10 +1,8 @@
 import os
-from sqlalchemy import select, func, text, create_engine, or_, and_
+from sqlalchemy import select, create_engine, or_, and_
 from sqlalchemy.orm import sessionmaker, aliased
 from business.BaseManager import BaseManager
 from data_models.models import *
-from console.console_base import Menu, MenuOption, Console
-from datetime import datetime
 from business.ValidationManager import ValidationManager
 from console.console_base import Console
 
@@ -132,12 +130,6 @@ class SearchManager(BaseManager):
                 #     choice_hotel_id = hotels[choice - 1].id
                 #     return choice_hotel_id
 
-    def get_all_rooms_by_hotel_id(self, hotel_id):
-        query = select(Room).where(Room.hotel_id == hotel_id)
-        result = self._session.execute(query)
-        all_rooms = result.scalars().all()
-        return all_rooms
-
     def get_desired_rooms_by_hotel_id(self, hotel_id=None, number=None, type=None, max_guests=None, amenities=None,
                                       price=None, description=None, start_date=None, end_date=None) -> List[Room]:
         query = select(Room)
@@ -164,7 +156,10 @@ class SearchManager(BaseManager):
             end_date = None
 
         if start_date and end_date:
+            # Alias for the Booking table to avoid name conflicts
             br = aliased(Booking)
+
+            # Subquery to find booked room_hotel_id combinations
             booking_subquery = (
                 select(br.room_hotel_id, br.room_number)
                 .where(
@@ -177,6 +172,7 @@ class SearchManager(BaseManager):
                 .subquery()
             )
 
+            # Main query to exclude hotels with booked rooms during the requested period
             query = query.outerjoin(
                 booking_subquery,
                 and_(
