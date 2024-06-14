@@ -43,9 +43,11 @@ class SearchManager(BaseManager):
         # Start building the query to get hotels with various optional filters
         query = select(Hotel).distinct().select_from(Hotel)
 
+        # If hotel_name is specified, add it to the WHERE clause
         if hotel_name:
             # Filter by hotel name if provided
             query = query.where(Hotel.name.ilike(f"%{hotel_name}%"))
+        # If city is specified, add it to the WHERE clause
         if city:
             # Join with Address table to filter by city
             query = query.join(Address, Hotel.address_id == Address.id).where(
@@ -89,35 +91,41 @@ class SearchManager(BaseManager):
         query = query.distinct(Hotel.id)
 
         result = self._session.execute(query)
+
         hotels = result.scalars().all()
-        # return all_hotels
-        print(hotels)
 
-        Console.format_text("Available Hotels:")
-        seen_hotel_names = set()  # Verwende ein Set, um bereits gesehene Hotelnamen zu speichern
-        for i, hotel in enumerate(hotels, start=1):
-            if hotel.name not in seen_hotel_names:
-                Console.format_text(f"{i} \033[4m{hotel.name}\033[0m\n"
-                                    f"Address: {hotel.address.street}, {hotel.address.zip} {hotel.address.city}\n"
-                                    f"Stars: {hotel.stars}")
-                seen_hotel_names.add(hotel.name)
+        # check whether hotels with the given attributes were found
+        if not hotels:
+            Console.format_text("No hotels were found.")
+            input("Press Enter to continue...")
+            return None
+        else:
+            Console.format_text("Available Hotels:")
+            seen_hotel_names = set()  # workaround with set, so that the hotels are only displayed once
+            for i, hotel in enumerate(hotels, start=1):
+                if hotel.name not in seen_hotel_names:
+                    Console.format_text(f"{i}: \033[4m{hotel.name}\033[0m\n"
+                                        f"Address: {hotel.address.street}, {hotel.address.zip} {hotel.address.city}\n"
+                                        f"Stars: {hotel.stars}")
+                    seen_hotel_names.add(hotel.name)
 
-        while True:
-            try:
-                choice = Console.format_text("To select the hotel of your choice ", "enter the number:").lower()
-                choice = int(choice)
-                if 1 <= choice <= len(hotels):
+            # Selection of the hotel
+            while True:
+                try:
+                    choice = Console.format_text("To select the hotel of your choice ", "enter the number:").lower()
+                    choice = int(choice)
+                    if 1 <= choice <= len(hotels):
 
-                    return choice  # Return the user's choice if it is valid
-                else:
-                    print("Invalid number. Please try again.")
-            except ValueError:
-                print("Invalid input. Please enter a number.")
+                        return choice  # Returns the user's choice if it is valid
+                    else:
+                        print("Invalid number. Please try again.")
+                except ValueError:
+                    print("Invalid input. Please enter a number.")
 
-            # if choice is not None:
-            #     print(f"You selected: {hotels[choice - 1]}")
-            #     choice_hotel_id = hotels[choice - 1].id
-            #     return choice_hotel_id
+                # if choice is not None:
+                #     print(f"You selected: {hotels[choice - 1]}")
+                #     choice_hotel_id = hotels[choice - 1].id
+                #     return choice_hotel_id
 
     def get_all_rooms_by_hotel_id(self, hotel_id):
         query = select(Room).where(Room.hotel_id == hotel_id)

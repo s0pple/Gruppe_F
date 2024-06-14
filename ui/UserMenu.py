@@ -37,6 +37,7 @@ class UserMenu(Menu):
                             existing_username = self.__user_manager.check_existing_usernames(username)
                             if existing_username:
                                 Console.format_text("E-Mail already exists. Please choose a different E-Mail.")
+                                continue
                             else:
                                 self.__validation_manager.create_password(username)
 

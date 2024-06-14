@@ -45,9 +45,8 @@ class SearchMenu(Menu):
             choice_hotel_id = self.__search_manager.get_hotels_by_city_guests_star_availability(hotel_name, city,
                                                                                                 max_guests, star_rating,
                                                                                                 start_date, end_date)
+            # If no hotel was found, the entries are queried again
             if not choice_hotel_id:
-                print("No hotels with these conditions were found")
-                input("Press Enter to continue...")
                 continue
             else:
                 self.__select_hotel_menu = SelectHotelMenu(self.__main_menu, hotel_id=choice_hotel_id)

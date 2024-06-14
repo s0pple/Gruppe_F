@@ -4,6 +4,7 @@ from sqlalchemy import select, func, text, create_engine, or_, and_
 from sqlalchemy.orm import sessionmaker, aliased
 from business.BaseManager import BaseManager
 from business.UserManager import UserManager
+from console.console_base import Console
 from data_models.models import *
 from datetime import datetime
 
@@ -18,19 +19,27 @@ class ValidationManager:
         self.__user_manager = UserManager()
 
     def create_userinfo(self, username: str):
-        print("Pleas enter the following user-information: ")
-        firstname = input("First name: ")
-        lastname = input("Last name: ")
+
+
+        Console.format_text("To register Please enter the requested user-information", "Press enter to continue... ")
+
+        firstname = Console.format_text("Register", "Enter Firstname: ")
+        lastname = Console.format_text("Register", "Enter Lastname: ")
         emailaddress = str(username)
-        print("Pleas enter the following address-information: ")
-        zip = self.input_zip()  # input("Zip Code: ")
-        city = input("City: ")
-        street = input('Street and Number ("Examplestreet 11"): ')
+        Console.clear()
+        Console.format_text("To register Please enter the requested address-information", "Press enter to continue... ")
+        zip = self.input_zip()
+        city = Console.format_text("Register", "Enter City: ").strip()
+        street = Console.format_text("Register", 'Street and Number ("Examplestreet 11"): ').strip()
+
+        Console.format_text("You have been successfully registered", "Press enter to continue... ")
+        Console.clear()
         return firstname, lastname, str(emailaddress), city, zip, street
 
     def input_zip(self):
         while True:
-            zip_code = input("Zip code: ").strip()
+
+            zip_code = Console.format_text("Register", "Enter Zip code: ").strip()
             if zip_code == "":
                 print("Zip code cannot be empty.")
                 continue
@@ -86,8 +95,6 @@ class ValidationManager:
                     print("The date cannot be in the past. Please enter a future date.")
                     continue
 
-                # Format the date to yyyy-mm-dd
-                # formatted_start_date = date_obj_start.strftime("%Y-%m-%d")
                 return date_obj_start
 
             except ValueError:
@@ -112,10 +119,7 @@ class ValidationManager:
                     print("The date cannot be in the past. Please enter a future date.")
                     continue
 
-                # Format the date to yyyy-mm-dd
-                # formatted_end_date = date_obj.strftime("%Y-%m-%d")
-
-                if date_obj_end < date_obj_start:  #if formatted_end_date < formatted_start_date:
+                if date_obj_end < date_obj_start:
                     print("The end date must be later than the start date. Please try again.")
                     continue
                 return date_obj_end
@@ -125,8 +129,9 @@ class ValidationManager:
 
     def create_password(self, username):
         while True:
-            print("Enter Passwort (capital and small letters, at least 10 characters)")
-            password = input("Your Password: ")
+            # print("Enter Passwort (capital and small letters, at least 10 characters)")
+            password = Console.format_text("Register", "Enter Passwort (capital and small letters, at least 10 characters):").strip()
+            # password = input("Your Password: ")
 
             if len(password) < 10:
                 print("Password must contain at least 10 characters, please enter it again")
@@ -142,7 +147,8 @@ class ValidationManager:
                 print("Password too weak, please enter another one")
                 continue
             else:
-                password_check = input("Enter your Password again to verify: ")
+                # password_check = input("Enter your Password again to verify: ")
+                password_check = Console.format_text("Register", "Enter your Password again to verify: ").strip()
                 if password == password_check:
                     login = self.__user_manager.create_user(username, password)
                     return self
