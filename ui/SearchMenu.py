@@ -57,12 +57,11 @@ class SearchMenu(Menu):
             if not choice_hotel_id:
                 continue
             else:
-                self.__select_hotel_menu = SelectHotelMenu(self.__main_menu, hotel_id=choice_hotel_id)
+                self.__select_hotel_menu = RoomSearchAndBookingMenu(self.__main_menu, hotel_id=choice_hotel_id)
                 return self.__select_hotel_menu
 
 
-
-class SelectHotelMenu(Menu):
+class RoomSearchAndBookingMenu(Menu):
     def __init__(self, main_menu: Menu, hotel_id=None):
         super().__init__("Search Rooms")
 
