@@ -38,7 +38,7 @@ class ValidationManager:
     def input_zip(self):
         while True:
 
-            zip_code = Console.format_text("Register", "Enter Zip code: ").strip()
+            zip_code = Console.format_text("Postal code", "Enter Zip code: ").strip()
             if zip_code == "":
                 print("Zip code cannot be empty.")
                 continue
@@ -185,7 +185,7 @@ class ValidationManager:
                 print("Invalid input. Please enter a valid integer.")
                 continue
 
-    def room_max_guests(self, max_capacity):
+    def room_max_guests(self, max_capacity: object) -> object:
         while True:
             input_value = input("Enter the number of guests: ").strip()
             if input_value.isdigit():

@@ -1,10 +1,10 @@
 import os
-from sqlalchemy import select, func, text, create_engine, or_, and_
-from sqlalchemy.orm import sessionmaker, aliased
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from business.BaseManager import BaseManager
 from console.console_base import Console
 from data_models.models import *
-
+from business.ValidationManager import ValidationManager
 
 class HotelManager(BaseManager):
     def __init__(self) -> None:
@@ -12,23 +12,30 @@ class HotelManager(BaseManager):
         engine = create_engine(f'sqlite:///{os.environ.get("DB_FILE")}')
         Session = sessionmaker(bind=engine)
         self._session = Session()
+        self.__validation_manager = ValidationManager()
 
     def get_session(self):
         return self
 
-    def add_hotel(self):
+    def add_hotel(self): #adds hotel to the database
         print("Enter the following information")
         # adds address
-        address = Address(street=str(input("Street:")),
-                          city=str(input("City:")),
-                          zip=int(input("Postal code:")))
+        streets = input(Console.format_text("Add hotel", "Enter street: "))
+        city = input(Console.format_text("Add hotel", "Enter city: "))
+        zip_code = self.__validation_manager.input_zip()
+        hotel_name = input(Console.format_text("Add hotel", "Enter hotel name: "))
+        stars = self.__validation_manager.input_star_rating()
+
+        address = Address(street=streets,
+                          city=city,
+                          zip=zip_code)
         self._session.add(address)
         self._session.commit()
         print("Address has been added to the database. Address ID is", address.id)
 
         # Add new hotels with the addresses
-        hotels = Hotel(name=str(Console.format_text("Add Hotel", "Hotelname:")),
-                       stars=int(input("Rating:")),
+        hotels = Hotel(name=hotel_name,
+                       stars=stars,
                        address_id=address.id)
         self._session.add(hotels)
         self._session.commit()
@@ -36,13 +43,21 @@ class HotelManager(BaseManager):
 
         # adds rooms in a loop
         def add_room(hotel_id):
+            number = int(input(Console.format_text("Add hotel", "Enter room number: ")))
+            type = input(Console.format_text("Add hotel", "Enter room type: "))
+            max_guest = self.__validation_manager.room_max_guests(object)
+            description = input(Console.format_text("Add hotel", "Enter a room description: "))
+            amenities = input(Console.format_text("Add hotel", "Enter the amenities of the room: "))
+            price = float(input(Console.format_text("Add hotel", "Enter the room price per night: ")))
+
+
             room = Room(hotel_id=hotel_id,
-                        number=int(input("Room number:")),
-                        type=str(input("Room type:")),
-                        max_guests=int(input("Maximum number of guests:")),
-                        description=str(input("Description:")),
-                        amenities=str(input("Amenities:")),
-                        price=float(input("Room price:")))
+                        number= number,
+                        type=type,
+                        max_guests=max_guest,
+                        description=description,
+                        amenities=amenities,
+                        price=price)
             self._session.add(room)
             self._session.commit()
             print("Room has been added to the database.")
@@ -56,7 +71,8 @@ class HotelManager(BaseManager):
                 break
 
     def delete_hotel(self):
-        hotel_id = int(input("Enter Hotel ID which will be deleted:"))
+        hotel_id = int(Console.format_text("delete hotel", "Enter hotel ID: "))
+
         hotel = self._session.query(Hotel).filter_by(id=hotel_id).first()
         if hotel:
             # Fetch and delete associated rooms
@@ -71,28 +87,41 @@ class HotelManager(BaseManager):
             print("Invalid Hotel ID")
 
     def adjust_room(self, room):
+        room_number = int(input(Console.format_text("adjust room", "Enter room number: ")))
+        room_type = input(Console.format_text("adjust room", "Enter room type: "))
+        max_guest = self.__validation_manager.room_max_guests(object)
+        room_description = input(Console.format_text("adjust room", "Enter a room description: "))
+        room_amenities = input(Console.format_text("adjust room", "Enter the amenities of the room: "))
+        room_price = float(input(Console.format_text("adjust room", "Enter the room price per night: ")))
+
         print("Adjusting room details. Press enter to skip.")
-        room.number = int(input(f"Enter new room number (current: {room.number}): ")) or room.number
-        room.type = str(input(f"Enter new room type (current: {room.type}): ")) or room.type
-        room.max_guests = int(
-            input(f"Enter new maximum number of guests (current: {room.max_guests}): ")) or room.max_guests
-        room.description = str(input(f"Enter new description (current: {room.description}): ")) or room.description
-        room.amenities = str(input(f"Enter new amenities (current: {room.amenities}): ")) or room.amenities
-        room.price = float(input(f"Enter new room price (current: {room.price}): ")) or room.price
-        self._session.commit()
+
+        room.number = room_number or room.number
+        room.type = room_type or room.type
+        room.max_guests = max_guest or room.max_guests
+        room.description = room_description or room.description
+        room.amenities = room_amenities or room.amenities
+        room.price = room_price or room.price
         print("Room details have been updated.")
 
     def edit_hotel(self):
-        hotel_name = input("Enter the hotel name you want to adjust: ")
+        current_hotel_name = input(Console.format_text("Edit Hotel", "Enter a hotel name: "))
+        streets = input(Console.format_text("Edit hotel", "Enter street: "))
+        city = input(Console.format_text("Edit hotel", "Enter city: "))
+        zip_code = self.__validation_manager.input_zip()
+        new_hotel_name = input(Console.format_text("Edit hotel", "Enter hotel name: "))
+        stars = self.__validation_manager.input_star_rating()
 
         # Retrieve the hotel by name
-        hotel = self._session.query(Hotel).filter_by(name=hotel_name).first()
+        hotel = self._session.query(Hotel).filter_by(name=current_hotel_name).first()
 
         if not hotel:
-            print(f"No hotel found with the name ' {hotel_name} '.")
+            print(f"No hotel found with the name ' {current_hotel_name} '.")
             return
+        # Retrieve the hotel address
         address = self._session.query(Address).filter_by(id=hotel.address_id).first()
 
+        # Displays current hotel information
         print(f"Adjusting details for hotel: {hotel.name}")
         print(f"Current information for hotel:\n"
               f"Stars: {hotel.stars} \n"
@@ -102,27 +131,25 @@ class HotelManager(BaseManager):
         # Adjust hotel details
         if input("Would you like to continue? (yes/no) :") == "yes":
             print("Adjusting details for hotel. Press enter to skip")
-            hotel.name = str(input(f"Enter new name for the hotel (current: {hotel.name}): ")) or hotel.name
-            hotel.stars = int(input(f"Enter new rating for the hotel (current: {hotel.stars}): ")) or hotel.stars
+            hotel.name = new_hotel_name or hotel.name
+            hotel.stars = stars or hotel.stars
 
             # Retrieve and adjust address details
-            address.street = str(input(f"Enter new street (current: {address.street}): ")) or address.street
-            address.city = str(input(f"Enter new city (current: {address.city}): ")) or address.city
-            address.zip = int(input(f"Enter new postal code (current: {address.zip}): ")) or address.zip
+            address.street = streets or address.street
+            address.city = city or address.city
+            address.zip = zip_code or address.zip
 
             self._session.commit()
             print("Hotel and address details have been updated.")
         else:
             print("Adjustment has been cancelled")
 
-        if input("Do you want to adjust the rooms? (yes/no): ").strip().lower() == "yes":
+        if input(Console.format_text("Edit hotel","Do you want to edit rooms (yes/no)")).strip().lower() == "yes":
             while True:
-                room_number = input(
-                    "Enter the room number you want to adjust (or type 'add' to add a new room, 'done' to finish): ").strip().lower()
+                room_number = input(Console.format_text("Edit room", "Enter the room number you want to adjust or type 'done' to finish): ")
+                                    .strip().lower())
                 if room_number == 'done':
                     break
-                #elif room_number == 'add':
-                #   add_room_to_hotel(hotel.id, Room)
                 else:
                     room = self._session.query(Room).filter_by(hotel_id=hotel.id, number=room_number).first()
                     if not room:
@@ -131,11 +158,11 @@ class HotelManager(BaseManager):
                     self.adjust_room(room)
 
     def edit_room(self):
-        hotel_name = input("In which hotel should the room be edited? ")
+        hotel_name = input(Console.format_text("Edit room", "In which hotel should the room be edited? "))
         hotel = self._session.query(Hotel).filter_by(name=hotel_name).first()
         if hotel:
             while True:  # Loop until valid room is selected
-                room_number = int(input("Enter room number to edit: "))
+                room_number = int(input(Console.format_text("Edit room", "Enter room number to edit: ")))
                 room = self._session.query(Room).filter_by(hotel_id=hotel.id, number=room_number).first()
 
                 if room:
@@ -147,12 +174,19 @@ class HotelManager(BaseManager):
             print("Hotel not found. Please try again.")
 
     def add_room(self):
-        hotel_name = input("In which hotel should the room be added? ")
+        hotel_name = input(Console.format_text("Add room", "In which hotel should the room be added? "))
+        room_number_ = int(input(Console.format_text("Add room", "Enter room number: ")))
+        room_type_ = input(Console.format_text("Add room", "Enter room type: "))
+        max_guest = self.__validation_manager.room_max_guests(object)
+        room_description = input(Console.format_text("Add room", "Enter a room description: "))
+        room_amenities = input(Console.format_text("Add room", "Enter the amenities of the room: "))
+        room_price_ = float(input(Console.format_text("Add room", "Enter the room price per night: ")))
+
         hotel = self._session.query(Hotel).filter_by(name=hotel_name).first()
         if hotel:
             while True:
                 try:
-                    room_number = int(input("Room number: "))
+                    room_number = room_number_
                     # Check if the room number already exists in this hotel
                     existing_room = self._session.query(Room).filter_by(hotel_id=hotel.id, number=room_number).first()
                     if existing_room:
@@ -160,11 +194,11 @@ class HotelManager(BaseManager):
                         continue  # Go back to the beginning of the loop
 
                     # Get input for the new room's details
-                    room_type = input("Room type: ")
-                    max_guests = int(input("Maximum number of guests: "))
-                    description = input("Description: ")
-                    amenities = input("Amenities: ")
-                    room_price = float(input("Room price: "))
+                    room_type = room_type_
+                    max_guests = max_guest
+                    description = room_description
+                    amenities = room_amenities
+                    room_price = room_price_
 
                     # Create and add the new room
                     new_room = Room(
@@ -184,12 +218,12 @@ class HotelManager(BaseManager):
 
                 except ValueError:
                     print(
-                        "Invalid input. Please enter numbers for room number and maximum guests, and a decimal number for price.")
+                        "Invalid input. Please check the inputs")
         else:
             print("Hotel not found. Please try again.")
 
     def delete_room(self):
-        hotel_name = input("In which hotel should the room be deleted? ")
+        hotel_name = input(Console.format_text("Delete room", "In which hotel should the room be deleted? "))
         hotel = self._session.query(Hotel).filter_by(name=hotel_name).first()
 
         if not hotel:
@@ -198,7 +232,7 @@ class HotelManager(BaseManager):
 
         while True:
             try:
-                room_number = int(input("Room number to delete: "))
+                room_number = int(input(Console.format_text("Delete room", "Room number to delete: ")))
             except ValueError:
                 print("Invalid input. Please enter a number.")
                 continue  # Go back to the beginning of the loop
