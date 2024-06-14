@@ -6,23 +6,28 @@ from business.ValidationManager import ValidationManager
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import os
-from data_models.models import Address, Guest, Login
+
 
 
 class SearchMenu(Menu):
 
     def __init__(self, main_menu: Menu):
         super().__init__("Search Hotel")
-        self.add_option(MenuOption("Search hotels with desired attributes "))  # Option to search hotels
-        self.add_option(MenuOption("Back"))  # Option to go back to the main menu
-
         self.__main_menu = main_menu
         self.__search_manager = SearchManager()
         self.__validation_manager = ValidationManager()
         self.__user_manager = UserManager()
         self.__select_hotel_menu = None  # Will be initialized later with hotel_id
 
+        # Adding menu options for user interaction
+        self.add_option(MenuOption("Search hotels with desired attributes "))  # Option to search hotels
+        self.add_option(MenuOption("Back"))  # Option to go back to the main menu
+
+
+
+
     def _navigate(self, choice: int):
+        # Handling user selection from the menu
         match choice:
             case 1:
                 # Create a guest user when the user selects the "Search Hotels" option
@@ -40,8 +45,7 @@ class SearchMenu(Menu):
                     star_rating = self.__validation_manager.input_star_rating()
                     start_date = self.__validation_manager.input_start_date()
                     if start_date is not None:
-                        end_date = self.__validation_manager.input_end_date(
-                            start_date)
+                        end_date = self.__validation_manager.input_end_date(start_date)
                     else:
                         end_date = None
 
@@ -60,6 +64,7 @@ class SearchMenu(Menu):
             case 2:
                 Console.clear()
                 return self.__main_menu  # Navigate back to the main menu
+
 
 class RoomSearchAndBookingMenu(Menu):
     def __init__(self, main_menu: Menu, hotel_id=None):

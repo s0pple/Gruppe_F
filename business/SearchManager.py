@@ -34,10 +34,9 @@ class SearchManager(BaseManager):
         return result
 
     # Subquery to find booked room_hotel_id combinations
-    def get_booking_subquery(self, start_date, end_date):
+    def booking_subquery(self, start_date, end_date):
         br = aliased(Booking)
 
-        # Subquery to find booked room_hotel_id combinations
         booking_subquery = (
             select(br.room_hotel_id, br.room_number)
             .where(
@@ -82,21 +81,7 @@ class SearchManager(BaseManager):
         if start_date and end_date:
             # Alias for the Booking table to avoid name conflicts
 
-            booking_subquery = self.get_booking_subquery(start_date, end_date)
-
-
-            # br = aliased(Booking)
-            # booking_subquery = (
-            #     select(br.room_hotel_id, br.room_number)
-            #     .where(
-            #         or_(
-            #             and_(br.start_date <= start_date, br.end_date >= end_date),
-            #             and_(br.start_date >= start_date, br.start_date <= end_date),
-            #             and_(br.end_date >= start_date, br.end_date <= end_date)
-            #         )
-            #     )
-            #     .subquery()
-            # )
+            booking_subquery = self.booking_subquery(start_date, end_date)
 
             # Main query to exclude hotels with booked rooms during the requested period
             query = query.join(Room, Hotel.id == Room.hotel_id).outerjoin(
@@ -141,18 +126,11 @@ class SearchManager(BaseManager):
                 except ValueError:
                     print("Invalid input. Please enter a number.")
 
-
-                # if choice is not None:
-                #     print(f"You selected: {hotels[choice - 1]}")
-                #     choice_hotel_id = hotels[choice - 1].id
-                #     return choice_hotel_id
-
     def get_all_rooms_by_hotel_id(self, hotel_id):
         query = select(Room).where(Room.hotel_id == hotel_id)
         result = self._session.execute(query)
         all_rooms = result.scalars().all()
         return all_rooms
-
 
     def get_desired_rooms_by_hotel_id(self, hotel_id=None, number=None, type=None, max_guests=None, amenities=None,
                                       price=None, description=None, start_date=None, end_date=None) -> List[Room]:
