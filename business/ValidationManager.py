@@ -20,7 +20,6 @@ class ValidationManager:
 
     def create_userinfo(self, username: str):
 
-
         Console.format_text("To register Please enter the requested user-information", "Press enter to continue... ")
 
         firstname = Console.format_text("Register", "Enter Firstname: ")
@@ -28,13 +27,13 @@ class ValidationManager:
         emailaddress = str(username)
         Console.clear()
         Console.format_text("To register Please enter the requested address-information", "Press enter to continue... ")
-        zip = self.input_zip()
+        zip_code = self.input_zip()
         city = Console.format_text("Register", "Enter City: ").strip()
         street = Console.format_text("Register", 'Street and Number ("Examplestreet 11"): ').strip()
 
         Console.format_text("You have been successfully registered", "Press enter to continue... ")
         Console.clear()
-        return firstname, lastname, str(emailaddress), city, zip, street
+        return firstname, lastname, str(emailaddress), city, zip_code, street
 
     def input_zip(self):
         while True:
@@ -130,7 +129,8 @@ class ValidationManager:
     def create_password(self, username):
         while True:
             # print("Enter Passwort (capital and small letters, at least 10 characters)")
-            password = Console.format_text("Register", "Enter Passwort (capital and small letters, at least 10 characters):").strip()
+            password = Console.format_text("Register",
+                                           "Enter Passwort (capital and small letters, at least 10 characters):").strip()
             # password = input("Your Password: ")
 
             if len(password) < 10:

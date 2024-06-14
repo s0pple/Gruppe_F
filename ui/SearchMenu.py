@@ -3,7 +3,6 @@ from business.SearchManager import SearchManager
 from console.console_base import Menu, MenuOption, Console
 from business.UserManager import UserManager
 from business.ValidationManager import ValidationManager
-from datetime import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import os
@@ -28,12 +27,12 @@ class SearchMenu(Menu):
             case 1:
                 # Create a guest user when the user selects the "Search Hotels" option
                 self.__user_manager.create_guest_user()
-                return self.__search_by_name_city_guests_star_availability()
+                return self.search_by_name_city_guests_star_availability()
             case 2:
                 Console.clear()
                 return self.__main_menu  # Navigate back to the main menu
 
-    def __search_by_name_city_guests_star_availability(self):
+    def search_by_name_city_guests_star_availability(self):
         while True:
             # print("Enter the attributes you want to search with, or skip to show all hotels ")
             Console.format_text("Enter the attributes you want to search with, or skip to show all hotels", "press Enter to continue...")
@@ -47,7 +46,7 @@ class SearchMenu(Menu):
             start_date = self.__validation_manager.input_start_date()
             if start_date is not None:
                 end_date = self.__validation_manager.input_end_date(
-                    start_date)  # input("(optional) - Enter the end date: ")
+                    start_date)
             else:
                 end_date = None
 

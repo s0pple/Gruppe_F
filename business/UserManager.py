@@ -5,7 +5,6 @@ from console.console_base import Console
 from data_models.models import Login, Guest, Booking, Address
 
 
-
 class UserManager:
     def __init__(self) -> None:
         super().__init__()
@@ -35,19 +34,13 @@ class UserManager:
         self._session.add(new_login)
         self._session.commit()
 
-    def create_user_information(self, firstname, lastname, emailaddress: str, city, zip, street):
-        #guest = Guest(firstname=firstname, email=emailaddress,  lastname=lastname)
-        #address = Address(city=city, zip=zip, street=street)
-        #self._session.add(guest)
-        #self._session.commit()
-        #self._session.add(address)
-        #self._session.commit()
+    def create_user_information(self, firstname, lastname, emailaddress: str, city, zip_code, street):
         # Commit the session to save the new user and login to the database
-        new_address = Address(city=city, zip=zip, street=street)
+        new_address = Address(city=city, zip=zip_code, street=street)
         self._session.add(new_address)
-        self._session.flush()  # Sicherstellen, dass die Adresse in die DB geschrieben wird und eine ID erhält
+        self._session.flush()  # To ensure that the address is written to the DB and receives an ID
 
-        # Jetzt den Benutzer speichern und die address_id setzen
+        # Now the user is saved and the address_id is set
         guest = Guest(firstname=firstname, lastname=lastname, email=emailaddress, address_id=new_address.id,
                       type='registered')
         self._session.add(guest)
