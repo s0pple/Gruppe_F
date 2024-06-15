@@ -84,7 +84,7 @@ class BookingManager(BaseManager):
 
     def get_bookings(self, start_date: datetime = None, end_date: datetime = None, hotel_name: str = None,
                      booking_id: int = None):
-        # Context manager ensures the session is properly closed after use
+        # Get bookings based on the provided parameters
         with self._session as session:
             query = session.query(Booking, Hotel, Guest).join(Hotel, Booking.room_hotel_id == Hotel.id).join(Guest,
                                                                                                              Booking.guest_id == Guest.id)

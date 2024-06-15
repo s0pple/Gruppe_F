@@ -172,11 +172,87 @@ Remember, if you ever want to go back to the previous menu or exit the applicati
 1. Register:
    A new profile is written to the database by entering the e-mail and password and important user and address information. Many input conditions are checked and if the input is invalid, you will be asked to enter it again. After a successful registration you will be redirected to the user menu for login.
 2. Login:
-   
-4. Back:
+   In the login section, you are prompted to enter your registered email and password. 
+   If the entered credentials match a user in the database, you are successfully logged in and redirected to the respective user menu (Registered User Menu or Admin Menu) based on your user role.
+   If the entered credentials do not match any user in the database, you are informed about the unsuccessful login attempt and asked to try again or register a new account.
+3. Main Menu:
    You return to the main menu.
 
+**Registered User Menu**
 
+Once you are logged in as a registered user, you will be redirected to the Registered User Menu. Here's a brief explanation of each option:
+
+1. Show Bookings:
+   This option allows you to view all your bookings. 
+   When you select this option, a list of all your bookings will be displayed with details such as hotel name, room type, start date, end date, and booking status. 
+   You can print out this list for your records by following the prompts after the list is displayed. 
+   When you choose to print a booking, a text file with the booking details is created and saved in your Downloads folder.
+
+2. Edit Booking:
+   This option allows you to edit an existing booking. 
+   When you select this option, you will be asked to enter the booking ID of the booking you want to edit. 
+   Then, you can update the start date, end date, or cancel the booking.
+
+3. Cancel Booking:
+   This option allows you to cancel an existing booking. 
+   When you select this option, you will be asked to enter the booking ID of the booking you want to cancel. 
+   Once you confirm the cancellation, the booking will be removed from your bookings list.
+
+4. Update User:
+   This option allows you to update your user information. 
+   When you select this option, you will be able to update your email, password, and other personal information.
+
+5. Delete User:
+   This option allows you to delete your user account, provided you have no future bookings. 
+   When you select this option, you will be asked to confirm your decision. 
+   Once confirmed, your user account and all associated bookings will be deleted.
+
+6. Log Out:
+   This option allows you to log out from your account. 
+   When you select this option, you will be redirected back to the Main Menu.
+
+7. Back:
+   This option allows you to go back to the Main Menu.
+
+To select an option, simply type the number of the option and press Enter. Please note that any changes you make to your bookings or user account are permanent and cannot be undone.
+
+**Admin Menu**
+
+Once you are logged in as an administrator, you will be redirected to the Admin Menu. Here's a brief explanation of each option:
+
+1. Search Bookings:
+   - This option allows you to view all bookings of a specific user.
+   - When you select this option, you will be prompted to enter the user ID of the user whose bookings you want to view.
+   - If the entered user ID is valid, a list of all bookings of the specified user will be displayed with details such as hotel name, room type, start date, end date, and booking status.
+
+2. Edit Bookings:
+   - This option allows you to edit any existing booking.
+   - When you select this option, you will be asked to enter the booking ID of the booking you want to edit.
+   - Then, you can update the start date, end date, or cancel the booking.
+
+3. Cancel Bookings:
+   - This option allows you to cancel any existing booking.
+   - When you select this option, you will be asked to enter the booking ID of the booking you want to cancel.
+   - Once you confirm the cancellation, the booking will be removed from the bookings list.
+
+4. Hotel Panel:
+   - This option redirects you to the Hotel Panel where you can manage hotel information.
+   - In the Hotel Panel, you can add new hotels, update existing hotel information, or delete hotels.
+
+5. Update User:
+   - This option allows you to update any user's information.
+   - When you select this option, you will be able to update a user's email, password, and other personal information.
+
+6. Delete User:
+   - This option allows you to delete any user account, provided they have no future bookings.
+   - When you select this option, you will be asked to confirm your decision.
+   - Once confirmed, the user account and all associated bookings will be deleted.
+
+7. Logout:
+   - This option allows you to log out from your account.
+   - When you select this option, you will be redirected back to the Main Menu.
+
+To select an option, simply type the number of the option and press Enter. Please note that any changes you make to bookings or user accounts are permanent and cannot be undone.
 
 
 **END**

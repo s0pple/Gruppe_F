@@ -33,7 +33,7 @@ class UserManager:
         # Create a new login instance for the user
         new_login = Login(username=username, password=password, role_id=2)
 
-        # Add the new user and login to the session
+        # Add the new user and login to the session & commit the session
         self._session.add(new_login)
         self._session.commit()
 
@@ -52,8 +52,8 @@ class UserManager:
 
     """
     checks if there is a user with the given username and password
-    #if its an admin user, it returns the AdminMenu instance
-    #if its a registered user, it returns the RegisteredUserMenu instance
+    if its an admin user, it returns the AdminMenu instance
+    if its a registered user, it returns the RegisteredUserMenu instance
     """
 
     def login(self, username: str, password: str):
@@ -108,7 +108,7 @@ class UserManager:
         return menu_instance
 
     """
-    This method is used to delete a user from the system. It first prompts the user for their username and password.
+    Delete a user from the system. It first prompts the user for their username and password.
     If the login is successful, it retrieves the user's login and guest information from the database.
     It then checks if the user has any future bookings. If there are future bookings, it prints a message and returns.
     If there are no future bookings, it deletes all the user's bookings, their guest information, and their login information.
