@@ -2,7 +2,7 @@
 from business.UserManager import UserManager
 from business.ValidationManager import ValidationManager
 from console.console_base import Menu, MenuOption, Console
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import session
 from data_models.models import Guest
 from ui.AdminMenu import AdminMenu
 from ui.RegisteredUserMenu import RegisteredUserMenu

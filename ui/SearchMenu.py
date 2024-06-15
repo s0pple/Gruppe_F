@@ -1,4 +1,3 @@
-from business.BookingManager import BookingManager
 from business.SearchManager import SearchManager
 from console.console_base import Menu, MenuOption, Console
 from business.UserManager import UserManager
@@ -77,8 +76,8 @@ class RoomSearchAndBookingMenu(Menu):
 
         # Setting up the database connection
         engine = create_engine(f'sqlite:///{os.environ.get("DB_FILE")}')
-        Session = sessionmaker(bind=engine)
-        self._session = Session()
+        session = sessionmaker(bind=engine)
+        self._session = session()
 
         # Adding menu options for user interaction
         self.add_option(MenuOption("Search rooms in selected hotel"))  # Option to search rooms based on criteria

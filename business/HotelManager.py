@@ -10,8 +10,8 @@ class HotelManager(BaseManager):
     def __init__(self) -> None:
         super().__init__()
         engine = create_engine(f'sqlite:///{os.environ.get("DB_FILE")}')
-        Session = sessionmaker(bind=engine)
-        self._session = Session()
+        session = sessionmaker(bind=engine)
+        self._session = session()
 
     def get_session(self):
         return self

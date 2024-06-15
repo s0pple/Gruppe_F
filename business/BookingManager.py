@@ -19,8 +19,8 @@ class BookingManager(BaseManager):
         self.user_manager = UserManager()
         # Creating a connection to the database using the DB_FILE environment variable
         engine = create_engine(f'sqlite:///{os.environ.get("DB_FILE")}')
-        Session = sessionmaker(bind=engine)  # Creating a session class bound to the engine
-        self._session = Session()  # Initializing the session instance
+        session = sessionmaker(bind=engine)  # Creating a session class bound to the engine
+        self._session = session()  # Initializing the session instance
 
     def get_session(self):
         return self._session  # Returning the current session instance for reuse

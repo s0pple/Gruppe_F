@@ -14,10 +14,11 @@ class ValidationManager:
         super().__init__()
 
         engine = create_engine(f'sqlite:///{os.environ.get("DB_FILE")}')
-        Session = sessionmaker(bind=engine)
-        self._session = Session()
+        session = sessionmaker(bind=engine)
+        self._session = session()
         self.__user_manager = UserManager()
 
+    # Entering the user data for registration
     def create_userinfo(self, username: str):
 
         Console.format_text("To register Please enter the requested user-information", "Press enter to continue... ")
@@ -35,6 +36,7 @@ class ValidationManager:
         Console.clear()
         return firstname, lastname, str(emailaddress), city, zip_code, street
 
+    # The input, formatting and validation of the zip code
     def input_zip(self):
         while True:
 
@@ -48,6 +50,7 @@ class ValidationManager:
             except ValueError:
                 print("Zip code is not valid. Please enter a valid number.")
 
+    # The input, formatting and validation of the max_guest
     def input_max_guests(self):
         while True:
             input_value = input("Number of guests       :").strip()
@@ -62,11 +65,12 @@ class ValidationManager:
             except ValueError:
                 print("Error: Invalid input. Please enter a valid number.")
 
+    # The input, formatting and validation of the star_rating
     def input_star_rating(self):
         while True:
             try:
                 input_value = input("Star rating(1-5)       :").strip()
-                if input_value == "":
+                if input_value == "": # cancel if the input was empty
                     return None
                 stars = int(input_value)
                 if 1 <= stars <= 5:
@@ -79,6 +83,7 @@ class ValidationManager:
             except ValueError:
                 print("Error: Invalid input. Please enter a valid number.")
 
+    # The input, formatting and validation of the start_date
     def input_start_date(self):
         while True:
             start_date = input("Start date (dd.mm.yyyy):")
@@ -86,7 +91,7 @@ class ValidationManager:
                 return None  # If the input is optional and user does not enter anything, return None
 
             try:
-                # Check if the date is in the correct format
+                # Formatting the data entry to the correct format
                 date_obj_start = datetime.strptime(start_date, "%d.%m.%Y")
 
                 # Check if the date is not in the past
@@ -99,6 +104,7 @@ class ValidationManager:
             except ValueError:
                 print("Invalid date format. Please enter the date in dd.mm.yyyy format.")
 
+    # The input, formatting and validation of the end_date, only if the start_date has been entered
     def input_end_date(self, date_obj_start=None):
         if date_obj_start is None:
             print("Start date is needed to compare with the end date.")
@@ -110,7 +116,7 @@ class ValidationManager:
                 continue
 
             try:
-                # Check if the date is in the correct format
+                # Formatting the data entry to the correct format
                 date_obj_end = datetime.strptime(end_date, "%d.%m.%Y")
 
                 # Check if the date is not in the past
@@ -126,12 +132,11 @@ class ValidationManager:
             except ValueError:
                 print("Invalid date format. Please enter the date in dd.mm.yyyy format.")
 
+    # The input and validation of the password
     def create_password(self, username):
         while True:
-            # print("Enter Passwort (capital and small letters, at least 10 characters)")
             password = Console.format_text("Register",
                                            "Enter Passwort (capital and small letters, at least 10 characters):").strip()
-            # password = input("Your Password: ")
 
             if len(password) < 10:
                 print("Password must contain at least 10 characters, please enter it again")
@@ -147,15 +152,14 @@ class ValidationManager:
                 print("Password too weak, please enter another one")
                 continue
             else:
-                # password_check = input("Enter your Password again to verify: ")
                 password_check = Console.format_text("Register", "Enter your Password again to verify: ").strip()
                 if password == password_check:
-                    login = self.__user_manager.create_user(username, password)
                     return self
                 else:
                     print("Passwords are not identical, please enter them again")
             input("Press enter to continue...")
 
+    # check if e-mail address can be correct
     def is_valid_email(self, mail: str):
         while True:
             if "@" in mail and "." in mail:
@@ -167,6 +171,7 @@ class ValidationManager:
                     print("Invalid E-Mail address")
                     mail = str(input("Please enter E-Mail address again: ")).strip().lower()
 
+    # check if input of text is valid
     def input_text(self, prompt: str):
         while True:
             input_value = input(prompt)
@@ -176,6 +181,7 @@ class ValidationManager:
                 print("Invalid input. Please enter a text.")
                 continue
 
+    # check if input of number is valid
     def input_integer(self, prompt: str):
         while True:
             input_value = input(prompt)
