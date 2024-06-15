@@ -5,7 +5,7 @@ from business.BookingManager import BookingManager
 
 class RegisteredUserMenu(Menu):
     def __init__(self, main_menu: Menu, role: str, username: str, user_id: int):
-        super().__init__("Logged In Menu")
+        super().__init__("User Panel")
         self.add_option(MenuOption("Show Bookings"))  # option 1
         self.add_option(MenuOption("Edit Booking"))  # option 2
         self.add_option(MenuOption("Cancel Booking"))  # option 3

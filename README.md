@@ -28,14 +28,14 @@ This project has been a collaborative effort, reflecting the contributions and t
 
 ### Haag Robin
 - Registering GitHub Premium & integrating with PyCharm
-- Setting up the project with GitHub Desktop
+- Setting up the GitHub environment
 - 2 Registered: 2.1 As a registered user, I want to log into my account to access my booking history ("read"), so that I can manage my upcoming reservations.
 - 3 Admin: 3.2 As an admin user of the booking system, I want to see all bookings of all hotels to get an overview.
 - 3 Admin: 3.3 I want to edit all bookings to add missing information (e.g., phone number)
 - Contributed to UserMenu, AdminMenu, RegisteredUserMenu, UserManager, BookingManager, Validation Manager, UI Implementation
 - Modelled the AdminMenu and Registered User Menu
 - concept and structure of the hotel reservation system with menu and submenu, definition of interactions between methods (with Vadivel Vaagisan, Schüpbach Michael , Haag Robin)
-
+- Modelled & Implemented the format_text method for the UI implementation
 
 ### Nydegger Patrick
 - Registering GitHub Premium & integrating with PyCharm

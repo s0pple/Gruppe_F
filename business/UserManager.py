@@ -108,53 +108,75 @@ class UserManager:
         return menu_instance
 
     """
-    Delete a user from the system. It first prompts the user for their username and password.
-    If the login is successful, it retrieves the user's login and guest information from the database.
-    It then checks if the user has any future bookings. If there are future bookings, it prints a message and returns.
-    If there are no future bookings, it deletes all the user's bookings, their guest information, and their login information.
-    Finally, it commits the changes to the database and prints a message indicating that the user has been deleted.
-    If the login is not successful or the user is not found, it prints an appropriate error message.
+        Deletes a user based on the provided role. If the role is 'admin',
+        prompts for the user's email address. Otherwise, prompts for the 
+        username and password to verify the user before deletion. After 
+        deleting the user's login information, it calls delete_guest to 
+        remove the associated guest information based on the email.
     """
-
-    def delete_user(self):
-        username = Console.format_text("Delete User", "Enter your username: ")
-        password = Console.format_text("Delete User", "Enter your password: ")
-        login_successful, _, _ = self.login(username, password)
-
-        # If the login is successful, delete the user
-        if login_successful:
-            # Get the user's login information
-            user_login = self._session.query(Login).filter_by(username=username).first()
-
-            if user_login:
-                # Get the user's guest information
-                user_guest = self._session.query(Guest).filter_by(email=username).first()
-
-                if user_guest:
-                    # Get the user's booking information
-                    user_bookings = self._session.query(Booking).filter_by(guest_id=user_guest.id).all()
-
-                    # Check if there are any future bookings
-                    future_bookings = [booking for booking in user_bookings if booking.date > datetime.now()]
-
-                    if future_bookings:
-                        Console.format_text("User has future bookings. Cannot delete user.")
-                        return
-
-                    # Delete the user's booking information
-                    for booking in user_bookings:
-                        self._session.delete(booking)
-
-                    # Delete the user's guest information
-                    self._session.delete(user_guest)
-
-                # Delete the user's login information
-                self._session.delete(user_login)
-
-                self._session.commit()
-                Console.format_text(f"User {username} has been deleted.")
-            else:
-                Console.format_text("User not found.")
+    def delete_user(self, role=None):
+        if role == 'admin':
+            username = Console.format_text("Delete User", "Enter the user's email address: ")
         else:
-            Console.format_text("Login failed. Please try again.")
+            username = Console.format_text("Delete User", "Enter your username: ")
+            password = Console.format_text("Delete User", "Enter your password: ")
+            login_successful, _, _ = self.login(username, password)
+            if not login_successful:
+                Console.format_text("Login failed. Please try again.")
+                return self._main_menu
+
+        # Get the user's login information
+        user_login = self._session.query(Login).filter_by(username=username).first()
+
+        if user_login:
+            email = user_login.username  # Assuming the username is the email
+            # Delete the user's login information
+            self._session.delete(user_login)
+            self._session.commit()
+
+            # Call delete_guest with the captured email
+            self.delete_guest(email)
+
+            Console.format_text(f"User {username} has been deleted.")
+        else:
+            Console.format_text("User not found.")
+
         return self._main_menu
+
+    """
+        Deletes guest information associated with the provided email. 
+        It first checks if the guest has any future bookings. If there 
+        are future bookings, the guest is not deleted. Otherwise, it 
+        deletes all bookings associated with the guest and then deletes 
+        the guest information.
+    """
+    def delete_guest(self, email):
+        try:
+            # Get the user's guest information
+            user_guest = self._session.query(Guest).filter_by(email=email).first()
+
+            if user_guest:
+                # Get the user's booking information
+                user_bookings = self._session.query(Booking).filter_by(guest_id=user_guest.id).all()
+
+                # Check if there are any future bookings
+                future_bookings = [booking for booking in user_bookings if booking.start_date > datetime.now().date()]
+
+                if future_bookings:
+                    Console.format_text("User has future bookings. Cannot delete user.")
+                    return
+
+                # Delete the user's booking information
+                for booking in user_bookings:
+                    self._session.delete(booking)
+
+                # Delete the user's guest information
+                self._session.delete(user_guest)
+                self._session.commit()
+
+                Console.format_text(f"Guest associated with {email} has been deleted.")
+            else:
+                Console.format_text("Guest not found.")
+        except Exception as e:
+            self._session.rollback()
+            Console.format_text(f"Error deleting guest: {e}")

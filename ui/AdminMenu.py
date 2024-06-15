@@ -46,7 +46,7 @@ class AdminMenu(Menu):
             self.__user_manager.update_user(self.__role, self.__user_id, self)
             return self
         elif choice == 6:  # Delete user
-            self.__user_manager.delete_user()
+            self.__user_manager.delete_user(self.__role)
             return self
         elif choice == 7:  # Back
             return self.__main_menu
