@@ -112,16 +112,17 @@ Finally, you can run the application. This can be done by running the main.py fi
 6. **Use the Application** -
 Once the application is running, you will see a command-line interface with various options. Here's how you can interact with it:  
 
-***Main Menu***
+**Main Menu**
 
 The main menu is the first thing you'll see when you start the application. It provides several options for you to choose from. Here's a brief explanation of each option:
 
 1. Search hotels with desired attributes: This option allows you to search for hotels based on specific attributes such as room type, maximum number of guests, price per night, and availability during a specific date range. After selecting this option, you'll be prompted to enter your desired attributes. If you want to skip any attribute, just press Enter without typing anything.  
-2. Back: This option allows you to go back to the previous menu. If you're already at the main menu, selecting this option will exit the application.  
+2. User Menu:Here you get to the user menu, which deals with login and registration.
+3. Quit: The program will be terminated.
 
 To select an option, simply type the number of the option and press Enter.  
 
-***Search Hotels***
+**Search Hotels**
 
 When you select the "Search hotels with desired attributes" option, you'll be prompted to enter your desired attributes. Here's how you can do it:
 
@@ -164,7 +165,10 @@ After selecting a room, you'll be prompted to enter your booking details such as
 
 Remember, if you ever want to go back to the previous menu or exit the application, you can usually do so by selecting the "Back" or "Exit" option from the menu.  
 
-
+**User Menu**
+1. Register:
+   A new profile is written to the database by entering the e-mail and password and important user and address information. Many input conditions are checked and if the input is invalid, you will be asked to enter it again. After a successful registration you will be redirected to the user menu for login.
+2. Login
 
 **END**
 
