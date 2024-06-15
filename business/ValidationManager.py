@@ -38,7 +38,7 @@ class ValidationManager:
     def input_zip(self):
         while True:
 
-            zip_code = Console.format_text("Register", "Enter Zip code: ").strip()
+            zip_code = Console.format_text("Postal code", "Enter Zip code: ").strip()
             if zip_code == "":
                 print("Zip code cannot be empty.")
                 continue
@@ -146,7 +146,7 @@ class ValidationManager:
                 print("Password must contain capital and small letters, please enter it again")
                 continue
             elif password in ["P123456789", "Qwerty1234", "Qaywsxedcr", "Password12", "Password123",
-                              "Password1234", "Passwort12", "Passwort123", "Passwort1234"]: # list expandable
+                              "Password1234", "Passwort12", "Passwort123", "Passwort1234"]:
                 print("Password too weak, please enter another one")
                 continue
             else:

@@ -198,7 +198,7 @@ class SearchManager(BaseManager):
         query, rooms = self.get_desired_rooms_by_hotel_id(hotel_id)
 
         if not rooms:
-            print("No rooms found.")
+            Console.format_text("No rooms found.")
         else:
             Console.format_text("Available rooms:")
             for index, room in enumerate(rooms, start=1):
@@ -208,8 +208,8 @@ class SearchManager(BaseManager):
                              f"    Room Number: {room.number}\n"
                              f"    Type: {room.type}\n"
                              f"    Price per Night: {room.price}")
-                print(room_info)
-                print("******************************************************************************************")
+                Console.format_text(room_info)
+                # print("******************************************************************************************")
 
         try:
             choice = int(input("Enter the number you want to book: "))
@@ -325,10 +325,10 @@ class SearchManager(BaseManager):
                                  f"   Room Number: {room.Room.number}\n"
                                  f"   Type: {room.Room.type}\n"
                                  f"   Price per Night: {room.Room.price}")
-                    print(room_info)
-                    print("******************************************************************************************")
+                    Console.format_text(room_info)
+                    # print("******************************************************************************************")
                 except AttributeError as e:
-                    print(f"Error: {e}. Room attributes: {room._mapping}")
+                    Console.format_text(f"Error: {e}. Room attributes: {room._mapping}")
 
             try:
                 choice = int(input("Enter the number you want to book: "))

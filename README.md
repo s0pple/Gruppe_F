@@ -21,9 +21,10 @@ This project has been a collaborative effort, reflecting the contributions and t
 - Updating the structure -> to the UE3 Classroom (scalability)
 - 1 Guest User: 1.1 As a guest user, I want to search available hotels so that I can choose the one that meets my preferences. (with Patrick Nydegger)
 - 1 Guest User: 1.2 As a guest user, I want to see details of different room types (single, double, family rooms) available in a hotel, including the maximum number of guests, description, price, and amenities, so that I can make an informed decision.
+- Integration of external classes primarily the following; Menu(), SearchManager(), ValidationManager(), Session(), BaseManager() 
 - UI / Menus & Submenus creation
 - Creation of entity relationship diagram (ERD)
-- Constructing the class diagram
+- Constructing the class diagram (old version was manually created, new version created with "instant reverse" and roughly added the missing classes, attributes, operations and relationships manually - we included both for contrast reasons)
 - Creating the README.md file
 
 ### Haag Robin
@@ -168,3 +169,17 @@ Remember, if you ever want to go back to the previous menu or exit the applicati
 **END**
 
 That's it! You should now be able to use the application effectively.
+
+____________________________________________________________________________________________________________________
+
+Artifacts: (for more information look inside the respective contribution)
+- GitHub repository
+- Code Convention - created with GitHub
+- Kanban - created with GitHub
+- Entity Relationship Diagram (ERD) - created with DBeaver
+- Old Class Diagram VS New Class Diagram - created with Visual Paradigm
+- BPMN - created with Canvas
+- README File - created with PyCharm
+- Code - created with PyCharm
+- DataBase - created with PyCharm
+- GUI - created with PowerPoint

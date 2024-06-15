@@ -73,11 +73,6 @@ class RoomSearchAndBookingMenu(Menu):
         self.__search_manager = SearchManager()  # Initializing SearchManager for room search functionality
         self.__validation_manager = ValidationManager()  # Initializing ValidationManager for input validation
 
-        # Setting up the database connection
-        engine = create_engine(f'sqlite:///{os.environ.get("DB_FILE")}')
-        session = sessionmaker(bind=engine)
-        self._session = session()
-
         # Adding menu options for user interaction
         self.add_option(MenuOption("Search rooms in selected hotel"))  # Option to search rooms based on criteria
         self.add_option(MenuOption("Display all available rooms"))  # Option to display all rooms without criteria
