@@ -98,22 +98,14 @@ After activating the virtual environment, you need to install the project's depe
 
    ```bash
    pip install -r requirements.txt
-   
-4. **Initialize the Database** -
-Before you can run the application, you need to initialize the database. This can be done by running the init_db function from the data_access/data_base.py file. Please ensure that you provide the correct path to the SQLite database file.
 
-   ```bash
-   from data_access.data_base import init_db
-
-   init_db('path_to_your_database_file')
-
-5. **Run the Application** -
+4. **Run the Application** -
 Finally, you can run the application. This can be done by running the main.py file:
 
    ```bash
    python main.py
 
-6. **Use the Application** -
+5. **Use the Application** -
 Once the application is running, you will see a command-line interface with various options. Here's how you can interact with it:  
 
 **Main Menu**
