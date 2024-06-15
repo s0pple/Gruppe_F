@@ -19,13 +19,15 @@ class HotelManager(BaseManager):
 
     def add_hotel(self): #adds hotel to the database
         print("Enter the following information")
-        # adds address
+
+        #variables
         streets = input(Console.format_text("Add hotel", "Enter street: "))
         city = input(Console.format_text("Add hotel", "Enter city: "))
         zip_code = self.__validation_manager.input_zip()
         hotel_name = input(Console.format_text("Add hotel", "Enter hotel name: "))
         stars = self.__validation_manager.input_star_rating()
 
+        # adds address
         address = Address(street=streets,
                           city=city,
                           zip=zip_code)
@@ -70,10 +72,11 @@ class HotelManager(BaseManager):
                 print("All rooms have been added to the hotel.")
                 break
 
-    def delete_hotel(self):
+    def delete_hotel(self): #deletes hotel from database
+        #variables
         hotel_id = int(Console.format_text("delete hotel", "Enter hotel ID: "))
-
         hotel = self._session.query(Hotel).filter_by(id=hotel_id).first()
+
         if hotel:
             # Fetch and delete associated rooms
             room = self._session.query(Room).filter_by(hotel_id=hotel_id).all()
@@ -86,7 +89,8 @@ class HotelManager(BaseManager):
         else:
             print("Invalid Hotel ID")
 
-    def adjust_room(self, room):
+    def adjust_room(self, room): #method to edit room room information
+        #variables
         room_number = int(input(Console.format_text("adjust room", "Enter room number: ")))
         room_type = input(Console.format_text("adjust room", "Enter room type: "))
         max_guest = self.__validation_manager.room_max_guests(object)
@@ -95,7 +99,7 @@ class HotelManager(BaseManager):
         room_price = float(input(Console.format_text("adjust room", "Enter the room price per night: ")))
 
         print("Adjusting room details. Press enter to skip.")
-
+        #overrides the current information with the new information, if the there was an input
         room.number = room_number or room.number
         room.type = room_type or room.type
         room.max_guests = max_guest or room.max_guests
@@ -104,7 +108,8 @@ class HotelManager(BaseManager):
         room.price = room_price or room.price
         print("Room details have been updated.")
 
-    def edit_hotel(self):
+    def edit_hotel(self): #method to edit hotel information
+        #variables
         current_hotel_name = input(Console.format_text("Edit Hotel", "Enter a hotel name: "))
         streets = input(Console.format_text("Edit hotel", "Enter street: "))
         city = input(Console.format_text("Edit hotel", "Enter city: "))
@@ -143,7 +148,7 @@ class HotelManager(BaseManager):
             print("Hotel and address details have been updated.")
         else:
             print("Adjustment has been cancelled")
-
+        #adjust room details if needed
         if input(Console.format_text("Edit hotel","Do you want to edit rooms (yes/no)")).strip().lower() == "yes":
             while True:
                 room_number = input(Console.format_text("Edit room", "Enter the room number you want to adjust or type 'done' to finish): ")
@@ -155,9 +160,11 @@ class HotelManager(BaseManager):
                     if not room:
                         print(f"No room found with the number '{room_number}' in this hotel.")
                         continue
+                    #retrieves method to adjust hotel details
                     self.adjust_room(room)
 
-    def edit_room(self):
+    def edit_room(self): #method to edit room details
+        #variables
         hotel_name = input(Console.format_text("Edit room", "In which hotel should the room be edited? "))
         hotel = self._session.query(Hotel).filter_by(name=hotel_name).first()
         if hotel:
@@ -166,6 +173,7 @@ class HotelManager(BaseManager):
                 room = self._session.query(Room).filter_by(hotel_id=hotel.id, number=room_number).first()
 
                 if room:
+                    #trieves method to edit room details
                     self.adjust_room(room)
                     break
                 else:
@@ -173,7 +181,8 @@ class HotelManager(BaseManager):
         else:
             print("Hotel not found. Please try again.")
 
-    def add_room(self):
+    def add_room(self): #adds room to a hotel
+        #variables
         hotel_name = input(Console.format_text("Add room", "In which hotel should the room be added? "))
         room_number_ = int(input(Console.format_text("Add room", "Enter room number: ")))
         room_type_ = input(Console.format_text("Add room", "Enter room type: "))
@@ -222,14 +231,15 @@ class HotelManager(BaseManager):
         else:
             print("Hotel not found. Please try again.")
 
-    def delete_room(self):
+    def delete_room(self): #deletes rooms from hotel
+        #variables
         hotel_name = input(Console.format_text("Delete room", "In which hotel should the room be deleted? "))
         hotel = self._session.query(Hotel).filter_by(name=hotel_name).first()
 
         if not hotel:
             print(f"Hotel '{hotel_name}' not found.")
             return
-
+        #checks if room exists
         while True:
             try:
                 room_number = int(input(Console.format_text("Delete room", "Room number to delete: ")))
@@ -239,6 +249,7 @@ class HotelManager(BaseManager):
 
             room = self._session.query(Room).filter_by(hotel_id=hotel.id, number=room_number).first()
 
+            #deletes room from database
             if room:
                 self._session.delete(room)
                 self._session.commit()
