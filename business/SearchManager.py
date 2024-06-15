@@ -145,12 +145,8 @@ class SearchManager(BaseManager):
             query = query.where(Room.type == type)
         if max_guests:
             query = query.where(Room.max_guests == max_guests)
-        if amenities:
-            query = query.where(Room.amenities == amenities)
         if price:
             query = query.where(Room.price <= price)
-        if description:
-            query = query.where(Room.description == description)
 
         # Get the start and end dates for the booking period
         start_date = self.__validation_manager.input_start_date()
@@ -181,7 +177,6 @@ class SearchManager(BaseManager):
 
     def display_all_rooms(self, hotel_id):
         from business.BookingManager import BookingManager
-        from business.UserManager import UserManager
         # Display all rooms for a specific hotel
         query, rooms = self.get_desired_rooms_by_hotel_id(hotel_id)
 
@@ -197,7 +192,6 @@ class SearchManager(BaseManager):
                              f"    Type: {room.type}\n"
                              f"    Price per Night: {room.price}")
                 Console.format_text(room_info)
-                # print("******************************************************************************************")
 
         try:
             choice = int(input("Enter the number you want to book: "))
@@ -261,7 +255,6 @@ class SearchManager(BaseManager):
 
     def search_rooms(self, hotel_id):
         from business.BookingManager import BookingManager #Lazy import
-        from business.UserManager import UserManager #Lazy import
 
         # Prompts the user to search for rooms based on various criteria
         Console.format_text("Select the room type you want to search for:")
@@ -286,8 +279,6 @@ class SearchManager(BaseManager):
             room_type = None  # Treat "all" as no specific room type
 
         max_guests = self.__validation_manager.input_max_guests()
-        # max_guests = input("Enter the maximum number of guests you want to search for or press Enter for all: ")
-        # max_guests = int(max_guests) if max_guests.isdigit() and int(max_guests) > 0 else None
 
         price = input("Enter the price per night you want to search for or press Enter for all: ")
         price = int(price) if price.isdigit() and int(price) > 0 else None
@@ -304,9 +295,13 @@ class SearchManager(BaseManager):
             price=price, start_date=start_date, end_date=end_date
         )
 
+        # Debugging statement to check rooms list
+        print(f"Rooms found: {rooms}")
+
+        # Should check if the rooms list is empty, but somehow does not display the message
         if not rooms:
             Console.format_text("No rooms found matching the criteria.")
-            # print("No rooms found matching the criteria.")
+            print("No rooms found matching the criteria.")
         else:
             Console.format_text("Available rooms:")
             for index, room in enumerate(rooms, start=1):
@@ -317,7 +312,6 @@ class SearchManager(BaseManager):
                                  f"   Type: {room.Room.type}\n"
                                  f"   Price per Night: {room.Room.price}")
                     Console.format_text(room_info)
-                    # print("******************************************************************************************")
                 except AttributeError as e:
                     Console.format_text(f"Error: {e}. Room attributes: {room._mapping}")
 
