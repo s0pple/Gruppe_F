@@ -299,9 +299,9 @@ class SearchManager(BaseManager):
         print(f"Rooms found: {rooms}")
 
         # Should check if the rooms list is empty, but somehow does not display the message
+        # (when emulate run option turned off, then it shows the message)
         if not rooms:
             Console.format_text("No rooms found matching the criteria.")
-            print("No rooms found matching the criteria.")
         else:
             Console.format_text("Available rooms:")
             for index, room in enumerate(rooms, start=1):

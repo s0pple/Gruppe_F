@@ -188,27 +188,3 @@ class ValidationManager:
             except ValueError:
                 print("Invalid input. Please enter a valid integer.")
                 continue
-    #
-    # def room_max_guests(self, max_capacity):
-    #     while True:
-    #         input_value = input("Enter the number of guests: ").strip()
-    #         if input_value.isdigit():
-    #             number_of_guests = int(input_value)
-    #             if 1 <= number_of_guests <= max_capacity:
-    #                 return number_of_guests
-    #             else:
-    #                 print(f"Error: The number of guests cannot be less than 1 or more than {max_capacity}.")
-    #         else:
-    #             print("Error: Invalid input. Please enter a valid number.")
-    #
-    # def input_future_date(self, start_date=None):
-    #     while True:
-    #         input_date = input("Enter the date (dd.mm.yyyy): ").strip()
-    #         try:
-    #             date_obj = datetime.strptime(input_date, "%d.%m.%Y")
-    #             if date_obj > datetime.now() and (start_date is None or date_obj > start_date):
-    #                 return date_obj
-    #             else:
-    #                 print("Error: The date must be in the future and after the start date if provided.")
-    #         except ValueError:
-    #             print("Error: Invalid date format. Please enter the date in dd.mm.yyyy format.")
