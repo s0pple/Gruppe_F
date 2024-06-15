@@ -33,8 +33,7 @@ class SearchMenu(Menu):
                 self.__user_manager.create_guest_user()
                 while True:
                     # print("Enter the attributes you want to search with, or skip to show all hotels ")
-                    Console.format_text("Enter the attributes you want to search with, or skip to show all hotels",
-                                        "press Enter to continue...")
+                    Console.format_text("Enter the attributes you want to search with, or skip to show all hotels"),
                     # Incorrect user entries are included based on the SQL statements
                     hotel_name = input("Name of hotel          :")
                     city = input("City                   :")

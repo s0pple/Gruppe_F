@@ -24,20 +24,22 @@ class UserMenu(Menu):
                         while True:
                             mail = Console.format_text("Account Creation",
                                                        "Please enter E-Mail address: ").strip().lower()
-                            username = self.__validation_manager.is_valid_email(mail)
+                            username = self.__validation_manager.is_valid_email(mail) # check if the mail can be correct
                             username = str(username)
                             if not username:
                                 continue
-
+                            # check to see if this username already exists
                             existing_username = self.__user_manager.check_existing_usernames(username)
                             if existing_username:
                                 Console.format_text("E-Mail already exists. Please choose a different E-Mail.")
                                 continue
                             else:
+                                # definition and request of the password
                                 self.__validation_manager.create_password(username)
-
+                                # request for user information
                                 firstname, lastname, emailaddress, city, zip, street = (
                                     self.__validation_manager.create_userinfo(username))
+                                # save the user information
                                 self.__user_manager.create_user_information(firstname, lastname, emailaddress, city,
                                                                             zip, street)
                                 Console.format_text("you have been successfully registered")

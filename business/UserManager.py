@@ -17,6 +17,7 @@ class UserManager:
     def get_session(self):
         return self._session
 
+    # validation to check if this username already exists
     def check_existing_usernames(self, username: str):
         existing_username = self._session.query(Login).filter(Login.username == username).first()
         return existing_username
@@ -36,6 +37,7 @@ class UserManager:
         self._session.add(new_login)
         self._session.commit()
 
+    # After the new user has been created, the user information is entered into the database.
     def create_user_information(self, firstname, lastname, emailaddress: str, city, zip_code, street):
         # Commit the session to save the new user and login to the database
         new_address = Address(city=city, zip=zip_code, street=street)
