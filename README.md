@@ -163,9 +163,22 @@ After selecting the desired hotel you can choose one of the following options:
 
 When you see the list of available rooms, you can select a room to book. To select a room, simply type the number of the room and press Enter.
 
-After selecting a room, you'll be prompted to enter your booking details such as your name and contact information. After entering your details, your booking will be confirmed, and you'll see a confirmation message.
+After selecting a room, you will be asked for your login:
 
-Remember, if you ever want to go back to the previous menu or exit the application, you can usually do so by selecting the "Back" or "Exit" option from the menu.  
+- **Yes**: If you already have an account, enter your username and password.
+- **No**: If you do not have an account, you can continue as a guest by entering your personal information.  
+  *(Later on, you will still have the option to create an account.)*
+
+Next, you will be able to enter a start and end date (dd.mm.yyyy) and the number of guests.
+
+After entering your details, your booking will be confirmed, and you will see a confirmation message.
+
+At the end, you will have the option to print out your booking.
+
+- **Yes**: If you confirm, please check your Downloads folder in the Explorer on your device.
+- **No**: If you exit as a guest, it will be impossible to check your booking later.
+
+Remember, if you ever want to go back to the previous menu or exit the application, you can usually do so by selecting the "Back" or "Exit" option from the menu.
 
 **User Menu**
 
