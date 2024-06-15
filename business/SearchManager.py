@@ -161,21 +161,9 @@ class SearchManager(BaseManager):
 
         # If both start and end dates are provided, filter out booked rooms during this period
         if start_date and end_date:
-            # Create an alias for the Booking table to avoid name conflicts
-            br = aliased(Booking)
 
             # Subquery to find rooms that are already booked during the given period
-            booking_subquery = (
-                select(br.room_hotel_id, br.room_number)
-                .where(
-                    or_(
-                        and_(br.start_date <= start_date, br.end_date >= end_date),
-                        and_(br.start_date >= start_date, br.start_date <= end_date),
-                        and_(br.end_date >= start_date, br.end_date <= end_date)
-                    )
-                )
-                .subquery()
-            )
+            booking_subquery = self.booking_subquery(start_date, end_date)
 
             # Main query to exclude hotels with booked rooms during the requested period
             query = query.outerjoin(
@@ -274,6 +262,7 @@ class SearchManager(BaseManager):
     def search_rooms(self, hotel_id):
         from business.BookingManager import BookingManager #Lazy import
         from business.UserManager import UserManager #Lazy import
+
         # Prompts the user to search for rooms based on various criteria
         Console.format_text("Select the room type you want to search for:")
         print("1. Single Room")
@@ -296,8 +285,9 @@ class SearchManager(BaseManager):
         if room_type == "all":
             room_type = None  # Treat "all" as no specific room type
 
-        max_guests = input("Enter the maximum number of guests you want to search for or press Enter for all: ")
-        max_guests = int(max_guests) if max_guests.isdigit() and int(max_guests) > 0 else None
+        max_guests = self.__validation_manager.input_max_guests()
+        # max_guests = input("Enter the maximum number of guests you want to search for or press Enter for all: ")
+        # max_guests = int(max_guests) if max_guests.isdigit() and int(max_guests) > 0 else None
 
         price = input("Enter the price per night you want to search for or press Enter for all: ")
         price = int(price) if price.isdigit() and int(price) > 0 else None
@@ -316,6 +306,7 @@ class SearchManager(BaseManager):
 
         if not rooms:
             Console.format_text("No rooms found matching the criteria.")
+            # print("No rooms found matching the criteria.")
         else:
             Console.format_text("Available rooms:")
             for index, room in enumerate(rooms, start=1):
