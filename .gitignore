@@ -1,4 +1,4 @@
-.idea
-.venv
-/data/
-test/sql_alchemy.py
+/.idea/
+*.pyc
+/data/*.db
+/data/*.ddl
