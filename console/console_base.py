@@ -43,6 +43,9 @@ class Console(object):
                 f"{left if not multiple_lines else ''}{prompt}{space if not multiple_lines else ''}{right if not multiple_lines else ''}")
         if not multiple_lines:
             print("*" * width)
+        else:
+            print("-" * width)
+
         user_input = None
         if prompt:
             user_input = input()
