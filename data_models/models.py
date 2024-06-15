@@ -3,11 +3,8 @@ from __future__ import annotations
 from datetime import date
 
 from typing import List
-from sqlalchemy import ForeignKey, ForeignKeyConstraint
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import relationship
+from sqlalchemy import ForeignKey, ForeignKeyConstraint, Column, Integer, String, Boolean
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 
 
@@ -117,22 +114,18 @@ class Hotel(Base):
 
 
 class Room(Base):
-    '''
-    Raum Entitätstyp.
-    '''
     __tablename__ = "room"
-
     hotel_id: Mapped[int] = mapped_column("hotel_id", ForeignKey("hotel.id"), primary_key=True)
     hotel: Mapped["Hotel"] = relationship(back_populates="rooms")
     number: Mapped[str] = mapped_column("number", primary_key=True)
-    type: Mapped[str] = mapped_column("type", nullable=True) # e.g. "family room", "single room", etc.
+    type: Mapped[str] = mapped_column("type", nullable=True)
     max_guests: Mapped[int] = mapped_column("max_guests")
-    description: Mapped[str] = mapped_column("description", nullable=True) # e.g. "Room with sea view"
+    description: Mapped[str] = mapped_column("description", nullable=True)
     amenities: Mapped[str] = mapped_column("amenities", nullable=True)
     price: Mapped[float] = mapped_column("price")
 
     def __repr__(self) -> str:
-        return f"Room(hotel={self.hotel!r}, room_number={self.number!r}, type={self.type!r}, description={self.description!r}, amenities={self.amenities!r}, price={self.price!r})"
+        return f"Room(hotel_id={self.hotel_id!r}, number={self.number!r}, type={self.type!r}, max_guests={self.max_guests!r}, description={self.description!r}, amenities={self.amenities!r}, price={self.price!r})"
 
 
 class Booking(Base):

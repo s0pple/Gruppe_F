@@ -1,77 +1,96 @@
 from business.SearchManager import SearchManager
-from console.console_base import Menu, MenuOption
+from console.console_base import Menu, MenuOption, Console
+from business.UserManager import UserManager
+from business.ValidationManager import ValidationManager
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+import os
+
 
 
 class SearchMenu(Menu):
+
     def __init__(self, main_menu: Menu):
         super().__init__("Search Hotel")
-        self.add_option(MenuOption("Show all hotel"))  # option 1
-        self.add_option(MenuOption("Search by city"))  # option 2
-        self.add_option(MenuOption("Search by stars"))  # option 3
-        self.add_option(MenuOption("Search hotels by city and max guests with optional star rating"))  # option 4
-        # TODO: Add further MenuOptions to search by the address.city etc. of the hotels.
-        self.add_option(MenuOption("Back"))  # option 5
-        # we need the main menu to navigate back to it
         self.__main_menu = main_menu
-
         self.__search_manager = SearchManager()
+        self.__validation_manager = ValidationManager()
+        self.__user_manager = UserManager()
+        self.__select_hotel_menu = None  # Will be initialized later with hotel_id
 
-    def __show_all(self):
-        self.clear() # clear the console
-        all_hotels = self.__search_manager.get_all_hotels()  # search all hotels with the search manager
-        for hotel in all_hotels:
-            print(hotel)
-        input("Press Enter to continue...")
+        # Adding menu options for user interaction
+        self.add_option(MenuOption("Search hotels with desired attributes "))  # Option to search hotels
+        self.add_option(MenuOption("Back"))  # Option to go back to the main menu
 
-    def __search_by_city(self):
-        self.clear() # clear the console
-        city = input("City: ")
-        hotels_by_name = self.__search_manager.get_hotels_by_city(city)  # search by name with the search manager
-        for hotel in hotels_by_name:
-            print(hotel)
-        input("Press Enter to continue...")
 
-    def __search_by_stars(self):
-        self.clear() # clear the console
-        stars = input("Hotel Stars: ")
-        # TODO: Check if it is a number 1-5, if not output error and ask again... we have done that
-        # TODO: implement the search by stars in the search manager and call the method
-        # TODO: output the search result
-        print("Implement this by next week")
-        input("Press Enter to continue...")
 
-    def __search_by_city_and_max_guests_with_optional_star_rating(self):
-        self.clear()
-        city = input("City: ")
-        max_guests = input("Max Guests: ")
-        stars = input("Star Rating (optional): ")
-        if stars:
-            stars = int(stars)
-        hotels = self.__search_manager.search_hotels_by_city_and_max_guests_with_optional_star_rating(city, max_guests, stars)
 
-        if hotels == 0:
-            print("No hotels found")
-        else:
-            for hotel in hotels:
-                print(hotel)
-
-        input("Press Enter to continue...")
-
-    # TODO: Add more methods which implement the UI for further search options.
-
-    def _navigate(self, choice: int): # TODO: Add further navigation options according to the added MenuOptions in the constructor.
+    def _navigate(self, choice: int):
+        # Handling user selection from the menu
         match choice:
-            case 1:  # option 1 (Show all hotel)
-                self.__show_all()
-                return self  # navigate again to this menu
-            case 2:  # option 2 (Search by name)
-                self.__search_by_city()
-                return self  # navigate again to this menu
-            case 3:  # option 3 (Search by starts)
-                self.__search_by_stars()
-                return self  # navigate again to this menu
-            case 4: # option 4 (Search hotels by city and max guests with optional star rating)
-                self.__search_by_city_and_max_guests_with_optional_star_rating()
-                return self # navigate again to this menu
-            case 5:  # option 5 (Back)
-                return self.__main_menu  # navigate back to the main menu
+            case 1:
+                # Create a guest user when the user selects the "Search Hotels" option
+                self.__user_manager.create_guest_user()
+                while True:
+                    # print("Enter the attributes you want to search with, or skip to show all hotels ")
+                    Console.format_text("Enter the attributes you want to search with, or skip to show all hotels"),
+                    # Incorrect user entries are included based on the SQL statements
+                    hotel_name = input("Name of hotel          :")
+                    city = input("City                   :")
+
+                    # input in the validation manager so that it can be easily accessed,
+                    max_guests = self.__validation_manager.input_max_guests()
+                    star_rating = self.__validation_manager.input_star_rating()
+                    start_date = self.__validation_manager.input_start_date()
+                    if start_date is not None:
+                        end_date = self.__validation_manager.input_end_date(start_date)
+                    else:
+                        end_date = None
+
+                    # Perform the hotel search and selection based on the provided criteria
+                    choice_hotel_id = self.__search_manager.get_hotels_by_city_guests_star_availability(hotel_name,
+                                                                                                        city,
+                                                                                                        max_guests,
+                                                                                                        star_rating,
+                                                                                                        start_date,
+                                                                                                        end_date)
+                    if not choice_hotel_id:
+                        continue
+                    else:
+                        self.__select_hotel_menu = RoomSearchAndBookingMenu(self.__main_menu, hotel_id=choice_hotel_id)
+                        return self.__select_hotel_menu
+            case 2:
+                Console.clear()
+                return self.__main_menu  # Navigate back to the main menu
+
+
+class RoomSearchAndBookingMenu(Menu):
+    def __init__(self, main_menu: Menu, hotel_id=None):
+        super().__init__("Search Rooms")
+
+        self.__main_menu = main_menu  # Reference to the main menu to enable navigation back to it
+        self._hotel_id = hotel_id  # Storing the hotel_id to identify which hotel's rooms to search
+        self.__search_manager = SearchManager()  # Initializing SearchManager for room search functionality
+        self.__validation_manager = ValidationManager()  # Initializing ValidationManager for input validation
+
+        # Adding menu options for user interaction
+        self.add_option(MenuOption("Search rooms in selected hotel"))  # Option to search rooms based on criteria
+        self.add_option(MenuOption("Display all available rooms"))  # Option to display all rooms without criteria
+        self.add_option(MenuOption("Back"))  # Option to go back to the main menu
+
+    def _navigate(self, choice: int):
+        # Handling user selection from the menu
+        match choice:
+            case 1:
+                if self._hotel_id is not None:
+                    # If a hotel is selected, proceed with room search for that hotel
+                    self.__search_manager.search_rooms(self._hotel_id)
+                return self  # Return to the current menu after operation
+            case 2:
+                if self._hotel_id is not None:
+                    # If a hotel is selected, display all available rooms for that hotel
+                    self.__search_manager.display_all_rooms(self._hotel_id)
+                return self  # Return to the current menu after operation
+            case 3:
+                # Navigate back to the main menu
+                return self.__main_menu
