@@ -118,9 +118,9 @@ The main menu is the first thing you'll see when you start the application. It p
 
 1. Search hotels with desired attributes:
    This option allows you to search for hotels based on specific attributes such as room type, maximum number of guests, price per night, and availability during a specific date range. After selecting this option, you'll be prompted to enter your desired attributes. If you want to skip any attribute, just press Enter without typing anything.  
-3. User Menu:
+2. User Menu:
    Here you get to the user menu, which deals with login and registration.
-5. Quit:
+3. Quit:
    The program will be terminated.
 
 To select an option, simply type the number of the option and press Enter.  
@@ -148,13 +148,13 @@ After selecting the desired hotel you can choose one of the following options:
    * How: Enter room type, maximum number of guests, price per night (budget), and availability during a specific date range (you can also skip with Enter all the criterias you want to skip).
    * last step: View and select the room you want to book.
 
-5. Display all available rooms
+2. Display all available rooms
    * Why: To see all rooms without filters.
    * What next: View and select a room.
    * How: Only enter the start and end date of the desired stay or skip (press Enter) to show all.
    * last step: View and select the room you want to book.
 
-9. Back
+3. Back
    * Why: To return to the main menu.
    * What next: Navigate to the previous menu.
    

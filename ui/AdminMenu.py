@@ -19,7 +19,7 @@ class AdminMenu(Menu):
         self.__user_manager = UserManager()
         self.__role = role
         self.__booking_manager = BookingManager()
-        self.__hotel_manager = HotelManager()
+        self.__hotel_manager = HotelManager
         self.__hotel_menu = HotelMenu
         self.__user_id = user_id
 

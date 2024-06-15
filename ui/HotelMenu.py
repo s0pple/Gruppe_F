@@ -13,27 +13,24 @@ class HotelMenu(Menu):
         self.add_option(MenuOption("Delete hotel"))  # option 6
         self.add_option(MenuOption("Back"))  # option 7
         self.__main_menu = main_menu
-        self.__hotel_manager = HotelManager()
+        self.__hotel_manager = HotelManager(self)
 
     def _navigate(self, choice):
         if choice == 1:  # add hotel
             self.__hotel_manager.add_hotel()
-            return self
         elif choice == 2:  # edit hotel information
             self.__hotel_manager.edit_hotel()
-            return self
         elif choice == 3:  # add room
             self.__hotel_manager.add_room()
         elif choice == 4:  # edit room
             self.__hotel_manager.edit_room()
-            return self
         elif choice == 5:  # delete room
             self.__hotel_manager.delete_room()
-            return self
         elif choice == 6:  # delete hotel
             self.__hotel_manager.delete_hotel()
         elif choice == 7:  # Back
             return self.__main_menu
         else:
-            print("Invalid choice. Please enter a number between 1 and 6.")
-            return self
+            print("Invalid choice. Please enter a number between 1 and 7.")
+
+        return self
