@@ -1,9 +1,7 @@
 import os
 from pathlib import Path
 from sqlalchemy import create_engine, Select
-from sqlalchemy.orm import session
 from sqlalchemy.orm import scoped_session, sessionmaker
-
 from data_access.data_base import init_db
 
 

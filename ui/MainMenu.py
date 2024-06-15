@@ -1,8 +1,6 @@
-# ui/MainMenu.py
 from console.console_base import Menu, MenuOption, Console
-from ui.SearchMenu import SearchMenu, RoomSearchAndBookingMenu
+from ui.SearchMenu import SearchMenu
 from ui.UserMenu import UserMenu
-from ui.AdminMenu import AdminMenu
 
 
 class MainMenu(Menu):
@@ -11,12 +9,11 @@ class MainMenu(Menu):
         super().__init__("Main Menu")
         self.add_option(MenuOption("Search Hotels"))  # option 1
         self.add_option(MenuOption("User Menu"))  # option 2
+        self.add_option(MenuOption("Quit"))  # option 3
         # we need the search menu to navigate to it
         self._search_menu = SearchMenu(self)
         self._user_menu = UserMenu(self)
-        # TODO: Implement other SubMenus like SearchMenu
-        # TODO: Add more MenuOptions for other User Stories to navigate to the implemented submenus
-        self.add_option(MenuOption("Quit"))  # option 3
+
 
     def _navigate(self, choice: int):
         match choice:

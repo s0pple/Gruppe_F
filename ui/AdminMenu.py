@@ -1,5 +1,5 @@
 from console.console_base import Menu, MenuOption, Console
-from business.UserManager import UserManager  # import UserManager
+from business.UserManager import UserManager
 from business.BookingManager import BookingManager
 from business.HotelManager import HotelManager
 from ui.HotelMenu import HotelMenu

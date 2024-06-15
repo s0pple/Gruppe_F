@@ -1,11 +1,9 @@
 import os
 import webbrowser
-from sqlalchemy import select, func, text, create_engine, or_, and_
+from sqlalchemy import create_engine, or_, and_
 from sqlalchemy.orm import sessionmaker, aliased
-from business.BaseManager import BaseManager
 from business.UserManager import UserManager
 from console.console_base import Console
-from data_models.models import *
 from datetime import datetime
 
 

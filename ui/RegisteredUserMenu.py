@@ -1,4 +1,3 @@
-# ui/RegisteredUserMenu.py
 from console.console_base import Menu, MenuOption
 from business.UserManager import UserManager
 from business.BookingManager import BookingManager
