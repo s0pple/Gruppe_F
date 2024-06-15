@@ -1,5 +1,5 @@
 from console.console_base import Menu, MenuOption, Console
-from business.UserManager import UserManager  # import UserManager
+from business.UserManager import UserManager
 from business.BookingManager import BookingManager
 from business.HotelManager import HotelManager
 from ui.HotelMenu import HotelMenu
@@ -11,7 +11,7 @@ class AdminMenu(Menu):
         self.add_option(MenuOption("Search Bookings"))
         self.add_option(MenuOption("Edit Bookings"))
         self.add_option(MenuOption("Cancel Bookings"))
-        self.add_option(MenuOption("Adjust hotel information"))
+        self.add_option(MenuOption("Hotel Panel"))
         self.add_option(MenuOption("Update user"))
         self.add_option(MenuOption("Delete user"))
         self.add_option(MenuOption("Logout"))
@@ -40,8 +40,8 @@ class AdminMenu(Menu):
             self.__booking_manager.delete_booking(booking_id)
             return self
         elif choice == 4:  # Adjust hotel information
-            self.__hotel_manager.edit_hotel()
-            return self
+            hotel_menu = self.__hotel_menu(self.__main_menu, self.__role)
+            return hotel_menu
         elif choice == 5:
             self.__user_manager.update_user(self.__role, self.__user_id, self)
             return self

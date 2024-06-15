@@ -7,16 +7,15 @@ from business.ValidationManager import ValidationManager
 from console.console_base import Console
 
 
-
 class SearchManager(BaseManager):
     def __init__(self) -> None:
         super().__init__()
         # Setting up the database connection
         self.__select_hotel_menu = None
         engine = create_engine(f'sqlite:///{os.environ.get("DB_FILE")}')
-        Session = sessionmaker(bind=engine)
-        self._session = Session() # Initialize a session for database operations
-        self.__validation_manager = ValidationManager() # Initialize validation manager for input validation
+        session = sessionmaker(bind=engine)
+        self._session = session()  # Initialize a session for database operations
+        self.__validation_manager = ValidationManager()  # Initialize validation manager for input validation
 
     def get_session(self):
         # Provide a method to access the current session
@@ -30,7 +29,7 @@ class SearchManager(BaseManager):
     def get_hotel_name_by_id(self, hotel_id):
         # Query to get the name of a hotel by its ID
         query = select(Hotel.name).where(Hotel.id == hotel_id)
-        result = self._session.execute(query).scalar_one() # Execute the query and return a single scalar result
+        result = self._session.execute(query).scalar_one()  # Execute the query and return a single scalar result
         return result
 
     # Subquery to find booked room_hotel_id combinations
@@ -134,8 +133,10 @@ class SearchManager(BaseManager):
 
     def get_desired_rooms_by_hotel_id(self, hotel_id=None, number=None, type=None, max_guests=None, amenities=None,
                                       price=None, description=None, start_date=None, end_date=None) -> List[Room]:
+        # Start by creating a basic query to select all rooms
         query = select(Room)
 
+        # Filter the query based on the provided criteria
         if hotel_id:
             query = query.where(Room.hotel_id == hotel_id)
         if number:
@@ -151,17 +152,19 @@ class SearchManager(BaseManager):
         if description:
             query = query.where(Room.description == description)
 
+        # Get the start and end dates for the booking period
         start_date = self.__validation_manager.input_start_date()
         if start_date is not None:
             end_date = self.__validation_manager.input_end_date(start_date)
         else:
             end_date = None
 
+        # If both start and end dates are provided, filter out booked rooms during this period
         if start_date and end_date:
-            # Alias for the Booking table to avoid name conflicts
+            # Create an alias for the Booking table to avoid name conflicts
             br = aliased(Booking)
 
-            # Subquery to find booked room_hotel_id combinations
+            # Subquery to find rooms that are already booked during the given period
             booking_subquery = (
                 select(br.room_hotel_id, br.room_number)
                 .where(
@@ -183,16 +186,19 @@ class SearchManager(BaseManager):
                 )
             ).where(booking_subquery.c.room_hotel_id == None).group_by(Room.number)
 
+        # Execute the query and fetch all results
         result = self._session.execute(query)
         all_rooms = result.fetchall()
         return self.select_all(query), all_rooms
 
     def display_all_rooms(self, hotel_id):
+        from business.BookingManager import BookingManager
+        from business.UserManager import UserManager
         # Display all rooms for a specific hotel
         query, rooms = self.get_desired_rooms_by_hotel_id(hotel_id)
 
         if not rooms:
-            print("No rooms found.")
+            Console.format_text("No rooms found.")
         else:
             Console.format_text("Available rooms:")
             for index, room in enumerate(rooms, start=1):
@@ -202,8 +208,8 @@ class SearchManager(BaseManager):
                              f"    Room Number: {room.number}\n"
                              f"    Type: {room.type}\n"
                              f"    Price per Night: {room.price}")
-                print(room_info)
-                print("******************************************************************************************")
+                Console.format_text(room_info)
+                # print("******************************************************************************************")
 
         try:
             choice = int(input("Enter the number you want to book: "))
@@ -211,21 +217,21 @@ class SearchManager(BaseManager):
                 selected_room = rooms[choice - 1].Room
                 Console.format_text(f"You selected the following room number for booking: {selected_room.number}")
 
-                has_login = input("Do you have a login? (yes/no): ").strip().lower()
+                has_login = Console.format_text("Login", "Do you have a login? (yes/no): ").strip().lower()
                 if has_login == 'yes':
-                    username = input("Enter your username: ")
-                    password = input("Enter your password: ")
-                    guest = self._session.query(Guest).join(Login).filter(
-                        Login.username == username,
-                        Login.password == password
-                    ).first()
+                    # If the user has a login, retrieve the Guest instance associated with that login
+                    username = Console.format_text("Login", "Enter your username: ").strip()
+                    password = Console.format_text("Login", "Enter your password: ").strip()
+                    guest = self._session.query(Guest).join(Login).filter(Login.username == username,
+                                                                          Login.password == password).first()
                 else:
-                    firstname = input("Enter your first name: ")
-                    lastname = input("Enter your last name: ")
-                    email = input("Enter your email: ")
-                    street = input("Enter your street and house number: ")
-                    zip = input("Enter your zip code: ")
-                    city = input("Enter your city: ")
+                    # If the user doesn't have a login, ask for their details and create a new Guest instance
+                    firstname = Console.format_text("Guest Details", "Enter your first name: ").strip()
+                    lastname = Console.format_text("Guest Details", "Enter your last name: ").strip()
+                    email = Console.format_text("Guest Details", "Enter your email: ").strip()
+                    street = Console.format_text("Guest Details", "Enter your street and house number: ").strip()
+                    zip = Console.format_text("Guest Details", "Enter your zip code: ").strip()
+                    city = Console.format_text("Guest Details", "Enter your city: ").strip()
 
                     address = Address(street=street, zip=zip, city=city)
                     self._session.add(address)
@@ -234,6 +240,13 @@ class SearchManager(BaseManager):
                     guest = Guest(firstname=firstname, lastname=lastname, email=email, address_id=address.id)
                     self._session.add(guest)
                     self._session.commit()
+
+                    # Ask the guest if they want to create an account
+                    create_account = Console.format_text("Account Creation",
+                                                         "Do you want to create an account? (yes/no): ").strip().lower()
+                    if create_account == 'yes':
+                        username = email
+                        self.__validation_manager.create_password(username)
 
                 booking_manager = BookingManager()
                 hotel_name = self.get_hotel_name_by_id(selected_room.hotel_id)
@@ -259,6 +272,8 @@ class SearchManager(BaseManager):
         return self
 
     def search_rooms(self, hotel_id):
+        from business.BookingManager import BookingManager #Lazy import
+        from business.UserManager import UserManager #Lazy import
         # Prompts the user to search for rooms based on various criteria
         Console.format_text("Select the room type you want to search for:")
         print("1. Single Room")
@@ -279,7 +294,7 @@ class SearchManager(BaseManager):
 
         room_type = room_type_dict.get(room_type_choice, "all")
         if room_type == "all":
-            room_type = None  # Treat 'all' as no specific room type
+            room_type = None  # Treat "all" as no specific room type
 
         max_guests = input("Enter the maximum number of guests you want to search for or press Enter for all: ")
         max_guests = int(max_guests) if max_guests.isdigit() and int(max_guests) > 0 else None
@@ -310,10 +325,10 @@ class SearchManager(BaseManager):
                                  f"   Room Number: {room.Room.number}\n"
                                  f"   Type: {room.Room.type}\n"
                                  f"   Price per Night: {room.Room.price}")
-                    print(room_info)
-                    print("******************************************************************************************")
+                    Console.format_text(room_info)
+                    # print("******************************************************************************************")
                 except AttributeError as e:
-                    print(f"Error: {e}. Room attributes: {room._mapping}")
+                    Console.format_text(f"Error: {e}. Room attributes: {room._mapping}")
 
             try:
                 choice = int(input("Enter the number you want to book: "))
@@ -321,22 +336,21 @@ class SearchManager(BaseManager):
                     selected_room = rooms[choice - 1].Room
                     Console.format_text(f"You selected the following room number for booking: {selected_room.number}")
 
-                    # Ask if the user has a login
-                    has_login = input("Do you have a login? (yes/no): ")
-                    if has_login.lower() == 'yes':
+                    has_login = Console.format_text("Login", "Do you have a login? (yes/no): ").strip().lower()
+                    if has_login == 'yes':
                         # If the user has a login, retrieve the Guest instance associated with that login
-                        username = input("Enter your username: ")
-                        password = input("Enter your password: ")
+                        username = Console.format_text("Login", "Enter your username: ").strip()
+                        password = Console.format_text("Login", "Enter your password: ").strip()
                         guest = self._session.query(Guest).join(Login).filter(Login.username == username,
                                                                               Login.password == password).first()
                     else:
                         # If the user doesn't have a login, ask for their details and create a new Guest instance
-                        firstname = input("Enter your first name: ")
-                        lastname = input("Enter your last name: ")
-                        email = input("Enter your email: ")
-                        street = input("Enter your street and house number: ")
-                        zip = input("Enter your zip code: ")
-                        city = input("Enter your city: ")
+                        firstname = Console.format_text("Guest Details", "Enter your first name: ").strip()
+                        lastname = Console.format_text("Guest Details", "Enter your last name: ").strip()
+                        email = Console.format_text("Guest Details", "Enter your email: ").strip()
+                        street = Console.format_text("Guest Details", "Enter your street and house number: ").strip()
+                        zip = Console.format_text("Guest Details", "Enter your zip code: ").strip()
+                        city = Console.format_text("Guest Details", "Enter your city: ").strip()
 
                         address = Address(street=street, zip=zip, city=city)
                         self._session.add(address)
@@ -345,6 +359,13 @@ class SearchManager(BaseManager):
                         guest = Guest(firstname=firstname, lastname=lastname, email=email, address_id=address.id)
                         self._session.add(guest)
                         self._session.commit()
+
+                        # Ask the guest if they want to create an account
+                        create_account = Console.format_text("Account Creation",
+                                                             "Do you want to create an account? (yes/no): ").strip().lower()
+                        if create_account == 'yes':
+                            username = email
+                            self.__validation_manager.create_password(username)
 
                     booking_manager = BookingManager()
                     hotel_name = self.get_hotel_name_by_id(selected_room.hotel_id)
@@ -365,8 +386,8 @@ class SearchManager(BaseManager):
                 Console.format_text("Invalid input. Please enter a valid number.")
         return self
 
+
 if __name__ == '__main__':
-    # Set the database file path if not set in the environment
     if not os.environ.get('DB_FILE'):
         os.environ['DB_FILE'] = '../data/test.db'
     search_manager = SearchManager()

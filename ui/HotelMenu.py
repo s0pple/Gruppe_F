@@ -1,7 +1,6 @@
 from console.console_base import Menu, MenuOption
-from data_models.models import Booking, Hotel
-from datetime import datetime
 from business.HotelManager import HotelManager
+
 
 class HotelMenu(Menu):
     def __init__(self, main_menu: Menu, role: str):
@@ -12,7 +11,7 @@ class HotelMenu(Menu):
         self.add_option(MenuOption("edit room information"))  # option 4
         self.add_option(MenuOption("Delete room"))  # option 5
         self.add_option(MenuOption("Delete hotel"))  # option 6
-        self.add_option(MenuOption("Back"))  #option 7
+        self.add_option(MenuOption("Back"))  # option 7
         self.__main_menu = main_menu
         self.__hotel_manager = HotelManager()
 
@@ -31,7 +30,7 @@ class HotelMenu(Menu):
         elif choice == 5:  # delete room
             self.__hotel_manager.delete_room()
             return self
-        elif choice == 6: # delete hotel
+        elif choice == 6:  # delete hotel
             self.__hotel_manager.delete_hotel()
         elif choice == 7:  # Back
             return self.__main_menu

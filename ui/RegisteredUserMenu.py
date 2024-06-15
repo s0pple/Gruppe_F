@@ -1,4 +1,3 @@
-# ui/RegisteredUserMenu.py
 from console.console_base import Menu, MenuOption
 from business.UserManager import UserManager
 from business.BookingManager import BookingManager
@@ -35,7 +34,7 @@ class RegisteredUserMenu(Menu):
         elif choice == 4:  # Update user
             return self.__user_manager.update_user(self.__role, self.__user_id, self)
         elif choice == 5:  # Delete user
-            self.__user_manager.delete_user(self.__user_id)
+            self.__user_manager.delete_user()
             return self
         elif choice == 6:  # Log out
             return self.__main_menu
