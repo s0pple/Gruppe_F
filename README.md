@@ -116,9 +116,12 @@ Once the application is running, you will see a command-line interface with vari
 
 The main menu is the first thing you'll see when you start the application. It provides several options for you to choose from. Here's a brief explanation of each option:
 
-1. Search hotels with desired attributes: This option allows you to search for hotels based on specific attributes such as room type, maximum number of guests, price per night, and availability during a specific date range. After selecting this option, you'll be prompted to enter your desired attributes. If you want to skip any attribute, just press Enter without typing anything.  
-2. User Menu:Here you get to the user menu, which deals with login and registration.
-3. Quit: The program will be terminated.
+1. Search hotels with desired attributes:
+   This option allows you to search for hotels based on specific attributes such as room type, maximum number of guests, price per night, and availability during a specific date range. After selecting this option, you'll be prompted to enter your desired attributes. If you want to skip any attribute, just press Enter without typing anything.  
+3. User Menu:
+   Here you get to the user menu, which deals with login and registration.
+5. Quit:
+   The program will be terminated.
 
 To select an option, simply type the number of the option and press Enter.  
 
@@ -126,14 +129,13 @@ To select an option, simply type the number of the option and press Enter.
 
 When you select the "Search hotels with desired attributes" option, you'll be prompted to enter your desired attributes. Here's how you can do it:
 
-1. no entry: If no entries are made for any of the following search options, all hotels from the database are displayed. The entries are complementary so that combinations are also possible. 
-2. name of hotel: If the name or a part of it is known and entered, the names of the hotels in the database are compared with it and the matching hotels are displayed. Thanks to the “ilike(f”%{hotel_name}%“)” implementation, the hotels are output as soon as the input is also present in the name in any form. Example: if you enter “aMA”, “Hotel Amaris” is displayed.
-3. city: The same for the city. This allows spelling mistakes to be partially ignored.
-4. number of guests: The maximum number of guests that should be in a room can be entered here.
-5. star rating(1-5): This filters the hotels according to the number of stars.
-6. start date(dd.mm.yyyy): The start date can be entered here.
-7. end date(dd.mm.yyyy): This is only asked to be entered if a start date has been entered, but it is then mandatory to enter it.
-8. if no hotels match the conditions, the entries are queried again with the message that no hotel was found.
+ * no entry: If no entries are made for any of the following search options, all hotels from the database are displayed. The entries are complementary so that combinations are also possible.
+   
+You will now be asked for various search entries, all of which can be entered optionally. These entries are monitored so that incorrect entries can be restricted. For example, the number of stars can only have the values 1, 2, 3, 4 and 5.
+
+  * end date(dd.mm.yyyy): This is only asked to be entered if a start date has been entered, but it is then mandatory to enter it.
+    
+if no hotels match the conditions, the entries are queried again with the message that no hotel was found.
 Otherwise the hotels are listed and you can select one of them. The room search is started by the selection.
 
 **Search Rooms**
@@ -166,9 +168,16 @@ After selecting a room, you'll be prompted to enter your booking details such as
 Remember, if you ever want to go back to the previous menu or exit the application, you can usually do so by selecting the "Back" or "Exit" option from the menu.  
 
 **User Menu**
+
 1. Register:
    A new profile is written to the database by entering the e-mail and password and important user and address information. Many input conditions are checked and if the input is invalid, you will be asked to enter it again. After a successful registration you will be redirected to the user menu for login.
-2. Login
+2. Login:
+   
+4. Back:
+   You return to the main menu.
+
+
+
 
 **END**
 
@@ -182,7 +191,7 @@ Artifacts: (for more information look inside the respective contribution)
 - Kanban - created with GitHub
 - Entity Relationship Diagram (ERD) - created with DBeaver
 - Old Class Diagram VS New Class Diagram - created with Visual Paradigm
-- BPMN - created with Canvas
+- BPMN - created with Camunda
 - README File - created with PyCharm
 - Code - created with PyCharm
 - DataBase - created with PyCharm
