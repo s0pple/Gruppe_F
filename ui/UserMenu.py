@@ -35,13 +35,14 @@ class UserMenu(Menu):
                                 continue
                             else:
                                 # definition and request of the password
-                                self.__validation_manager.create_password(username)
+                                password= self.__validation_manager.create_password(username)
+                                self.__user_manager.create_user(username, password)
                                 # request for user information
-                                firstname, lastname, emailaddress, city, zip, street = (
+                                firstname, lastname, emailaddress, city, zip_code, street = (
                                     self.__validation_manager.create_userinfo(username))
                                 # save the user information
                                 self.__user_manager.create_user_information(firstname, lastname, emailaddress, city,
-                                                                            zip, street)
+                                                                            zip_code, street)
                                 Console.format_text("you have been successfully registered")
                                 Console.format_text("please login")
                             return self

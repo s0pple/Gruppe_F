@@ -152,7 +152,7 @@ class ValidationManager:
             else:
                 password_check = Console.format_text("Register", "Enter your Password again to verify: ").strip()
                 if password == password_check:
-                    return self
+                    return password
                 else:
                     print("Passwords are not identical, please enter them again")
             input("Press enter to continue...")
