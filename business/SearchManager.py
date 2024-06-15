@@ -5,6 +5,7 @@ from business.BaseManager import BaseManager
 from data_models.models import *
 from business.ValidationManager import ValidationManager
 from console.console_base import Console
+from sqlalchemy.orm import aliased
 
 
 class SearchManager(BaseManager):
@@ -157,7 +158,6 @@ class SearchManager(BaseManager):
 
         # If both start and end dates are provided, filter out booked rooms during this period
         if start_date and end_date:
-
             # Subquery to find rooms that are already booked during the given period
             booking_subquery = self.booking_subquery(start_date, end_date)
 
@@ -204,8 +204,10 @@ class SearchManager(BaseManager):
                     # If the user has a login, retrieve the Guest instance associated with that login
                     username = Console.format_text("Login", "Enter your username: ").strip()
                     password = Console.format_text("Login", "Enter your password: ").strip()
-                    guest = self._session.query(Guest).join(Login).filter(Login.username == username,
-                                                                          Login.password == password).first()
+                    registered_guest_alias = aliased(RegisteredGuest, flat=True)
+
+                    guest = self._session.query(Guest).join(registered_guest_alias).join(Login).filter(
+                        Guest.email == username, Login.password == password).first()
                 else:
                     # If the user doesn't have a login, ask for their details and create a new Guest instance
                     firstname = Console.format_text("Guest Details", "Enter your first name: ").strip()
@@ -254,7 +256,7 @@ class SearchManager(BaseManager):
         return self
 
     def search_rooms(self, hotel_id):
-        from business.BookingManager import BookingManager #Lazy import
+        from business.BookingManager import BookingManager  #Lazy import
 
         # Prompts the user to search for rooms based on various criteria
         Console.format_text("Select the room type you want to search for:")
@@ -326,8 +328,10 @@ class SearchManager(BaseManager):
                         # If the user has a login, retrieve the Guest instance associated with that login
                         username = Console.format_text("Login", "Enter your username: ").strip()
                         password = Console.format_text("Login", "Enter your password: ").strip()
-                        guest = self._session.query(Guest).join(Login).filter(Login.username == username,
-                                                                              Login.password == password).first()
+                        registered_guest_alias = aliased(RegisteredGuest, flat=True)
+
+                        guest = self._session.query(Guest).join(registered_guest_alias).join(Login).filter(
+                            Guest.email == username, Login.password == password).first()
                     else:
                         # If the user doesn't have a login, ask for their details and create a new Guest instance
                         firstname = Console.format_text("Guest Details", "Enter your first name: ").strip()
