@@ -72,13 +72,23 @@ class HotelManager(BaseManager):
 
     def adjust_room(self, room):
         print("Adjusting room details. Press enter to skip.")
-        room.number = int(input(f"Enter new room number (current: {room.number}): ")) or room.number
+        try:
+            room.number = int(input(f"Enter new room number (current: {room.number}): ")) or room.number
+        except ValueError:
+            pass
         room.type = str(input(f"Enter new room type (current: {room.type}): ")) or room.type
-        room.max_guests = int(
-            input(f"Enter new maximum number of guests (current: {room.max_guests}): ")) or room.max_guests
+        try:
+            room.max_guests = int(
+                input(f"Enter new maximum number of guests (current: {room.max_guests}): ")) or room.max_guests
+        except ValueError:
+            pass
         room.description = str(input(f"Enter new description (current: {room.description}): ")) or room.description
         room.amenities = str(input(f"Enter new amenities (current: {room.amenities}): ")) or room.amenities
-        room.price = float(input(f"Enter new room price (current: {room.price}): ")) or room.price
+        user_input = input(f"Enter new room price (current: {room.price}): ")
+        try:
+            room.price = float(user_input) if user_input else room.price
+        except ValueError:
+            pass
         self._session.commit()
         print("Room details have been updated.")
 

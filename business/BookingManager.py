@@ -176,3 +176,8 @@ class BookingManager(BaseManager):
 
         Console.format_text(f"Booking for {hotel_name}, room number {room_id} has been added.")
 
+        # Ask the user if they want to print the booking
+        print_choice = Console.format_text("Do you want to print the booking?", "(yes/no)").lower()
+        if print_choice == 'yes':
+            self.print_booking(booking.id, "booking.txt")
+

@@ -16,7 +16,7 @@ class UserMenu(Menu):
         self.add_option(MenuOption("Main Menu"))  # option 3
         self.__main_menu = main_menu
 
-        self.__user_manager = UserManager()
+        self.__user_manager = UserManager(main_menu)
         self.__validation_manager = ValidationManager()
 
     def _navigate(self, choice):
@@ -27,8 +27,8 @@ class UserMenu(Menu):
                 match choice:
                     case 1:  # option 1 (Create a new account)
                         while True:
-                            Console.format_text("To create a new account:")
-                            mail =input("Please enter E-Mail address: ").strip().lower()
+                            mail = Console.format_text("Account Creation",
+                                                       "Please enter E-Mail address: ").strip().lower()
                             username = self.__validation_manager.is_valid_email(mail)
                             username = str(username)
                             if not username:
@@ -56,8 +56,7 @@ class UserMenu(Menu):
                         if username != 'admin':
                             username = self.__validation_manager.is_valid_email(username)
 
-                        login_successful, menu_instance, role = self.__user_manager.login(username, password,
-                                                                                          self.__main_menu)
+                        login_successful, menu_instance, role = self.__user_manager.login(username, password)
                         if login_successful:
                             Console.clear()
                             Console.format_text("You are now logged in.")

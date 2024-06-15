@@ -12,17 +12,37 @@ class Console(object):
     def clear():
         os.system('cls' if os.name == 'nt' else 'clear')
 
+    """
+    This function formats and prints a given title and prompt with a specific width. 
+    It adds stars (*) to the left and right of the title and prompt, and fills the remaining width with spaces.
+    If the title or prompt contains multiple lines (detected by newline characters), it will not add stars or spaces.
+    If a prompt is provided, it will also wait for user input and return it.
+
+    Parameters:
+    title (str): The main text to be displayed.
+    prompt (str, optional): Additional text that asks for user input. Defaults to None.
+    width (int, optional): The total width of the printed line, including stars and spaces. Defaults to 90.
+
+    Returns:
+    str: The user input if a prompt is provided, otherwise None.
+    """
     @staticmethod
     def format_text(title, prompt=None, width=90):
         left = "* "
         right = " *"
-        print("*" * width)
+        multiple_lines = '\n' in title or (prompt and '\n' in prompt)
+
+        if not multiple_lines:
+            print("*" * width)
         space = " " * (width - len(left) - len(title) - len(right))
-        print(f"{left}{title}{space}{right}")
+        print(
+            f"{left if not multiple_lines else ''}{title}{space if not multiple_lines else ''}{right if not multiple_lines else ''}")
         if prompt:
             space = " " * (width - len(left) - len(prompt) - len(right))
-            print(f"{left}{prompt}{space}{right}")
-        print("*" * width)
+            print(
+                f"{left if not multiple_lines else ''}{prompt}{space if not multiple_lines else ''}{right if not multiple_lines else ''}")
+        if not multiple_lines:
+            print("*" * width)
         user_input = None
         if prompt:
             user_input = input()

@@ -3,14 +3,16 @@ from sqlalchemy.orm import sessionmaker
 import os
 from console.console_base import Console
 from data_models.models import Login, Guest, Booking, Address
+from datetime import datetime
 
 
 class UserManager:
-    def __init__(self) -> None:
+    def __init__(self, main_menu=None) -> None:
         super().__init__()
         engine = create_engine(f'sqlite:///{os.environ.get("DB_FILE")}')
-        Session = sessionmaker(bind=engine)
-        self._session = Session()
+        session = sessionmaker(bind=engine)
+        self._session = session()
+        self._main_menu = main_menu
 
     def get_session(self):
         return self._session
@@ -46,18 +48,30 @@ class UserManager:
         self._session.add(guest)
         self._session.commit()
 
-    def login(self, username: str, password: str, main_menu):
+    """
+    checks if there is a user with the given username and password
+    #if its an admin user, it returns the AdminMenu instance
+    #if its a registered user, it returns the RegisteredUserMenu instance
+    """
+
+    def login(self, username: str, password: str):
         user = self._session.query(Login).filter_by(username=username, password=password).first()
         if user:
             role = 'admin' if user.role_id == 1 else 'user'
             if role == 'admin':
                 from ui.AdminMenu import AdminMenu  # lazy import AdminMenu
-                return True, AdminMenu(main_menu, role, user.id), role
+                return True, AdminMenu(self._main_menu, role, user.id), role
             else:
                 from ui.RegisteredUserMenu import RegisteredUserMenu  # lazy import RegisteredUserMenu
-                return True, RegisteredUserMenu(main_menu, role, username, user.id), role
+                return True, RegisteredUserMenu(self._main_menu, role, username, user.id), role
         else:
             return False, None, None
+
+    """
+    Updates a user's details based on user input. If the user is not found, a message is displayed.
+    If the role is 'admin' and no user_id is provided, it prompts for one.
+    Returns the menu_instance at the end.
+    """
 
     def update_user(self, role: str, user_id=None, menu_instance=None):
         if role == 'admin' and user_id is None:
@@ -91,10 +105,19 @@ class UserManager:
 
         return menu_instance
 
+    """
+    This method is used to delete a user from the system. It first prompts the user for their username and password.
+    If the login is successful, it retrieves the user's login and guest information from the database.
+    It then checks if the user has any future bookings. If there are future bookings, it prints a message and returns.
+    If there are no future bookings, it deletes all the user's bookings, their guest information, and their login information.
+    Finally, it commits the changes to the database and prints a message indicating that the user has been deleted.
+    If the login is not successful or the user is not found, it prints an appropriate error message.
+    """
+
     def delete_user(self):
         username = Console.format_text("Delete User", "Enter your username: ")
         password = Console.format_text("Delete User", "Enter your password: ")
-        login_successful, _ = self.login(username, password)
+        login_successful, _, _ = self.login(username, password)
 
         # If the login is successful, delete the user
         if login_successful:
@@ -108,6 +131,13 @@ class UserManager:
                 if user_guest:
                     # Get the user's booking information
                     user_bookings = self._session.query(Booking).filter_by(guest_id=user_guest.id).all()
+
+                    # Check if there are any future bookings
+                    future_bookings = [booking for booking in user_bookings if booking.date > datetime.now()]
+
+                    if future_bookings:
+                        Console.format_text("User has future bookings. Cannot delete user.")
+                        return
 
                     # Delete the user's booking information
                     for booking in user_bookings:
@@ -125,3 +155,4 @@ class UserManager:
                 Console.format_text("User not found.")
         else:
             Console.format_text("Login failed. Please try again.")
+        return self._main_menu
