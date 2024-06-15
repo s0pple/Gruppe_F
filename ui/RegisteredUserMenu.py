@@ -12,7 +12,7 @@ class RegisteredUserMenu(Menu):
         self.add_option(MenuOption("Update user"))  # option 4
         self.add_option(MenuOption("Delete user"))  # option 5
         self.add_option(MenuOption("Log out"))  # option 6
-        self.add_option(MenuOption("Back"))  # option 7
+
         self.__main_menu = main_menu
         self.__role = role
         self.__username = username
@@ -37,8 +37,6 @@ class RegisteredUserMenu(Menu):
             self.__user_manager.delete_user()
             return self
         elif choice == 6:  # Log out
-            return self.__main_menu
-        elif choice == 7:  # Back
             return self.__main_menu
         else:
             print("Invalid choice. Please enter a number between 1 and 7.")

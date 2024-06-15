@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import os
 from console.console_base import Console
-from data_models.models import Login, Guest, Booking, Address
+from data_models.models import *
 from datetime import datetime
 
 
