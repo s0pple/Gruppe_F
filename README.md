@@ -22,7 +22,6 @@ This project has been a collaborative effort, reflecting the contributions and t
 - 1 Guest User: 1.1 As a guest user, I want to search available hotels so that I can choose the one that meets my preferences. (with Patrick Nydegger)
 - 1 Guest User: 1.2 As a guest user, I want to see details of different room types (single, double, family rooms) available in a hotel, including the maximum number of guests, description, price, and amenities, so that I can make an informed decision.
 - Integration of external classes primarily the following; Menu(), SearchManager(), ValidationManager(), Session(), BaseManager() 
-- UI / Menus & Submenus creation
 - Creation of entity relationship diagram (ERD)
 - Constructing the class diagram (old version was manually created, new version created with "instant reverse" and roughly added the missing classes, attributes, operations and relationships manually - we included both for contrast reasons)
 - Creating the README.md file
@@ -33,9 +32,10 @@ This project has been a collaborative effort, reflecting the contributions and t
 - 2 Registered: 2.1 As a registered user, I want to log into my account to access my booking history ("read"), so that I can manage my upcoming reservations.
 - 3 Admin: 3.2 As an admin user of the booking system, I want to see all bookings of all hotels to get an overview.
 - 3 Admin: 3.3 I want to edit all bookings to add missing information (e.g., phone number)
-- UI / Menus & Submenus creation
 - Contributed to UserMenu, AdminMenu, RegisteredUserMenu, UserManager, BookingManager, Validation Manager, UI Implementation
 - Modelled the AdminMenu and Registered User Menu
+- concept and structure of the hotel reservation system with menu and submenu, definition of interactions between methods (with Vadivel Vaagisan, Schüpbach Michael , Haag Robin)
+
 
 ### Nydegger Patrick
 - Registering GitHub Premium & integrating with PyCharm
@@ -43,8 +43,7 @@ This project has been a collaborative effort, reflecting the contributions and t
 - 1 Guest User: 1.1 As a guest user, I want to search available hotels so that I can choose the one that meets my preferences. (with Oliver Gwerder)
 - existing individual search functions combined and summarized, basic concept of building SQLAlchemy query (standard search and specification using “append”) defined, also for the other database interactions
 - 1 Guest User: 1.6 As a guest user, I want to register with my email address and a personal identifier (password) to use additional functionalities (e.g., booking history, booking changes, etc. [see 2.1]).
-- UI / Menus & Submenus creation
-- concept and structure of the hotel reservation system with menu and submenu, definition of interactions between methods (with Vadivel Vaagisan, Schüpbach Michael , Haag Robin)
+- concept and structure of the hotel reservation system with menu and submenu, definition of interactions between methods (with Vadivel Vaagisan, Schüpbach Michael , Nydegger Patrick)
 - construction and implementation of a validation manager to intercept incorrect and repetitive user entries
 
 ### Schüpbach Michael
@@ -53,7 +52,8 @@ This project has been a collaborative effort, reflecting the contributions and t
 - 1 Guest User: 1.3 As a guest user, I want to book a room in a specific hotel to plan my vacation.
 - 1 Guest User: 1.5 As a guest user, I want to receive the details of my reservation in a readable form (e.g., save the reservation in a permanent file) so that I can review my booking later.
 - 3 Admin: 3.1 As an admin user of the booking system, I want to be able to maintain hotel information to keep the system up-to-date. (with Vadivel Vaagisan)
-- UI / Menus & Submenus creation
+- concept and structure of the hotel reservation system with menu and submenu, definition of interactions between methods (with Vadivel Vaagisan, Nydegger Patrick , Haag Robin)
+
 
 ### Vadivel Vaagisan
 - Registering GitHub Premium & integrating with PyCharm
@@ -61,12 +61,16 @@ This project has been a collaborative effort, reflecting the contributions and t
 - 3 Admin: 3.1 As an admin user of the booking system, I want to be able to maintain hotel information to keep the system up-to-date. (with Michael Schüpbach)
 - GUI as a PPTX file
 - Modelled the AdminMenu and Registered User Menu 
+- concept and structure of the hotel reservation system with menu and submenu, definition of interactions between methods (with Nydegger Patrick, Schüpbach Michael , Haag Robin)
+
+
 
 ### All
 - Mutual support when coding
 - Weekly exchange and notification of work status, problems and challenges (every Sunday evening and Monday morning, and sometimes during the week)
 - Extreme-coding-event on Saturday, June 01, 2024 09:30 am to 10:00 pm
-  
+- UI / Menus & Submenus creation
+
 ## Using the Application
 
 ### Step-by-Step Guide
