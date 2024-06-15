@@ -45,12 +45,12 @@ class HotelManager(BaseManager):
 
         # adds rooms in a loop
         def add_room(hotel_id):
-            number = int(input(Console.format_text("Add hotel", "Enter room number: ")))
+            number = (input(Console.format_text("Add hotel", "Enter room number: ")))
             type = input(Console.format_text("Add hotel", "Enter room type: "))
-            max_guest = self.__validation_manager.room_max_guests(object)
+            max_guest = input(Console.format_text("Add room", "Enter maximum guest allowed in this room: "))
             description = input(Console.format_text("Add hotel", "Enter a room description: "))
             amenities = input(Console.format_text("Add hotel", "Enter the amenities of the room: "))
-            price = float(input(Console.format_text("Add hotel", "Enter the room price per night: ")))
+            price = (input(Console.format_text("Add hotel", "Enter the room price per night: ")))
 
 
             room = Room(hotel_id=hotel_id,
@@ -91,12 +91,12 @@ class HotelManager(BaseManager):
 
     def adjust_room(self, room): #method to edit room room information
         #variables
-        room_number = int(input(Console.format_text("adjust room", "Enter room number: ")))
+        room_number = (input(Console.format_text("adjust room", "Enter room number: ")))
         room_type = input(Console.format_text("adjust room", "Enter room type: "))
-        max_guest = self.__validation_manager.room_max_guests(object)
+        max_guest = input(Console.format_text("Add room", "Enter maximum guest allowed in this room: "))
         room_description = input(Console.format_text("adjust room", "Enter a room description: "))
         room_amenities = input(Console.format_text("adjust room", "Enter the amenities of the room: "))
-        room_price = float(input(Console.format_text("adjust room", "Enter the room price per night: ")))
+        room_price = (input(Console.format_text("adjust room", "Enter the room price per night: ")))
 
         print("Adjusting room details. Press enter to skip.")
         #overrides the current information with the new information, if the there was an input
@@ -184,12 +184,12 @@ class HotelManager(BaseManager):
     def add_room(self): #adds room to a hotel
         #variables
         hotel_name = input(Console.format_text("Add room", "In which hotel should the room be added? "))
-        room_number_ = int(input(Console.format_text("Add room", "Enter room number: ")))
+        room_number_ = (input(Console.format_text("Add room", "Enter room number: ")))
         room_type_ = input(Console.format_text("Add room", "Enter room type: "))
-        max_guest = self.__validation_manager.room_max_guests(object)
+        max_guest = input(Console.format_text("Add room", "Enter maximum guest allowed in this room: "))
         room_description = input(Console.format_text("Add room", "Enter a room description: "))
         room_amenities = input(Console.format_text("Add room", "Enter the amenities of the room: "))
-        room_price_ = float(input(Console.format_text("Add room", "Enter the room price per night: ")))
+        room_price_ = ((input(Console.format_text("Add room", "Enter the room price per night: "))))
 
         hotel = self._session.query(Hotel).filter_by(name=hotel_name).first()
         if hotel:
@@ -242,7 +242,7 @@ class HotelManager(BaseManager):
         #checks if room exists
         while True:
             try:
-                room_number = int(input(Console.format_text("Delete room", "Room number to delete: ")))
+                room_number = (input(Console.format_text("Delete room", "Room number to delete: ")))
             except ValueError:
                 print("Invalid input. Please enter a number.")
                 continue  # Go back to the beginning of the loop
